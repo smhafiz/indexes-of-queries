@@ -214,13 +214,12 @@ int main()
 			std::chrono::nanoseconds zeroSec{0};
 			timeSpend = zeroSec;
 			//std::chrono::nanoseconds nsInOneSec{1000000000};
-
+			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 			for(numberOfOps=0; numberOfOps < numberOfThreads; numberOfOps++){
 
 				thrds[numberOfOps] = std::thread(runKernel,queryVector+numberOfOps,p,queryVector_d+numberOfOps,NDVSM,THREADSPERBLOCKDVSM,lengthOfResultVectorReduced,columnPtr_d,rowIndex_d,valueArray_d,resultSparseVectorValueArray_d+numberOfOps,resultSparseVectorValueArrayDD+numberOfOps);
 
 			}
-			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 			for(numberOfOps=0; numberOfOps < numberOfThreads; numberOfOps++){
 				thrds[numberOfOps].join();
 
