@@ -1,3 +1,6 @@
 createindex
+indexes
+*.row
+*.col
 val.*
-out.*
+*.polys
