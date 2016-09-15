@@ -11,8 +11,7 @@ NTL_CLIENT
 int main(int argc, char **argv)
 {
     int modulus = 65537;
-    int u = argc - 1;
-
+    int u = argc - 2;
     std::ifstream xcoords(argv++[1], std::ifstream::in);
     std::ifstream * irow = new std::ifstream[u];
     std::ifstream * icol = new std::ifstream[u];
@@ -27,8 +26,8 @@ int main(int argc, char **argv)
     }
 
     // open the files containing the sparse permutation-like matrices
-    for (int i = 1; i < u; ++i)
-    {
+    for (int i = 1; i <= u; ++i)
+    {	
 	char * infile = new char[strlen(argv[i]) + 4];
 	sprintf(infile, "%s.row", argv[i]);
 	irow[i - 1].open(infile, std::ifstream::in);
@@ -103,6 +102,7 @@ int main(int argc, char **argv)
 
     // read the input matrices and create the index in CCS format, on the fly
     int * prev_col = new int[u];
+    memset(prev_col, 0, sizeof(int)*u);
 
     vec_ZZ_pX buffer(INIT_SIZE, p, upoly);
     int next_col = 0;
@@ -113,7 +113,6 @@ int main(int argc, char **argv)
 	    int to_read = prev_col[i];
 	    icol[i] >> prev_col[i];
 	    to_read = prev_col[i] - to_read;
-
 	    while (to_read--)
 	    {
 		int which_row;
