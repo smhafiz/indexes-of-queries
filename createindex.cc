@@ -70,6 +70,8 @@ int main(int argc, char **argv)
     delete [] outfile;
 
     orow << p << " ";
+    long opos = orow.tellp();
+    orow << "           ";
     ocol << r << " 0 ";
     opoly << modulus << " ";
 
@@ -104,6 +106,9 @@ int main(int argc, char **argv)
     int * prev_col = new int[u];
     memset(prev_col, 0, sizeof(int)*u);
 
+
+    int num_vals = 0;
+
     vec_ZZ_pX buffer(INIT_SIZE, p, upoly);
     int next_col = 0;
     for (int j = 0; j < r; ++j)
@@ -131,11 +136,14 @@ int main(int argc, char **argv)
 		{
 		    oval[k] << eval(buffer[i], to_ZZ_p(server_xcoord[k])) << " ";
 		}
+                num_vals++;
 	    }
 	    NTL::clear(buffer[i]);
 	}
 	ocol << next_col << " ";
     }
+    orow.seekp(opos);
+    orow << num_vals;
 
     // cleanup
     delete [] prev_col;
