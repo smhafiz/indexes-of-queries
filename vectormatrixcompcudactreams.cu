@@ -33,12 +33,12 @@ __global__ void	dvsmMultKernel(int lengthOfResultVectorReduced, int *columnPtr,i
 int main()
 {
 	std::ofstream myfile;
-	myfile.open ("TestCase-CUDA100trialsR18.txt");
+	myfile.open ("TestCase-CUDA100trialsR20.txt");
 	uint64_t seed = time(NULL);
 	myfile << "Seed: " << seed ;
 //	std::cout << "Seed: " << seed ;
 	srand(seed);
-	const long max_u =16, r = 1L << 18;
+	const long max_u =16, r = 1L << 20;
 	for (long p = 2; p <= r; p <<= 1)
 	{
 		for (long u = 1; u <= max_u; u <<=1)
