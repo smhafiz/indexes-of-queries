@@ -204,7 +204,8 @@ int main(int argc, char **argv){
 		std::cout<<"O"<<(n%3==0?2*n-2:2*n-1)<<(occupied[(n%3==0?2*n-2:2*n-1)]?" +":" ")<<"= +c\n";
 	}
 	if(n>2 && n%3==0) { 
-		std::cout<<"O"<<2*n-1<< (occupied[(2*n-1)]?" +":" ") <<" =+c\n";
+		std::cout<<"\"addc.u32\t%"<<2*n-1<<", 0,"<< (occupied[(2*n-1)]?" %":" ") << (occupied[(2*n-1)]?2*n-1:0) <<";\\n\\t\"";
+		std::cout<<"\t\t\\\\(O"<<2*n-1<< (occupied[(2*n-1)]?" +":" ") <<" =+c"<<")\n";
 	}
 	myfile.close();
 }
