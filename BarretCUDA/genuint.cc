@@ -193,12 +193,12 @@ static void print_sub(uint limbs)
     for (int i = 1; i < limbs; ++i)
     {
 	sprintf(r0, "%%%u", i);
-	sprintf(r2, "%%%u", limbs + i);
+	sprintf(r2, "%%%u", limbs + i + 1);
 	printf("\t\"subc.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
 	printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
     }
     sprintf(r0, "%%%u", limbs);
-    sprintf(r2, "%%%u", 2 * limbs - 1);
+    sprintf(r2, "%%%u", 2 * limbs+1);
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
     cout << "\t: \"+r\"(_a[0])";
@@ -276,8 +276,7 @@ void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int
     if (pairs[i].empty())
     {
 	printf("\t\"add%s%s.u32\t%3s,%3s,  0    ;\\n\\t\"", CARRY_IN_FLAG(c), CARRY_OUT_FLAG(i), r0, (IS_OCCUPIED(i) ? r0 : "  0"));
-	sprintf(r0, "r%u", GET_DEST_REG(i));
-	printf("\t//%3s%s= c", r0, (IS_OCCUPIED(i) ? "+" : " ")); 
+	printf("\t//%3s%s= c", &(*r0='r'), (IS_OCCUPIED(i) ? "+" : " ")); 
 	CARRY_IN(i);
     }
     else
@@ -287,10 +286,7 @@ void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int
 	sprintf(r1, "%%%u", GET_FIRST_REG(p));
 	sprintf(r2, "%%%u", GET_SECOND_REG(i,p));
 	printf("\t\"mad%s%s%s.u32\t%3s,%3s,%3s,%3s;\\n\\t\"", CARRY_IN_FLAG(c), LO_OR_HI(p), CARRY_OUT_FLAG(i), r0, r1, r2, (IS_OCCUPIED(i) ? r0 : "  0"));
-	sprintf(r0, "r%u", GET_DEST_REG(i));
-	sprintf(r1, "r%u", GET_FIRST_REG(p));
-	sprintf(r2, "r%u", GET_SECOND_REG(i,p));
-	printf("\t//%3s%s=[%3s*%3s]%s%s", r0, (IS_OCCUPIED(i) ? "+" : " "), r1, r2, LO_OR_HI(p), (c ? "+c" : "  "));
+	printf("\t//%3s%s=[%3s*%3s]%s%s", &(*r0='r'), (IS_OCCUPIED(i) ? "+" : " "), &(*r1='r'), &(*r2='r'), LO_OR_HI(p), (c ? "+c" : "  "));
 	MUL_IN(i);
     }
     if (i < limbs - 1) cout << "  (r" << (i - limbs + 1) << " => r" << GET_DEST_REG(limbs + i) << ")";
@@ -329,10 +325,7 @@ inline void print_get_q(int limbs)
     sprintf(r1, "%%%u", GET_FIRST_REG(p));
     sprintf(r2, "%%%u", GET_SECOND_REG(1,p));
     printf("    asm(\"mul.hi.u32\t%3s,%3s,%3s    ;\\n\\t\"", r0, r1, r2);
-    sprintf(r0, "r%u", GET_DEST_REG(limbs+1));
-    sprintf(r1, "r%u", GET_FIRST_REG(p));
-    sprintf(r2, "r%u", GET_SECOND_REG(1,p));
-    printf("\t//%3s =[%3s*%3s].hi  ", r0, r1, r2);
+    printf("\t//%3s =[%3s*%3s].hi  ", &(*r0='r'), &(*r1='r'), &(*r2='r'));
     cout << "  (r" << (2-limbs) << " => r" << GET_DEST_REG(limbs+1) <<  ")\n";
     MUL_IN(1);
 
@@ -345,39 +338,29 @@ inline void print_get_q(int limbs)
     }
 
     // handle the implicit 1-word
-    sprintf(r0, "%%%u", GET_DEST_REG(limbs));
-    sprintf(r1, "%%%u", 2 * limbs - 1);
+    sprintf(r0, "%%%u", GET_DEST_REG(limbs-1));
+    sprintf(r1, "%%%u", 2 * limbs - 3);
     printf("\t\"add.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-    sprintf(r0, "r%u", GET_DEST_REG(limbs));
-    sprintf(r1, "r%u", 2 * limbs - 1);
-    printf("\t//%3s+=%3s\n", r0, r1);
+    printf("\t//%3s+=%3s\n", &(*r0='r'), &(*r1='r'));
     for (int i = limbs; i < 2 * limbs - 2; i++)
     {
-	sprintf(r0, "%%%u", GET_DEST_REG(i+1));
-	sprintf(r1, "%%%u", i + limbs);
+	sprintf(r0, "%%%u", GET_DEST_REG(i));
+	sprintf(r1, "%%%u", i + limbs-2);
 	printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-	sprintf(r0, "r%u", GET_DEST_REG(i+1));
-	sprintf(r1, "r%u", i + limbs);
-	printf("\t//%3s+=%3s+c\n", r0, r1);
+	printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     }
+    sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 2));
+    sprintf(r1, "%%%u", 3 * limbs - 4);
+    printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
+    printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 1));
-    sprintf(r1, "%%%u", 3 * limbs - 2);
-    printf("\t\"addc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-    sprintf(r0, "r%u", GET_DEST_REG(2 * limbs - 1));
-    sprintf(r1, "r%u", 3 * limbs - 2);
-    printf("\t//%3s+=%3s+c\n", r0, r1);
-
-//    sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 1));
-//    sprintf(r1, "%%%u", 3 * limbs - 2);
-//    printf("  //\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"\t// propagate overflow?\n",r0,r0,r1);
-//    sprintf(r0, "r%u", GET_DEST_REG(2 * limbs - 1));
-//    sprintf(r1, "r%u", 3 * limbs - 2);
-//    printf("  //\t\"addc.u32\t %%0,  0,  0    ;\\n\\t\"\t// overflow?\n");
+    printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
+    printf("\t//%3s+=c\n", &(*r0='r'));
 
     cout << "\t: \"=r\"(tmp)";
     for (int i = 0; i < limbs; i++) printf(", \"=r\"(_q[%u])", i);
-    cout << "\n\t: \"r\"(_a[0])";
-    for (int i = 1; i < limbs; i++) printf(", \"r\"(_a[%u])", i);
+    cout << "\n\t: \"r\"(_a[" << (limbs-2) << "])";
+    for (int i = limbs-1; i < 2*(limbs-1); i++) printf(", \"r\"(_a[%u])", i);
     for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_mu[%u])", i);
     cout << ");\n\n";
     cout << "    return q;\n";

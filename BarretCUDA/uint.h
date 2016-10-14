@@ -27,6 +27,7 @@
 
 #define BITS_PER_LIMB	(sizeof(uint) * 8)
 #define BITS_IN(limbs)	((limbs) * BITS_PER_LIMB)
+#define LIMBS_IN(x)	(sizeof(x) / sizeof(uint))
 
 typedef unsigned int uint;
 typedef uint  uint32;
