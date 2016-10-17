@@ -89,7 +89,7 @@ __device__ __forceinline__ void sub(uint128 & a_lo, uint128 & a_hi, const uintXp
 
 __device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo, const uint128 & a_hi, const uint128 & mu)
 {
-    uint __attribute__((unused)) tmp;
+    uint __attribute__((unused)) tmp0;
     uintXp<uint128> q;
     uint * _q = (uint *)&q;
     uint * _a_lo = (uint *)&a_lo;
@@ -149,7 +149,7 @@ __device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo, const uin
 	"addc.cc.u32	 %3, %3,%10    ;\n\t"	// r3+=r10+c
 	"addc.cc.u32	 %4, %4,%11    ;\n\t"	// r4+=r11+c
 	"addc.u32	 %5, %5,  0    ;\n\t"	// r5+=c
-	: "=r"(tmp), "=r"(_q[0]), "=r"(_q[1]), "=r"(_q[2]), "=r"(_q[3]), "=r"(_q[4])
+	: "=r"(_q[0]), "=r"(_q[1]), "=r"(_q[2]), "=r"(_q[3]), "=r"(_q[4]), "=r"(tmp0)
 	: "r"(_a_lo[3]), "r"(_a_hi[0]), "r"(_a_hi[1]), "r"(_a_hi[2]), "r"(_a_hi[3]), "r"(_mu[0]), "r"(_mu[1]), "r"(_mu[2]), "r"(_mu[3]));
 
     return q;
