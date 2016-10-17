@@ -4,3 +4,4 @@ indexes
 *.col
 val.*
 *.polys
+BarretCUDA/genuint

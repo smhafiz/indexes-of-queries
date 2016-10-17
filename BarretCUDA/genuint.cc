@@ -58,7 +58,8 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
-#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
+#define GET_DEST_REG(i)  	((i + limbs - 3) % (2 * limbs - 4))
+//#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
 #define GET_FIRST_REG(p)	(limbs+1+p.second)//(2*limbs-1+p.second)
 #define GET_SECOND_REG(i,p)	(2*limbs+1+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 
@@ -320,7 +321,7 @@ inline void print_get_q(int limbs)
 
     cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo, const uint" << BITS_IN(limbs-1) << " & a_hi, const uint" << BITS_IN(limbs-1) << " & mu)\n";
     cout << "{\n";
-    cout << "    uint __attribute__((unused)) tmp;\n";
+    for (int i = 0; i < (limbs-4); i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
     cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q;\n";
     cout << "    uint * _q = (uint *)&q;\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
@@ -364,8 +365,9 @@ inline void print_get_q(int limbs)
     printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
     printf("\t//%3s+=c\n", &(*r0='r'));
 
-    cout << "\t: \"=r\"(tmp)";
-    for (int i = 0; i < limbs; i++) printf(", \"=r\"(_q[%u])", i);
+    cout << "\t: \"=r\"(_q[0])";
+    for (int i = 1; i < limbs; i++) printf(", \"=r\"(_q[%u])", i);
+    for (int i = 0; i < (limbs-4); i++) cout << ", \"=r\"(tmp" << i << ")";
     cout << "\n\t: \"r\"(_a_lo[" << (limbs-2) << "])";
     for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_a_hi[%u])", i);
     for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_mu[%u])", i);
