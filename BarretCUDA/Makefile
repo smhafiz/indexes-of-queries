@@ -26,17 +26,16 @@ CXXFLAGS=-Wall -g -O2 -pedantic -std=c++11
 NVCCFLAGS=-std=c++11 -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__
 LDLIBS=-lntl -lgmp
 
+barret: barret.cu uint.h uintX.h
+	$(NVCC) $(NVCCFLAGS) -o $@ barret.cu $(LDLIBS)
+
 genuint: genuint.cc
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-rungenuint: genuint
+run-genuint: genuint
 	./genuint $(LIMBS) > uintX.h
 
-barret: barret.cu rungenuint uint.h
-	$(NVCC) $(NVCCFLAGS) -o $@ barret.cu $(LDLIBS)
+.PHONY: clean run-genuint
 
 clean:
 	-rm -f barret genuint
-
-veryclean: clean
-	-rm -f uintX.h

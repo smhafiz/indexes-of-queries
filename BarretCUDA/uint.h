@@ -36,18 +36,8 @@ typedef uint3 uint96;
 typedef uint4 uint128;
 
 template <typename T>
-struct uint2X
-{
-//    uint2X(T lo) : lo(lo) {}
-//    uint2X(T lo, T hi) : lo(lo), hi(hi) {}
-    T lo;
-    T hi;
-};
-
-template <typename T>
 struct uintXp
 {
-//    uintXp(T lo, uint hi) : lo(lo), hi(hi) {}
     T lo;
     uint hi;
 };
@@ -59,11 +49,9 @@ static inline NTL::ZZ to_ZZ(const T & n)
 }
 
 template <typename T>
-static inline T to_uint(const NTL::ZZ & n)
+static inline void to_uint(const NTL::ZZ & n, T & ret)
 {
-    T ret;
     NTL::BytesFromZZ((unsigned char *)&ret, n, sizeof(T));
-    return ret;
 }
 
 template <typename T>
@@ -73,9 +61,17 @@ static inline NTL::ZZ_p to_ZZ_p(const T & n)
 }
 
 template <typename T>
-static inline T make_zero()
+static inline void print(const T & n)
 {
-    return to_uint<T>(NTL::to_ZZ(0));
+    std::cout << to_ZZ<T>(n);
+}
+
+template <typename T>
+static inline void print_limbs(const T & n)
+{
+    const uint * _n = (uint *)&n;
+    std::cout << _n[0];
+    for (int i = 1; i < LIMBS_IN(T); ++i) std::cout << "." << _n[i];
 }
 
 #endif

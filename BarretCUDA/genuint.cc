@@ -58,7 +58,7 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
-#define GET_DEST_REG(i)  	(i < limbs-1 ? i+1 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
+#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
 #define GET_FIRST_REG(p)	(limbs+1+p.second)//(2*limbs-1+p.second)
 #define GET_SECOND_REG(i,p)	(2*limbs+1+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 
@@ -145,17 +145,18 @@ static void print_to_ZZ_p(uint limbs)
 static void print_to_uint(uint limbs)
 {
     /// output to_uintX (converts a ZZ to a uintX)
-    cout << "static inline uint" << BITS_IN(limbs) << " to_uint" << BITS_IN(limbs) << "(const NTL::ZZ & n)\n";
+    cout << "static inline void to_uint" << BITS_IN(limbs) << "(const NTL::ZZ & n, uint" << BITS_IN(limbs) << " & ret)\n";
     cout << "{\n";
-    cout << "    return to_uint<uint" << BITS_IN(limbs) << ">(n);\n";
+    cout << "    to_uint<uint" << BITS_IN(limbs) << ">(n, ret);\n";
     cout << "}\n\n";
 }
 
 static void print_normalize(uint limbs)
 {
-    cout << "__device__ __forceinline__ void normalize(uint2X<uint" << BITS_IN(limbs) << "> & a, const uint2X<uint" << BITS_IN(limbs) << "> & s)\n";
+    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi, const uint" << BITS_IN(limbs) << " * s)\n";
     cout << "{\n";
-    cout << "    uint * _a = (uint *)&a;\n";
+    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    cout << "    uint * _a_hi = (uint *)&a_hi;\n";
     cout << "    const uint * _s = (uint *)&s;\n";
     sprintf(r0, "%%%u", 0);
     sprintf(r2, "%%%u", 2 * limbs);
@@ -172,8 +173,9 @@ static void print_normalize(uint limbs)
     sprintf(r2, "%%%u", 4 * limbs - 1);
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
-    cout << "\t: \"+r\"(_a[0])";
-    for (int i = 1; i < 2 * limbs; i++) cout << ", \"+r\"(_a[" << i << "])";
+    cout << "\t: \"+r\"(_a_lo[0])";
+    for (int i = 1; i < limbs; i++) cout << ", \"+r\"(_a_lo[" << i << "])";
+    for (int i = 0; i < limbs; i++) cout << ", \"+r\"(_a_hi[" << i << "])";
     cout << "\n\t: \"r\"(_s[0])";
     for (int i = 1; i < 2 * limbs; i++) cout << ", \"r\"(_s[" << i << "])";
     cout << ");\n";
@@ -182,9 +184,10 @@ static void print_normalize(uint limbs)
 
 static void print_sub(uint limbs)
 {
-    cout << "__device__ __forceinline__ void sub(uint2X<uint" << BITS_IN(limbs) << "> & a, const uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
+    cout << "__device__ __forceinline__ void sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi, const uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
     cout << "{\n";
-    cout << "    uint * _a = (uint *)&a;\n";
+    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    cout << "    uint * _a_hi = (uint *)&a_hi;\n";
     cout << "    const uint * _r = (uint *)&r;\n";
     sprintf(r0, "%%%u", 0);
     sprintf(r2, "%%%u", limbs + 1);
@@ -201,8 +204,9 @@ static void print_sub(uint limbs)
     sprintf(r2, "%%%u", 2 * limbs+1);
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
-    cout << "\t: \"+r\"(_a[0])";
-    for (int i = 1; i < limbs + 1; i++) cout << ", \"+r\"(_a[" << i << "])";
+    cout << "\t: \"+r\"(_a_lo[0])";
+    for (int i = 1; i < limbs; i++) cout << ", \"+r\"(_a_lo[" << i << "])";
+    cout << ", \"+r\"(_a_hi[0])";
     cout << "\n\t: \"r\"(_r[0])";
     for (int i = 1; i < limbs + 1; i++) cout << ", \"r\"(_r[" << i << "])";
     cout << ");\n";
@@ -217,9 +221,10 @@ static void print_mad(uint limbs)
 	for (int j = limbs - 1; j >= 0; --j) col[i + j].push_back(i);
     }
     
-    cout << "__device__ __forceinline__ void mad(uint2X<uint" << BITS_IN(limbs) << "> & a, uint & overflow, const uint" << BITS_IN(limbs) << " & b, const uint" << BITS_IN(limbs) << " & c)\n";
+    cout << "__device__ __forceinline__ void mad(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi, uint & overflow, const uint" << BITS_IN(limbs) << " & b, const uint" << BITS_IN(limbs) << " & c)\n";
     cout << "{\n";
-    cout << "    uint * _a = (uint *)&a;\n";
+    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    cout << "    uint * _a_hi = (uint *)&a_hi;\n";
     cout << "    const uint * _b = (uint *)&b;\n";
     cout << "    const uint * _c = (uint *)&c;\n\n";
     cout << "    asm(";
@@ -260,7 +265,8 @@ static void print_mad(uint limbs)
 	}
     }
     cout << ": ";
-    for (int i = 0; i < 2 * limbs; ++i) cout << "\"+r\"(_a[" << i << "]), ";
+    for (int i = 0; i < limbs; ++i) cout << "\"+r\"(_a_lo[" << i << "]), ";
+    for (int i = 0; i < limbs; ++i) cout << "\"+r\"(_a_hi[" << i << "]), ";
     cout << "\"+r\"(overflow)\n\t: \"r\"(_b[0])";
     for (int i = 1; i < limbs; ++i) cout << ", \"r\"(_b[" << i << "])";
     for (int i = 0; i < limbs; ++i) cout << ", \"r\"(_c[" << i << "])";
@@ -289,7 +295,7 @@ void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int
 	printf("\t//%3s%s=[%3s*%3s]%s%s", &(*r0='r'), (IS_OCCUPIED(i) ? "+" : " "), &(*r1='r'), &(*r2='r'), LO_OR_HI(p), (c ? "+c" : "  "));
 	MUL_IN(i);
     }
-    if (i < limbs - 1) cout << "  (r" << (i - limbs + 1) << " => r" << GET_DEST_REG(limbs + i) << ")";
+    if (i < limbs - 1) cout << "  (r" << (i - limbs + 1) << " => r" << GET_DEST_REG(i) << ")";
     cout << "\n";
     if (cc && i < 2 * limbs - 1) propagate_q(i + 1,limbs, true, state, pairs);
 }
@@ -312,12 +318,13 @@ inline void print_get_q(int limbs)
 	}
     }
 
-    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint2X<uint" << BITS_IN(limbs-1) << "> & a, const uint" << BITS_IN(limbs-1) << " & mu)\n";
+    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo, const uint" << BITS_IN(limbs-1) << " & a_hi, const uint" << BITS_IN(limbs-1) << " & mu)\n";
     cout << "{\n";
     cout << "    uint __attribute__((unused)) tmp;\n";
     cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q;\n";
     cout << "    uint * _q = (uint *)&q;\n";
-    cout << "    uint * _a = (uint *)&a;\n";
+    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    cout << "    uint * _a_hi = (uint *)&a_hi;\n";
     cout << "    uint * _mu = (uint *)&mu;\n";
 
     auto p = make_pair(1,0);
@@ -359,8 +366,8 @@ inline void print_get_q(int limbs)
 
     cout << "\t: \"=r\"(tmp)";
     for (int i = 0; i < limbs; i++) printf(", \"=r\"(_q[%u])", i);
-    cout << "\n\t: \"r\"(_a[" << (limbs-2) << "])";
-    for (int i = limbs-1; i < 2*(limbs-1); i++) printf(", \"r\"(_a[%u])", i);
+    cout << "\n\t: \"r\"(_a_lo[" << (limbs-2) << "])";
+    for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_a_hi[%u])", i);
     for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_mu[%u])", i);
     cout << ");\n\n";
     cout << "    return q;\n";

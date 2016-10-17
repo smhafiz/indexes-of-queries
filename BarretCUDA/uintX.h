@@ -51,14 +51,15 @@ static inline NTL::ZZ_p to_ZZ_p(const uint128 & n)
     return NTL::to_ZZ_p(to_ZZ<uint128>(n));
 }
 
-static inline uint128 to_uint128(const NTL::ZZ & n)
+static inline void to_uint128(const NTL::ZZ & n, uint128 & ret)
 {
-    return to_uint<uint128>(n);
+    to_uint<uint128>(n, ret);
 }
 
-__device__ __forceinline__ void normalize(uint2X<uint128> & a, const uint2X<uint128> & s)
+__device__ __forceinline__ void normalize(uint128 & a_lo, uint128 & a_hi, const uint128 * s)
 {
-    uint * _a = (uint *)&a;
+    uint * _a_lo = (uint *)&a_lo;
+    uint * _a_hi = (uint *)&a_hi;
     const uint * _s = (uint *)&s;
     asm("sub.cc.u32	 %0, %0, %8;\n\t"	// r0-= r8
 	"subc.cc.u32	 %1, %1, %9;\n\t"	// r1-=( r9+c)
@@ -68,60 +69,62 @@ __device__ __forceinline__ void normalize(uint2X<uint128> & a, const uint2X<uint
 	"subc.cc.u32	 %5, %5,%13;\n\t"	// r5-=(r13+c)
 	"subc.cc.u32	 %6, %6,%14;\n\t"	// r6-=(r14+c)
 	"subc.u32	 %7, %7,%15;\n\t"	// r7-=(r15+c)
-	: "+r"(_a[0]), "+r"(_a[1]), "+r"(_a[2]), "+r"(_a[3]), "+r"(_a[4]), "+r"(_a[5]), "+r"(_a[6]), "+r"(_a[7])
+	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]), "+r"(_a_hi[0]), "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3])
 	: "r"(_s[0]), "r"(_s[1]), "r"(_s[2]), "r"(_s[3]), "r"(_s[4]), "r"(_s[5]), "r"(_s[6]), "r"(_s[7]));
 }
 
-__device__ __forceinline__ void sub(uint2X<uint128> & a, const uintXp<uint128> & r)
+__device__ __forceinline__ void sub(uint128 & a_lo, uint128 & a_hi, const uintXp<uint128> & r)
 {
-    uint * _a = (uint *)&a;
+    uint * _a_lo = (uint *)&a_lo;
+    uint * _a_hi = (uint *)&a_hi;
     const uint * _r = (uint *)&r;
     asm("sub.cc.u32	 %0, %0, %5;\n\t"	// r0-= r5
-	"subc.cc.u32	 %1, %1, %5;\n\t"	// r1-=( r5+c)
-	"subc.cc.u32	 %2, %2, %6;\n\t"	// r2-=( r6+c)
-	"subc.cc.u32	 %3, %3, %7;\n\t"	// r3-=( r7+c)
-	"subc.u32	 %4, %4, %7;\n\t"	// r4-=( r7+c)
-	: "+r"(_a[0]), "+r"(_a[1]), "+r"(_a[2]), "+r"(_a[3]), "+r"(_a[4])
+	"subc.cc.u32	 %1, %1, %6;\n\t"	// r1-=( r6+c)
+	"subc.cc.u32	 %2, %2, %7;\n\t"	// r2-=( r7+c)
+	"subc.cc.u32	 %3, %3, %8;\n\t"	// r3-=( r8+c)
+	"subc.u32	 %4, %4, %9;\n\t"	// r4-=( r9+c)
+	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]), "+r"(_a_hi[0])
 	: "r"(_r[0]), "r"(_r[1]), "r"(_r[2]), "r"(_r[3]), "r"(_r[4]));
 }
 
-__device__ __forceinline__ uintXp<uint128> get_q(const uint2X<uint128> & a, const uint128 & mu)
+__device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo, const uint128 & a_hi, const uint128 & mu)
 {
     uint __attribute__((unused)) tmp;
     uintXp<uint128> q;
     uint * _q = (uint *)&q;
-    uint * _a = (uint *)&a;
+    uint * _a_lo = (uint *)&a_lo;
+    uint * _a_hi = (uint *)&a_hi;
     uint * _mu = (uint *)&mu;
     asm("mul.hi.u32	 %2, %6,%11    ;\n\t"	// r2 =[ r6*r11].hi    (r-3 => r2)
-	"mad.lo.cc.u32	 %2, %7,%11, %2;\n\t"	// r2+=[ r7*r11].lo    (r-3 => r2)
-	"madc.lo.u32	 %3, %8,%11,  0;\n\t"	// r3 =[ r8*r11].lo+c  (r-2 => r3)
-	"mad.lo.cc.u32	 %2, %6,%12, %2;\n\t"	// r2+=[ r6*r12].lo    (r-3 => r2)
-	"madc.lo.cc.u32	 %3, %7,%12, %3;\n\t"	// r3+=[ r7*r12].lo+c  (r-2 => r3)
-	"madc.lo.u32	 %4, %9,%11,  0;\n\t"	// r4 =[ r9*r11].lo+c  (r-1 => r4)
-	"mad.lo.cc.u32	 %3, %6,%13, %3;\n\t"	// r3+=[ r6*r13].lo    (r-2 => r3)
-	"madc.lo.cc.u32	 %4, %8,%12, %4;\n\t"	// r4+=[ r8*r12].lo+c  (r-1 => r4)
+	"mad.lo.cc.u32	 %3, %7,%11, %3;\n\t"	// r3+=[ r7*r11].lo    (r-3 => r3)
+	"madc.lo.u32	 %4, %8,%11,  0;\n\t"	// r4 =[ r8*r11].lo+c  (r-2 => r4)
+	"mad.lo.cc.u32	 %3, %6,%12, %3;\n\t"	// r3+=[ r6*r12].lo    (r-3 => r3)
+	"madc.lo.cc.u32	 %4, %7,%12, %4;\n\t"	// r4+=[ r7*r12].lo+c  (r-2 => r4)
+	"madc.lo.u32	 %5, %9,%11,  0;\n\t"	// r5 =[ r9*r11].lo+c  (r-1 => r5)
+	"mad.lo.cc.u32	 %4, %6,%13, %4;\n\t"	// r4+=[ r6*r13].lo    (r-2 => r4)
+	"madc.lo.cc.u32	 %5, %8,%12, %5;\n\t"	// r5+=[ r8*r12].lo+c  (r-1 => r5)
 	"madc.lo.u32	 %0,%10,%11,  0;\n\t"	// r0 =[r10*r11].lo+c
-	"mad.hi.cc.u32	 %3, %7,%11, %3;\n\t"	// r3+=[ r7*r11].hi    (r-2 => r3)
-	"madc.lo.cc.u32	 %4, %7,%13, %4;\n\t"	// r4+=[ r7*r13].lo+c  (r-1 => r4)
+	"mad.hi.cc.u32	 %4, %7,%11, %4;\n\t"	// r4+=[ r7*r11].hi    (r-2 => r4)
+	"madc.lo.cc.u32	 %5, %7,%13, %5;\n\t"	// r5+=[ r7*r13].lo+c  (r-1 => r5)
 	"madc.lo.cc.u32	 %0, %9,%12, %0;\n\t"	// r0+=[ r9*r12].lo+c
 	"madc.lo.u32	 %1,%10,%12,  0;\n\t"	// r1 =[r10*r12].lo+c
-	"mad.hi.cc.u32	 %3, %6,%12, %3;\n\t"	// r3+=[ r6*r12].hi    (r-2 => r3)
-	"madc.lo.cc.u32	 %4, %6,%14, %4;\n\t"	// r4+=[ r6*r14].lo+c  (r-1 => r4)
+	"mad.hi.cc.u32	 %4, %6,%12, %4;\n\t"	// r4+=[ r6*r12].hi    (r-2 => r4)
+	"madc.lo.cc.u32	 %5, %6,%14, %5;\n\t"	// r5+=[ r6*r14].lo+c  (r-1 => r5)
 	"madc.lo.cc.u32	 %0, %8,%13, %0;\n\t"	// r0+=[ r8*r13].lo+c
 	"madc.lo.cc.u32	 %1, %9,%13, %1;\n\t"	// r1+=[ r9*r13].lo+c
 	"madc.lo.u32	 %2,%10,%13,  0;\n\t"	// r2 =[r10*r13].lo+c
-	"mad.hi.cc.u32	 %4, %8,%11, %4;\n\t"	// r4+=[ r8*r11].hi    (r-1 => r4)
+	"mad.hi.cc.u32	 %5, %8,%11, %5;\n\t"	// r5+=[ r8*r11].hi    (r-1 => r5)
 	"madc.lo.cc.u32	 %0, %7,%14, %0;\n\t"	// r0+=[ r7*r14].lo+c
 	"madc.lo.cc.u32	 %1, %8,%14, %1;\n\t"	// r1+=[ r8*r14].lo+c
 	"madc.lo.cc.u32	 %2, %9,%14, %2;\n\t"	// r2+=[ r9*r14].lo+c
 	"madc.lo.u32	 %3,%10,%14,  0;\n\t"	// r3 =[r10*r14].lo+c
-	"mad.hi.cc.u32	 %4, %7,%12, %4;\n\t"	// r4+=[ r7*r12].hi    (r-1 => r4)
+	"mad.hi.cc.u32	 %5, %7,%12, %5;\n\t"	// r5+=[ r7*r12].hi    (r-1 => r5)
 	"madc.hi.cc.u32	 %0, %9,%11, %0;\n\t"	// r0+=[ r9*r11].hi+c
 	"madc.hi.cc.u32	 %1,%10,%11, %1;\n\t"	// r1+=[r10*r11].hi+c
 	"madc.hi.cc.u32	 %2,%10,%12, %2;\n\t"	// r2+=[r10*r12].hi+c
 	"madc.hi.cc.u32	 %3,%10,%13, %3;\n\t"	// r3+=[r10*r13].hi+c
 	"madc.hi.u32	 %4,%10,%14,  0;\n\t"	// r4 =[r10*r14].hi+c
-	"mad.hi.cc.u32	 %4, %6,%13, %4;\n\t"	// r4+=[ r6*r13].hi    (r-1 => r4)
+	"mad.hi.cc.u32	 %5, %6,%13, %5;\n\t"	// r5+=[ r6*r13].hi    (r-1 => r5)
 	"madc.hi.cc.u32	 %0, %8,%12, %0;\n\t"	// r0+=[ r8*r12].hi+c
 	"madc.hi.cc.u32	 %1, %9,%12, %1;\n\t"	// r1+=[ r9*r12].hi+c
 	"madc.hi.cc.u32	 %2, %9,%13, %2;\n\t"	// r2+=[ r9*r13].hi+c
@@ -140,13 +143,14 @@ __device__ __forceinline__ uintXp<uint128> get_q(const uint2X<uint128> & a, cons
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
 	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
 	"addc.u32	 %5, %5,  0    ;\n\t"	// r5+= c
-	"add.cc.u32	 %1, %1, %9    ;\n\t"	// r1+= r9
-	"addc.cc.u32	 %2, %2,%10    ;\n\t"	// r2+=r10+c
-	"addc.cc.u32	 %3, %3,%11    ;\n\t"	// r3+=r11+c
-	"addc.cc.u32	 %4, %4,%12    ;\n\t"	// r4+=r12+c
-	"addc.u32	 %5, %5,%13    ;\n\t"	// r5+=r13+c
+	"add.cc.u32	 %0, %0, %7    ;\n\t"	// r0+= r7
+	"addc.cc.u32	 %1, %1, %8    ;\n\t"	// r1+= r8+c
+	"addc.cc.u32	 %2, %2, %9    ;\n\t"	// r2+= r9+c
+	"addc.cc.u32	 %3, %3,%10    ;\n\t"	// r3+=r10+c
+	"addc.cc.u32	 %4, %4,%11    ;\n\t"	// r4+=r11+c
+	"addc.u32	 %5, %5,  0    ;\n\t"	// r5+=c
 	: "=r"(tmp), "=r"(_q[0]), "=r"(_q[1]), "=r"(_q[2]), "=r"(_q[3]), "=r"(_q[4])
-	: "r"(_a[0]), "r"(_a[1]), "r"(_a[2]), "r"(_a[3]), "r"(_a[4]), "r"(_mu[0]), "r"(_mu[1]), "r"(_mu[2]), "r"(_mu[3]));
+	: "r"(_a_lo[3]), "r"(_a_hi[0]), "r"(_a_hi[1]), "r"(_a_hi[2]), "r"(_a_hi[3]), "r"(_mu[0]), "r"(_mu[1]), "r"(_mu[2]), "r"(_mu[3]));
 
     return q;
 }
@@ -187,9 +191,10 @@ __device__ __forceinline__ uintXp<uint128> get_r2(const uintXp<uint128> & q, con
 
     return r;
 }
-__device__ __forceinline__ void mad(uint2X<uint128> & a, uint & overflow, const uint128 & b, const uint128 & c)
+__device__ __forceinline__ void mad(uint128 & a_lo, uint128 & a_hi, uint & overflow, const uint128 & b, const uint128 & c)
 {
-    uint * _a = (uint *)&a;
+    uint * _a_lo = (uint *)&a_lo;
+    uint * _a_hi = (uint *)&a_hi;
     const uint * _b = (uint *)&b;
     const uint * _c = (uint *)&c;
 
@@ -244,7 +249,7 @@ __device__ __forceinline__ void mad(uint2X<uint128> & a, uint & overflow, const 
 	"addc.cc.u32	 %6, %6,  0    ;\n\t"	// r6+=c
 	"addc.cc.u32	 %7, %7,  0    ;\n\t"	// r7+=c
 	"addc.u32	 %8, %8,  0    ;\n\t"	// r8+=c
-	: "+r"(_a[0]), "+r"(_a[1]), "+r"(_a[2]), "+r"(_a[3]), "+r"(_a[4]), "+r"(_a[5]), "+r"(_a[6]), "+r"(_a[7]), "+r"(overflow)
+	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]), "+r"(_a_hi[0]), "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3]), "+r"(overflow)
 	: "r"(_b[0]), "r"(_b[1]), "r"(_b[2]), "r"(_b[3]), "r"(_c[0]), "r"(_c[1]), "r"(_c[2]), "r"(_c[3]));
 }
 
