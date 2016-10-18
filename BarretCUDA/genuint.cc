@@ -21,10 +21,13 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <stdint.h>
 #include <stdlib.h>
 #include <chrono>
+#include <string.h>
+#include <ctype.h>
 
 #define BITS_PER_LIMB	(sizeof(uint) * 8)
 #define BITS_IN(limbs)	((limbs) * BITS_PER_LIMB)
@@ -64,6 +67,26 @@ char * r3;
 #define GET_SECOND_REG(i,p)	(3*limbs-4+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 
 /// end get_q
+
+void wrap(const char * str, int width = 70, const char * afternl = "\t  ")
+{
+    std::stringstream buf;
+
+    int last_space = width - 1;
+    for (int i = 0; i < strlen(str); ++i)
+    {
+	int j = 0;
+	for (j = 0; j < width; j++)
+	{
+	    last_space = isspace(str[i + j]) ? i+j : last_space;
+	}
+	last_space = (i+j < strlen(str)) ? last_space : strlen(str);
+	buf << std::string(str, i, last_space-i);
+	if (last_space < strlen(str)) buf << "\n" << afternl;
+	i = last_space;
+    }
+    cout << buf.str().c_str();
+}
 
 static void print_license()
 {
@@ -154,7 +177,7 @@ static void print_to_uint(uint limbs)
 
 static void print_normalize(uint limbs)
 {
-    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi, const uint" << BITS_IN(limbs) << " * s)\n";
+    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uint" << BITS_IN(limbs) << " * s)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
@@ -174,18 +197,24 @@ static void print_normalize(uint limbs)
     sprintf(r2, "%%%u", 4 * limbs - 1);
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
-    cout << "\t: \"+r\"(_a_lo[0])";
-    for (int i = 1; i < limbs; i++) cout << ", \"+r\"(_a_lo[" << i << "])";
-    for (int i = 0; i < limbs; i++) cout << ", \"+r\"(_a_hi[" << i << "])";
-    cout << "\n\t: \"r\"(_s[0])";
-    for (int i = 1; i < 2 * limbs; i++) cout << ", \"r\"(_s[" << i << "])";
-    cout << ");\n";
+    
+    std::stringstream iregs;
+    iregs << "\t: \"+r\"(_a_lo[0])";
+    for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
+    for (int i = 0; i < limbs; i++) iregs << ", \"+r\"(_a_hi[" << i << "])";
+    wrap(iregs.str().c_str());
+
+    std::stringstream oregs;
+    oregs << "\n\t: \"r\"(_s[0])";
+    for (int i = 1; i < 2 * limbs; i++) oregs << ", \"r\"(_s[" << i << "])";
+    oregs << ");\n";
+    wrap(oregs.str().c_str());
     cout << "}\n\n";
 }
 
 static void print_sub(uint limbs)
 {
-    cout << "__device__ __forceinline__ void sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi, const uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
+    cout << "__device__ __forceinline__ void sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
@@ -205,12 +234,18 @@ static void print_sub(uint limbs)
     sprintf(r2, "%%%u", 2 * limbs+1);
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
-    cout << "\t: \"+r\"(_a_lo[0])";
-    for (int i = 1; i < limbs; i++) cout << ", \"+r\"(_a_lo[" << i << "])";
-    cout << ", \"+r\"(_a_hi[0])";
-    cout << "\n\t: \"r\"(_r[0])";
-    for (int i = 1; i < limbs + 1; i++) cout << ", \"r\"(_r[" << i << "])";
-    cout << ");\n";
+
+    std::stringstream iregs;
+    iregs << "\t: \"+r\"(_a_lo[0])";
+    for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
+    iregs << ", \"+r\"(_a_hi[0])";
+    wrap(iregs.str().c_str());
+
+    std::stringstream oregs;
+    oregs << "\n\t: \"r\"(_r[0])";
+    for (int i = 1; i < limbs + 1; i++) oregs << ", \"r\"(_r[" << i << "])";
+    oregs << ");\n";
+    wrap(oregs.str().c_str());
     cout << "}\n\n";
 }
 
@@ -222,7 +257,7 @@ static void print_mad(uint limbs)
 	for (int j = limbs - 1; j >= 0; --j) col[i + j].push_back(i);
     }
     
-    cout << "__device__ __forceinline__ void mad(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi, uint & overflow, const uint" << BITS_IN(limbs) << " & b, const uint" << BITS_IN(limbs) << " & c)\n";
+    cout << "__device__ __forceinline__ void mad(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tuint & overflow, const uint" << BITS_IN(limbs) << " & b, const uint" << BITS_IN(limbs) << " & c)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
@@ -265,13 +300,19 @@ static void print_mad(uint limbs)
 	    printf("\t//%3s+=c\n\t", &(*r0='r'));
 	}
     }
-    cout << ": ";
-    for (int i = 0; i < limbs; ++i) cout << "\"+r\"(_a_lo[" << i << "]), ";
-    for (int i = 0; i < limbs; ++i) cout << "\"+r\"(_a_hi[" << i << "]), ";
-    cout << "\"+r\"(overflow)\n\t: \"r\"(_b[0])";
-    for (int i = 1; i < limbs; ++i) cout << ", \"r\"(_b[" << i << "])";
-    for (int i = 0; i < limbs; ++i) cout << ", \"r\"(_c[" << i << "])";
-    cout << ");\n";
+    std::stringstream iregs;
+    iregs << ": \"+r\"(_a_lo[0])";
+    for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
+    for (int i = 0; i < limbs; i++) iregs << ", \"+r\"(_a_hi[" << i << "])";
+    iregs << ", \"+r\"(overflow)";
+    wrap(iregs.str().c_str());
+
+    std::stringstream oregs;
+    oregs << "\n\t: \"r\"(_b[0])";
+    for (int i = 1; i < limbs; i++) oregs << ", \"r\"(_b[" << i << "])";
+    for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_c[" << i << "])";
+    oregs << ");\n";
+    wrap(oregs.str().c_str());
     cout << "}\n\n";
 }
 
@@ -296,7 +337,7 @@ void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int
 	printf("\t//%3s%s=[%3s*%3s]%s%s", &(*r0='r'), (IS_OCCUPIED(i) ? "+" : " "), &(*r1='r'), &(*r2='r'), LO_OR_HI(p), (c ? "+c" : "  "));
 	MUL_IN(i);
     }
-    if (i < limbs - 1) cout << "  (r" << (i - limbs + 1) << " => r" << GET_DEST_REG(i) << ")";
+    if (i < limbs - 1) cout << " (r" << (i - limbs + 1) << "=>r" << GET_DEST_REG(i) << ")";
     cout << "\n";
     if (cc && i < 2 * limbs - 1) propagate_q(i + 1,limbs, true, state, pairs);
 }
@@ -319,7 +360,7 @@ inline void print_get_q(int limbs)
 	}
     }
 
-    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo, const uint" << BITS_IN(limbs-1) << " & a_hi, const uint" << BITS_IN(limbs-1) << " & mu)\n";
+    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo,\n\tconst uint" << BITS_IN(limbs-1) << " & a_hi, const uint" << BITS_IN(limbs-1) << " & mu)\n";
     cout << "{\n";
     for (int i = 0; i < (limbs-4); i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
     cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q;\n";
@@ -334,7 +375,7 @@ inline void print_get_q(int limbs)
     sprintf(r2, "%%%u", GET_SECOND_REG(1,p));
     printf("    asm(\"mul.hi.u32\t%3s,%3s,%3s    ;\\n\\t\"", r0, r1, r2);
     printf("\t//%3s =[%3s*%3s].hi  ", &(*r0='r'), &(*r1='r'), &(*r2='r'));
-    cout << "  (r" << (2-limbs) << " => r" << GET_DEST_REG(1) <<  ")\n";
+    cout << " (r" << (2-limbs) << "=>r" << GET_DEST_REG(1) <<  ")\n";
     MUL_IN(1);
 
     for (int i = 0; i < 2 * limbs; i++)
@@ -365,20 +406,25 @@ inline void print_get_q(int limbs)
     printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
     printf("\t//%3s+=c\n", &(*r0='r'));
 
-    cout << "\t: \"=r\"(_q[0])";
-    for (int i = 1; i < limbs; i++) printf(", \"=r\"(_q[%u])", i);
-    for (int i = 0; i < (limbs-4); i++) cout << ", \"=r\"(tmp" << i << ")";
-    cout << "\n\t: \"r\"(_a_lo[" << (limbs-2) << "])";
-    for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_a_hi[%u])", i);
-    for (int i = 0; i < limbs-1; i++) printf(", \"r\"(_mu[%u])", i);
-    cout << ");\n\n";
+    std::stringstream iregs;
+    iregs << "\t: \"+r\"(_q[0])";
+    for (int i = 1; i < limbs; i++) iregs << ", \"=r\"(_q[" << i << "])";
+    for (int i = 0; i < limbs-4; i++) iregs << ", \"=r\"(tmp" << i << ")";
+    wrap(iregs.str().c_str());
+
+    std::stringstream oregs;
+    oregs << "\n\t: \"r\"(_a_lo[" << (limbs-2) << "])";
+    for (int i = 0; i < limbs-1; i++) oregs << ", \"r\"(_a_hi[" << i << "])";
+    for (int i = 0; i < limbs-1; i++) oregs << ", \"r\"(_mu[" << i << "])";
+    oregs << ");\n\n";
+    wrap(oregs.str().c_str());
     cout << "    return q;\n";
     cout << "}\n\n";
 
     delete [] state;
 }
 
-void propagate_r(int i, int limbs, bool c, int * state, vector< vector< pair<int,int> > > & pairs)
+void propagate_r2(int i, int limbs, bool c, int * state, vector< vector< pair<int,int> > > & pairs)
 {
     bool cc = DO_CARRY_OUT(i);
     sprintf(r0, "%%%u", i);
@@ -393,7 +439,7 @@ void propagate_r(int i, int limbs, bool c, int * state, vector< vector< pair<int
     sprintf(r2, "r%u", GET_SECOND_REG(i,p)-1);
     printf("\t//%3s%s=[%3s*%3s]%s%s\n\t", r0, (IS_OCCUPIED(i) ? "+" : " "), r1, r2, LO_OR_HI(p), (c ? "+c" : "  "));
     MUL_IN(i);
-    if (cc && i < limbs - 1) propagate_r(i + 1, limbs, true, state, pairs);
+    if (cc && i < limbs - 1) propagate_r2(i + 1, limbs, true, state, pairs);
 }
 
 inline void print_get_r2(uint limbs)
@@ -410,7 +456,7 @@ inline void print_get_r2(uint limbs)
 	}
     }
 
-    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs) << "> get_r2(const uintXp<uint" << BITS_IN(limbs) << "> & q, const uint" << BITS_IN(limbs) << " & modulus)\n";
+    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs) << "> get_r2(const uintXp<uint" << BITS_IN(limbs) << "> & q,\n\tconst uint" << BITS_IN(limbs) << " & modulus)\n";
     cout << "{\n";
     cout << "    uintXp<uint" << BITS_IN(limbs) << "> r;\n";
     cout << "    uint * _r = (uint *)&r;\n";
@@ -422,18 +468,23 @@ inline void print_get_r2(uint limbs)
     {
 	while (!pairs[i].empty())
 	{
-	    propagate_r(i, limbs+1, false, state, pairs);
+	    propagate_r2(i, limbs+1, false, state, pairs);
 	}
     }
-    cout << ": \"=r\"(_r[0])";
-    for (int i = 1; i <= limbs; ++i) cout << ", \"=r\"(_r[" << i << "])";
-    cout << "\n\t: \"r\"(_q[0])";
-    for (int i = 1; i <= limbs; ++i) cout << ", \"r\"(_q[" << i << "])";
-    for (int i = 0; i < limbs; ++i) cout << ", \"r\"(_m[" << i << "])";
-    cout << ");\n\n";
 
+    std::stringstream iregs;
+    iregs << ": \"+r\"(_r[0])";
+    for (int i = 1; i <= limbs; i++) iregs << ", \"=r\"(_r[" << i << "])";
+    wrap(iregs.str().c_str());
+
+    std::stringstream oregs;
+    oregs << "\n\t: \"r\"(_q[0])";
+    for (int i = 1; i <= limbs; i++) oregs << ", \"r\"(_q[" << i << "])";
+    for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_m[" << i << "])";
+    oregs << ");\n\n";
+    wrap(oregs.str().c_str());
     cout << "    return r;\n";
-    cout << "}\n";
+    cout << "}\n\n";
 
     delete [] state;
 }
@@ -472,7 +523,7 @@ int main(int argc, char ** argv)
     cout << "    typedef uint" << BITS_IN(limbs) << " uintX;\n";
     cout << "#endif\n\n";
 
-    print_make_uint(limbs);
+    //print_make_uint(limbs);
     print_to_ZZ(limbs);
     print_to_ZZ_p(limbs);
     print_to_uint(limbs);
@@ -484,7 +535,7 @@ int main(int argc, char ** argv)
 
     print_mad(limbs);
 
-    cout << "#endif\n\n";
+    cout << "#endif\n";
 
     delete [] r0;
     delete [] r1;

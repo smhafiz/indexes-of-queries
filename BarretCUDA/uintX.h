@@ -28,19 +28,6 @@
     typedef uint128 uintX;
 #endif
 
-static inline uint128 make_uint128(const uint w0x, const uint w0y, const uint w0z, const uint w0w)
-{
-    uint128 res;
-
-    uint * _res = (uint *)&res;
-    _res[0]= w0x;				// res.w0.x= w0x
-    _res[1]= w0y;				// res.w0.y= w0y
-    _res[2]= w0z;				// res.w0.z= w0z
-    _res[3]= w0w;				// res.w0.w= w0w
-
-    return res;
-}
-
 static inline NTL::ZZ to_ZZ(const uint128 & n)
 {
     return to_ZZ<uint128>(n);
@@ -56,7 +43,8 @@ static inline void to_uint128(const NTL::ZZ & n, uint128 & ret)
     to_uint<uint128>(n, ret);
 }
 
-__device__ __forceinline__ void normalize(uint128 & a_lo, uint128 & a_hi, const uint128 * s)
+__device__ __forceinline__ void normalize(uint128 & a_lo, uint128 & a_hi,
+	const uint128 * s)
 {
     uint * _a_lo = (uint *)&a_lo;
     uint * _a_hi = (uint *)&a_hi;
@@ -69,11 +57,14 @@ __device__ __forceinline__ void normalize(uint128 & a_lo, uint128 & a_hi, const 
 	"subc.cc.u32	 %5, %5,%13;\n\t"	// r5-=(r13+c)
 	"subc.cc.u32	 %6, %6,%14;\n\t"	// r6-=(r14+c)
 	"subc.u32	 %7, %7,%15;\n\t"	// r7-=(r15+c)
-	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]), "+r"(_a_hi[0]), "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3])
-	: "r"(_s[0]), "r"(_s[1]), "r"(_s[2]), "r"(_s[3]), "r"(_s[4]), "r"(_s[5]), "r"(_s[6]), "r"(_s[7]));
+	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]),
+	  "+r"(_a_hi[0]), "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3])
+	: "r"(_s[0]), "r"(_s[1]), "r"(_s[2]), "r"(_s[3]), "r"(_s[4]),
+	  "r"(_s[5]), "r"(_s[6]), "r"(_s[7]));
 }
 
-__device__ __forceinline__ void sub(uint128 & a_lo, uint128 & a_hi, const uintXp<uint128> & r)
+__device__ __forceinline__ void sub(uint128 & a_lo, uint128 & a_hi,
+	const uintXp<uint128> & r)
 {
     uint * _a_lo = (uint *)&a_lo;
     uint * _a_hi = (uint *)&a_hi;
@@ -83,11 +74,13 @@ __device__ __forceinline__ void sub(uint128 & a_lo, uint128 & a_hi, const uintXp
 	"subc.cc.u32	 %2, %2, %7;\n\t"	// r2-=( r7+c)
 	"subc.cc.u32	 %3, %3, %8;\n\t"	// r3-=( r8+c)
 	"subc.u32	 %4, %4, %9;\n\t"	// r4-=( r9+c)
-	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]), "+r"(_a_hi[0])
+	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]),
+	  "+r"(_a_hi[0])
 	: "r"(_r[0]), "r"(_r[1]), "r"(_r[2]), "r"(_r[3]), "r"(_r[4]));
 }
 
-__device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo, const uint128 & a_hi, const uint128 & mu)
+__device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo,
+	const uint128 & a_hi, const uint128 & mu)
 {
     uint __attribute__((unused)) tmp0;
     uintXp<uint128> q;
@@ -95,67 +88,70 @@ __device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo, const uin
     uint * _a_lo = (uint *)&a_lo;
     uint * _a_hi = (uint *)&a_hi;
     uint * _mu = (uint *)&mu;
-    asm("mul.hi.u32	 %2, %6,%11    ;\n\t"	// r2 =[ r6*r11].hi    (r-3 => r2)
-	"mad.lo.cc.u32	 %2, %7,%11, %2;\n\t"	// r2+=[ r7*r11].lo    (r-3 => r2)
-	"madc.lo.u32	 %3, %8,%11,  0;\n\t"	// r3 =[ r8*r11].lo+c  (r-2 => r3)
-	"mad.lo.cc.u32	 %2, %6,%12, %2;\n\t"	// r2+=[ r6*r12].lo    (r-3 => r2)
-	"madc.lo.cc.u32	 %3, %7,%12, %3;\n\t"	// r3+=[ r7*r12].lo+c  (r-2 => r3)
-	"madc.lo.u32	 %4, %9,%11,  0;\n\t"	// r4 =[ r9*r11].lo+c  (r-1 => r4)
-	"mad.lo.cc.u32	 %3, %6,%13, %3;\n\t"	// r3+=[ r6*r13].lo    (r-2 => r3)
-	"madc.lo.cc.u32	 %4, %8,%12, %4;\n\t"	// r4+=[ r8*r12].lo+c  (r-1 => r4)
+    asm("mul.hi.u32	 %2, %6,%11    ;\n\t"	// r2 =[ r6*r11].hi   (r-3=>r2)
+	"mad.lo.cc.u32	 %2, %7,%11, %2;\n\t"	// r2+=[ r7*r11].lo   (r-3=>r2)
+	"madc.lo.u32	 %3, %8,%11,  0;\n\t"	// r3 =[ r8*r11].lo+c (r-2=>r3)
+	"mad.lo.cc.u32	 %2, %6,%12, %2;\n\t"	// r2+=[ r6*r12].lo   (r-3=>r2)
+	"madc.lo.cc.u32	 %3, %7,%12, %3;\n\t"	// r3+=[ r7*r12].lo+c (r-2=>r3)
+	"madc.lo.u32	 %4, %9,%11,  0;\n\t"	// r4 =[ r9*r11].lo+c (r-1=>r4)
+	"mad.lo.cc.u32	 %3, %6,%13, %3;\n\t"	// r3+=[ r6*r13].lo   (r-2=>r3)
+	"madc.lo.cc.u32	 %4, %8,%12, %4;\n\t"	// r4+=[ r8*r12].lo+c (r-1=>r4)
 	"madc.lo.u32	 %5,%10,%11,  0;\n\t"	// r5 =[r10*r11].lo+c
-	"mad.hi.cc.u32	 %3, %7,%11, %3;\n\t"	// r3+=[ r7*r11].hi    (r-2 => r3)
-	"madc.lo.cc.u32	 %4, %7,%13, %4;\n\t"	// r4+=[ r7*r13].lo+c  (r-1 => r4)
+	"mad.hi.cc.u32	 %3, %7,%11, %3;\n\t"	// r3+=[ r7*r11].hi   (r-2=>r3)
+	"madc.lo.cc.u32	 %4, %7,%13, %4;\n\t"	// r4+=[ r7*r13].lo+c (r-1=>r4)
 	"madc.lo.cc.u32	 %5, %9,%12, %5;\n\t"	// r5+=[ r9*r12].lo+c
 	"madc.lo.u32	 %0,%10,%12,  0;\n\t"	// r0 =[r10*r12].lo+c
-	"mad.hi.cc.u32	 %3, %6,%12, %3;\n\t"	// r3+=[ r6*r12].hi    (r-2 => r3)
-	"madc.lo.cc.u32	 %4, %6,%14, %4;\n\t"	// r4+=[ r6*r14].lo+c  (r-1 => r4)
+	"mad.hi.cc.u32	 %3, %6,%12, %3;\n\t"	// r3+=[ r6*r12].hi   (r-2=>r3)
+	"madc.lo.cc.u32	 %4, %6,%14, %4;\n\t"	// r4+=[ r6*r14].lo+c (r-1=>r4)
 	"madc.lo.cc.u32	 %5, %8,%13, %5;\n\t"	// r5+=[ r8*r13].lo+c
 	"madc.lo.cc.u32	 %0, %9,%13, %0;\n\t"	// r0+=[ r9*r13].lo+c
 	"madc.lo.u32	 %1,%10,%13,  0;\n\t"	// r1 =[r10*r13].lo+c
-	"mad.hi.cc.u32	 %4, %8,%11, %4;\n\t"	// r4+=[ r8*r11].hi    (r-1 => r4)
+	"mad.hi.cc.u32	 %4, %8,%11, %4;\n\t"	// r4+=[ r8*r11].hi   (r-1=>r4)
 	"madc.lo.cc.u32	 %5, %7,%14, %5;\n\t"	// r5+=[ r7*r14].lo+c
 	"madc.lo.cc.u32	 %0, %8,%14, %0;\n\t"	// r0+=[ r8*r14].lo+c
 	"madc.lo.cc.u32	 %1, %9,%14, %1;\n\t"	// r1+=[ r9*r14].lo+c
 	"madc.lo.u32	 %2,%10,%14,  0;\n\t"	// r2 =[r10*r14].lo+c
-	"mad.hi.cc.u32	 %4, %7,%12, %4;\n\t"	// r4+=[ r7*r12].hi    (r-1 => r4)
+	"mad.hi.cc.u32	 %4, %7,%12, %4;\n\t"	// r4+=[ r7*r12].hi   (r-1=>r4)
 	"madc.hi.cc.u32	 %5, %9,%11, %5;\n\t"	// r5+=[ r9*r11].hi+c
 	"madc.hi.cc.u32	 %0,%10,%11, %0;\n\t"	// r0+=[r10*r11].hi+c
 	"madc.hi.cc.u32	 %1,%10,%12, %1;\n\t"	// r1+=[r10*r12].hi+c
 	"madc.hi.cc.u32	 %2,%10,%13, %2;\n\t"	// r2+=[r10*r13].hi+c
-	"madc.hi.u32	 %3,%10,%14,  0;\n\t"	// r3 =[r10*r14].hi+c
-	"mad.hi.cc.u32	 %4, %6,%13, %4;\n\t"	// r4+=[ r6*r13].hi    (r-1 => r4)
+	"madc.hi.u32	 %3,%10,%14, %3;\n\t"	// r3+=[r10*r14].hi+c
+	"mad.hi.cc.u32	 %4, %6,%13, %4;\n\t"	// r4+=[ r6*r13].hi   (r-1=>r4)
 	"madc.hi.cc.u32	 %5, %8,%12, %5;\n\t"	// r5+=[ r8*r12].hi+c
 	"madc.hi.cc.u32	 %0, %9,%12, %0;\n\t"	// r0+=[ r9*r12].hi+c
 	"madc.hi.cc.u32	 %1, %9,%13, %1;\n\t"	// r1+=[ r9*r13].hi+c
 	"madc.hi.cc.u32	 %2, %9,%14, %2;\n\t"	// r2+=[ r9*r14].hi+c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
-	"addc.u32	 %4,  0,  0    ;\n\t"	// r4 = c
+	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
 	"mad.hi.cc.u32	 %5, %7,%13, %5;\n\t"	// r5+=[ r7*r13].hi  
 	"madc.hi.cc.u32	 %0, %8,%13, %0;\n\t"	// r0+=[ r8*r13].hi+c
 	"madc.hi.cc.u32	 %1, %8,%14, %1;\n\t"	// r1+=[ r8*r14].hi+c
 	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
-	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
 	"mad.hi.cc.u32	 %5, %6,%14, %5;\n\t"	// r5+=[ r6*r14].hi  
 	"madc.hi.cc.u32	 %0, %7,%14, %0;\n\t"	// r0+=[ r7*r14].hi+c
 	"addc.cc.u32	 %1, %1,  0    ;\n\t"	// r1+= c
 	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
-	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
 	"add.cc.u32	 %5, %5, %6    ;\n\t"	// r5+= r6
 	"addc.cc.u32	 %0, %0, %7    ;\n\t"	// r0+= r7+c
 	"addc.cc.u32	 %1, %1, %8    ;\n\t"	// r1+= r8+c
 	"addc.cc.u32	 %2, %2, %9    ;\n\t"	// r2+= r9+c
 	"addc.cc.u32	 %3, %3,%10    ;\n\t"	// r3+=r10+c
 	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+=c
-	: "=r"(_q[0]), "=r"(_q[1]), "=r"(_q[2]), "=r"(_q[3]), "=r"(_q[4]), "=r"(tmp0)
-	: "r"(_a_lo[3]), "r"(_a_hi[0]), "r"(_a_hi[1]), "r"(_a_hi[2]), "r"(_a_hi[3]), "r"(_mu[0]), "r"(_mu[1]), "r"(_mu[2]), "r"(_mu[3]));
+	: "+r"(_q[0]), "=r"(_q[1]), "=r"(_q[2]), "=r"(_q[3]), "=r"(_q[4]),
+	  "=r"(tmp0)
+	: "r"(_a_lo[3]), "r"(_a_hi[0]), "r"(_a_hi[1]), "r"(_a_hi[2]),
+	  "r"(_a_hi[3]), "r"(_mu[0]), "r"(_mu[1]), "r"(_mu[2]), "r"(_mu[3]));
 
     return q;
 }
 
-__device__ __forceinline__ uintXp<uint128> get_r2(const uintXp<uint128> & q, const uint128 & modulus)
+__device__ __forceinline__ uintXp<uint128> get_r2(const uintXp<uint128> & q,
+	const uint128 & modulus)
 {
     uintXp<uint128> r;
     uint * _r = (uint *)&r;
@@ -186,12 +182,15 @@ __device__ __forceinline__ uintXp<uint128> get_r2(const uintXp<uint128> & q, con
 	"madc.hi.cc.u32	 %4, %7,%11, %4;\n\t"	// r4+=[ r7*r11].hi+c
 	"mad.lo.cc.u32	 %4, %9,%10, %4;\n\t"	// r4+=[ r9*r10].lo  
 	"mad.hi.cc.u32	 %4, %8,%10, %4;\n\t"	// r4+=[ r8*r10].hi  
-	: "=r"(_r[0]), "=r"(_r[1]), "=r"(_r[2]), "=r"(_r[3]), "=r"(_r[4])
-	: "r"(_q[0]), "r"(_q[1]), "r"(_q[2]), "r"(_q[3]), "r"(_q[4]), "r"(_m[0]), "r"(_m[1]), "r"(_m[2]), "r"(_m[3]));
+	: "+r"(_r[0]), "=r"(_r[1]), "=r"(_r[2]), "=r"(_r[3]), "=r"(_r[4])
+	: "r"(_q[0]), "r"(_q[1]), "r"(_q[2]), "r"(_q[3]), "r"(_q[4]),
+	  "r"(_m[0]), "r"(_m[1]), "r"(_m[2]), "r"(_m[3]));
 
     return r;
 }
-__device__ __forceinline__ void mad(uint128 & a_lo, uint128 & a_hi, uint & overflow, const uint128 & b, const uint128 & c)
+
+__device__ __forceinline__ void mad(uint128 & a_lo, uint128 & a_hi,
+	uint & overflow, const uint128 & b, const uint128 & c)
 {
     uint * _a_lo = (uint *)&a_lo;
     uint * _a_hi = (uint *)&a_hi;
@@ -249,9 +248,11 @@ __device__ __forceinline__ void mad(uint128 & a_lo, uint128 & a_hi, uint & overf
 	"addc.cc.u32	 %6, %6,  0    ;\n\t"	// r6+=c
 	"addc.cc.u32	 %7, %7,  0    ;\n\t"	// r7+=c
 	"addc.u32	 %8, %8,  0    ;\n\t"	// r8+=c
-	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]), "+r"(_a_hi[0]), "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3]), "+r"(overflow)
-	: "r"(_b[0]), "r"(_b[1]), "r"(_b[2]), "r"(_b[3]), "r"(_c[0]), "r"(_c[1]), "r"(_c[2]), "r"(_c[3]));
+	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]),
+	  "+r"(_a_hi[0]), "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3]),
+	  "+r"(overflow)
+	: "r"(_b[0]), "r"(_b[1]), "r"(_b[2]), "r"(_b[3]), "r"(_c[0]),
+	  "r"(_c[1]), "r"(_c[2]), "r"(_c[3]));
 }
 
 #endif
-

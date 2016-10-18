@@ -5,3 +5,4 @@ indexes
 val.*
 *.polys
 BarretCUDA/genuint
+BarretCUDA/barret
