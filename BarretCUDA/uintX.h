@@ -91,51 +91,71 @@ __device__ __forceinline__ uintXp<uint128> get_q(const uint128 & a_lo,
     asm("mul.hi.u32	 %2, %6,%11    ;\n\t"	// r2 =[ r6*r11].hi   (r-3=>r2)
 	"mad.lo.cc.u32	 %2, %7,%11, %2;\n\t"	// r2+=[ r7*r11].lo   (r-3=>r2)
 	"madc.lo.u32	 %3, %8,%11,  0;\n\t"	// r3 =[ r8*r11].lo+c (r-2=>r3)
+
 	"mad.lo.cc.u32	 %2, %6,%12, %2;\n\t"	// r2+=[ r6*r12].lo   (r-3=>r2)
 	"madc.lo.cc.u32	 %3, %7,%12, %3;\n\t"	// r3+=[ r7*r12].lo+c (r-2=>r3)
-	"madc.lo.u32	 %4, %9,%11,  0;\n\t"	// r4 =[ r9*r11].lo+c (r-1=>r4)
+	"madc.lo.cc.u32	 %4, %9,%11, %4;\n\t"	// r4+=[ r9*r11].lo+c (r-1=>r4)
+	"madc.lo.cc.u32	 %5,%10,%11, %5;\n\t"	// r5+=[r10*r11].lo+c
+	"madc.lo.u32	 %0,%10,%12,  0;\n\t"	// r0 =[r10*r12].lo+c
+
 	"mad.lo.cc.u32	 %3, %6,%13, %3;\n\t"	// r3+=[ r6*r13].lo   (r-2=>r3)
 	"madc.lo.cc.u32	 %4, %8,%12, %4;\n\t"	// r4+=[ r8*r12].lo+c (r-1=>r4)
-	"madc.lo.u32	 %5,%10,%11,  0;\n\t"	// r5 =[r10*r11].lo+c
+	"madc.lo.cc.u32	 %5, %9,%12, %5;\n\t"	// r5+=[ r9*r12].lo+c
+	"madc.lo.cc.u32	 %0, %9,%13, %0;\n\t"	// r0+=[ r9*r13].lo+c
+	"madc.lo.cc.u32	 %1,%10,%13, %1;\n\t"	// r1+=[r10*r13].lo+c
+	"madc.lo.cc.u32	 %2,%10,%14, %2;\n\t"	// r2+=[r10*r14].lo+c
+	"madc.hi.cc.u32	 %3,%10,%14, %3;\n\t"	// r3+=[r10*r14].hi+c
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
 	"mad.hi.cc.u32	 %3, %7,%11, %3;\n\t"	// r3+=[ r7*r11].hi   (r-2=>r3)
 	"madc.lo.cc.u32	 %4, %7,%13, %4;\n\t"	// r4+=[ r7*r13].lo+c (r-1=>r4)
-	"madc.lo.cc.u32	 %5, %9,%12, %5;\n\t"	// r5+=[ r9*r12].lo+c
-	"madc.lo.u32	 %0,%10,%12,  0;\n\t"	// r0 =[r10*r12].lo+c
-	"mad.hi.cc.u32	 %3, %6,%12, %3;\n\t"	// r3+=[ r6*r12].hi   (r-2=>r3)
-	"madc.lo.cc.u32	 %4, %6,%14, %4;\n\t"	// r4+=[ r6*r14].lo+c (r-1=>r4)
 	"madc.lo.cc.u32	 %5, %8,%13, %5;\n\t"	// r5+=[ r8*r13].lo+c
-	"madc.lo.cc.u32	 %0, %9,%13, %0;\n\t"	// r0+=[ r9*r13].lo+c
-	"madc.lo.u32	 %1,%10,%13,  0;\n\t"	// r1 =[r10*r13].lo+c
-	"mad.hi.cc.u32	 %4, %8,%11, %4;\n\t"	// r4+=[ r8*r11].hi   (r-1=>r4)
-	"madc.lo.cc.u32	 %5, %7,%14, %5;\n\t"	// r5+=[ r7*r14].lo+c
 	"madc.lo.cc.u32	 %0, %8,%14, %0;\n\t"	// r0+=[ r8*r14].lo+c
 	"madc.lo.cc.u32	 %1, %9,%14, %1;\n\t"	// r1+=[ r9*r14].lo+c
-	"madc.lo.u32	 %2,%10,%14,  0;\n\t"	// r2 =[r10*r14].lo+c
-	"mad.hi.cc.u32	 %4, %7,%12, %4;\n\t"	// r4+=[ r7*r12].hi   (r-1=>r4)
-	"madc.hi.cc.u32	 %5, %9,%11, %5;\n\t"	// r5+=[ r9*r11].hi+c
+	"madc.hi.cc.u32	 %2,%10,%13, %2;\n\t"	// r2+=[r10*r13].hi+c
+	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
+	"mad.hi.cc.u32	 %3, %6,%12, %3;\n\t"	// r3+=[ r6*r12].hi   (r-2=>r3)
+	"madc.lo.cc.u32	 %4, %6,%14, %4;\n\t"	// r4+=[ r6*r14].lo+c (r-1=>r4)
+	"madc.lo.cc.u32	 %5, %7,%14, %5;\n\t"	// r5+=[ r7*r14].lo+c
 	"madc.hi.cc.u32	 %0,%10,%11, %0;\n\t"	// r0+=[r10*r11].hi+c
 	"madc.hi.cc.u32	 %1,%10,%12, %1;\n\t"	// r1+=[r10*r12].hi+c
-	"madc.hi.cc.u32	 %2,%10,%13, %2;\n\t"	// r2+=[r10*r13].hi+c
-	"madc.hi.u32	 %3,%10,%14, %3;\n\t"	// r3+=[r10*r14].hi+c
-	"mad.hi.cc.u32	 %4, %6,%13, %4;\n\t"	// r4+=[ r6*r13].hi   (r-1=>r4)
-	"madc.hi.cc.u32	 %5, %8,%12, %5;\n\t"	// r5+=[ r8*r12].hi+c
-	"madc.hi.cc.u32	 %0, %9,%12, %0;\n\t"	// r0+=[ r9*r12].hi+c
-	"madc.hi.cc.u32	 %1, %9,%13, %1;\n\t"	// r1+=[ r9*r13].hi+c
 	"madc.hi.cc.u32	 %2, %9,%14, %2;\n\t"	// r2+=[ r9*r14].hi+c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
-	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
-	"mad.hi.cc.u32	 %5, %7,%13, %5;\n\t"	// r5+=[ r7*r13].hi  
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
+	"mad.hi.cc.u32	 %4, %8,%11, %4;\n\t"	// r4+=[ r8*r11].hi   (r-1=>r4)
+	"madc.hi.cc.u32	 %5, %9,%11, %5;\n\t"	// r5+=[ r9*r11].hi+c
+	"madc.hi.cc.u32	 %0, %9,%12, %0;\n\t"	// r0+=[ r9*r12].hi+c
+	"madc.hi.cc.u32	 %1, %9,%13, %1;\n\t"	// r1+=[ r9*r13].hi+c
+	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
+	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
+	"mad.hi.cc.u32	 %4, %7,%12, %4;\n\t"	// r4+=[ r7*r12].hi   (r-1=>r4)
+	"madc.hi.cc.u32	 %5, %8,%12, %5;\n\t"	// r5+=[ r8*r12].hi+c
 	"madc.hi.cc.u32	 %0, %8,%13, %0;\n\t"	// r0+=[ r8*r13].hi+c
 	"madc.hi.cc.u32	 %1, %8,%14, %1;\n\t"	// r1+=[ r8*r14].hi+c
 	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
-	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
-	"mad.hi.cc.u32	 %5, %6,%14, %5;\n\t"	// r5+=[ r6*r14].hi  
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
+	"mad.hi.cc.u32	 %4, %6,%13, %4;\n\t"	// r4+=[ r6*r13].hi   (r-1=>r4)
+	"madc.hi.cc.u32	 %5, %7,%13, %5;\n\t"	// r5+=[ r7*r13].hi+c
 	"madc.hi.cc.u32	 %0, %7,%14, %0;\n\t"	// r0+=[ r7*r14].hi+c
 	"addc.cc.u32	 %1, %1,  0    ;\n\t"	// r1+= c
 	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
-	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
+	"mad.hi.cc.u32	 %5, %6,%14, %5;\n\t"	// r5+=[ r6*r14].hi  
+	"addc.cc.u32	 %0, %0,  0    ;\n\t"	// r0+= c
+	"addc.cc.u32	 %1, %1,  0    ;\n\t"	// r1+= c
+	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
+	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
+	"addc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
+
 	"add.cc.u32	 %5, %5, %6    ;\n\t"	// r5+= r6
 	"addc.cc.u32	 %0, %0, %7    ;\n\t"	// r0+= r7+c
 	"addc.cc.u32	 %1, %1, %8    ;\n\t"	// r1+= r8+c
