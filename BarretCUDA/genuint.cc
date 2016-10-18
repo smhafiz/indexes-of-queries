@@ -58,10 +58,10 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
-#define GET_DEST_REG(i)  	((i + limbs - 3) % (2 * limbs - 4))
+#define GET_DEST_REG(i)  	((i + limbs - 4) % (2 * limbs - 4))
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
-#define GET_FIRST_REG(p)	(limbs+1+p.second)//(2*limbs-1+p.second)
-#define GET_SECOND_REG(i,p)	(2*limbs+1+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
+#define GET_FIRST_REG(p)	(2*limbs-4+p.second)//(2*limbs-1+p.second)
+#define GET_SECOND_REG(i,p)	(3*limbs-4+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 
 /// end get_q
 
@@ -329,12 +329,12 @@ inline void print_get_q(int limbs)
     cout << "    uint * _mu = (uint *)&mu;\n";
 
     auto p = make_pair(1,0);
-    sprintf(r0, "%%%u", GET_DEST_REG(limbs+1));
+    sprintf(r0, "%%%u", GET_DEST_REG(1));
     sprintf(r1, "%%%u", GET_FIRST_REG(p));
     sprintf(r2, "%%%u", GET_SECOND_REG(1,p));
     printf("    asm(\"mul.hi.u32\t%3s,%3s,%3s    ;\\n\\t\"", r0, r1, r2);
     printf("\t//%3s =[%3s*%3s].hi  ", &(*r0='r'), &(*r1='r'), &(*r2='r'));
-    cout << "  (r" << (2-limbs) << " => r" << GET_DEST_REG(limbs+1) <<  ")\n";
+    cout << "  (r" << (2-limbs) << " => r" << GET_DEST_REG(1) <<  ")\n";
     MUL_IN(1);
 
     for (int i = 0; i < 2 * limbs; i++)
@@ -347,7 +347,7 @@ inline void print_get_q(int limbs)
 
     // handle the implicit 1-word
     sprintf(r0, "%%%u", GET_DEST_REG(limbs-1));
-    sprintf(r1, "%%%u", 2 * limbs - 3);
+    sprintf(r1, "%%%u", 2 * limbs - 2);
     printf("\t\"add.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s\n", &(*r0='r'), &(*r1='r'));
     for (int i = limbs; i < 2 * limbs - 2; i++)
