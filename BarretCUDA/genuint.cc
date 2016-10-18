@@ -347,18 +347,18 @@ inline void print_get_q(int limbs)
 
     // handle the implicit 1-word
     sprintf(r0, "%%%u", GET_DEST_REG(limbs-1));
-    sprintf(r1, "%%%u", 2 * limbs - 2);
+    sprintf(r1, "%%%u", 2 * limbs - 2-2);//TODO::CHECK
     printf("\t\"add.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s\n", &(*r0='r'), &(*r1='r'));
     for (int i = limbs; i < 2 * limbs - 2; i++)
     {
 	sprintf(r0, "%%%u", GET_DEST_REG(i));
-	sprintf(r1, "%%%u", i + limbs-2);
+	sprintf(r1, "%%%u", i + limbs-2-1);//TODO::CHECK
 	printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
 	printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     }
     sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 2));
-    sprintf(r1, "%%%u", 3 * limbs - 4);
+    sprintf(r1, "%%%u", 3 * limbs - 4 -1);//TODO::CHECK
     printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 1));
