@@ -321,6 +321,7 @@ void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int
     bool cc = DO_CARRY_OUT(i);
     sprintf(r0, "%%%u", GET_DEST_REG(i));
     //if (!c) cout << "\n";
+
     if (pairs[i].empty())
     {
 	printf("\t\"add%s%s.u32\t%3s,%3s,  0    ;\\n\\t\"", CARRY_IN_FLAG(c), CARRY_OUT_FLAG(i), r0, (IS_OCCUPIED(i) ? r0 : "  0"));
@@ -349,6 +350,7 @@ inline void print_get_q(int limbs)
 
     for (int i = 0; i < 2 * limbs; ++i)
     {
+    	state[i] = 0;
 	for (int j = 0; j <= i; j++)
 	{
 	    if (i - j < limbs - 1 && j < limbs)
