@@ -20,6 +20,8 @@
 // along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <atomic>
+#include <chrono>
+#include <ratio>
 #include <fstream>
 
 #include "barret.h"
@@ -51,24 +53,67 @@ __global__ void SpMV_kernel(T * response, const T * query, const uint nvals,
 }
 
 template <typename T>
+void SpMV_ntl(NTL::vec_ZZ_p & response, const NTL::vec_ZZ_p & query,
+	const SparseMatrix<T> & matrix)
+{
+    for (int i = 0; i < response.length(); i++)
+    {
+	response[i] = NTL::to_ZZ_p(0);
+
+	for (int j = matrix.l_cols[i]; j < matrix.l_cols[i+1]; ++j)
+	{
+	    response[i] += to_ZZ_p(matrix.l_vals[j]) * query[matrix.l_rows[j]];
+	}
+    }
+}
+
+template <typename T>
+void SpMV_ntl_barret(NTL::vec_ZZ_p & response, const NTL::vec_ZZ_p & query,
+	const SparseMatrix<T> & matrix, struct BarretParams<T> & barret)
+{
+    NTL::vec_ZZ response_ZZ(INIT_SIZE, response.length());
+    for (int i = 0; i < response.length(); i++)
+    {
+	response_ZZ[i] = NTL::to_ZZ(0);
+
+	for (int j = matrix.l_cols[i]; j < matrix.l_cols[i+1]; ++j)
+	{
+	    response_ZZ[i] += to_ZZ(matrix.l_vals[j]) * rep(query[matrix.l_rows[j]]);
+	}
+	int overflow = (int)trunc_long(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)), 32);
+	response_ZZ[i] -= barret.l_subtrahends[overflow];
+
+	NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_IN(T)-1);
+	NTL::ZZ q2 = q1 * barret.l_mu;
+	NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_IN(T)+1);
+
+	NTL::ZZ r1 = response_ZZ[i] % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
+	NTL::ZZ r2 = q2 * barret.l_modulus % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
+	NTL::ZZ r = r1 - r2 % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));;
+
+	response[i] = NTL::to_ZZ_p(r);
+    }
+}
+
+template <typename T>
 void SpMV(NTL::vec_ZZ_p & response, T * l_response, const T * l_query,
 	T * d_response,	T * d_query, const cudaStream_t & stream,
 	const SparseMatrix<T> & matrix, const BarretParams<T> & barret)
 {
     cudaMemcpyAsync(d_query, l_query, matrix.nrows * sizeof(T),
 	cudaMemcpyHostToDevice, stream);
-    
+
     const dim3 Dg(NUM_BLOCKS, 1, 1);
     const dim3 Db(THREADS_PER_BLOCK(matrix.ncols), 1, 1);
     const size_t Ns = 0;
 
     SpMV_kernel<T> <<< Dg, Db, Ns, stream >>> (d_response, d_query,
-	matrix.nvals, matrix.vals, matrix.ncols, matrix.cols, matrix.rows,
-	barret.modulus, barret.mu, barret.subtrahends);
+	matrix.nvals, matrix.d_vals, matrix.ncols, matrix.d_cols, matrix.d_rows,
+	barret.d_modulus, barret.d_mu, barret.d_subtrahends);
 
     cudaMemcpyAsync(l_response, d_response, matrix.ncols * sizeof(T),
 	cudaMemcpyDeviceToHost, stream);
-    
+
     response.SetLength(matrix.ncols);
     for (int i = 0; i < matrix.ncols; ++i)
     {
@@ -100,7 +145,7 @@ int main(int argc, char ** argv)
     uintX * l_response, * d_response;
     cudaMallocHost((void**)&l_response, nstreams * matrix.ncols * sizeof(uintX));
     cudaMalloc((void**)&d_response, nstreams * matrix.ncols * sizeof(uintX));
-    
+
     cudaStream_t * streams = new cudaStream_t[nstreams];
     for (int i = 0; i < nstreams; ++i) cudaStreamCreate(&streams[i]);
 
@@ -124,12 +169,14 @@ int main(int argc, char ** argv)
 
 	SpMV<uintX>(responses[i], __l_response, __l_query, __d_response,
 	    __d_query, streams[i], matrix, barret);
+
 	std::atomic_fetch_add(&cnt, 1);
-	
+
 	for (int j = 0; j < matrix.nrows; j++)
 	{
 	    to_uint<uintX>(NTL::rep(NTL::random_ZZ_p()), __l_query[j]);
 	}
+
     }
 
     // cleanup
@@ -156,75 +203,82 @@ void initMatrix(const char * valfile, const char * rowfile,
     std::ifstream valstream(valfile, std::ifstream::in);
     valstream >> modulus;
     valstream >> matrix.nvals;
-    T * vals = (T *)malloc(matrix.nvals * sizeof(T));
-    cudaMalloc((void**)&matrix.vals, matrix.nvals * sizeof(T));
+    matrix.l_vals = (T *)malloc(matrix.nvals * sizeof(T));
+    cudaMalloc((void**)&matrix.d_vals, matrix.nvals * sizeof(T));
 
     std::ifstream rowstream(rowfile, std::ifstream::in);
-    uint * rows = (uint *)malloc(matrix.nvals * sizeof(uint));
-    cudaMalloc((void**)&matrix.rows, matrix.nvals * sizeof(uint));
+    matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
+    cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
 
     std::ifstream colstream(colfile, std::ifstream::in);
     colstream >> matrix.ncols;
-    uint * cols = (uint *)malloc(matrix.ncols * sizeof(uint));
-    cudaMalloc((void**)&matrix.cols, matrix.ncols * sizeof(uint));
+    matrix.l_cols = (uint *)malloc(matrix.ncols * sizeof(uint));
+    cudaMalloc((void**)&matrix.d_cols, matrix.ncols * sizeof(uint));
 
     NTL::ZZ_pPush p(modulus);
     for (int i = 0; i < matrix.nvals; i++)
     {
 	NTL::ZZ_p tmp;
 	valstream >> tmp;
-	to_uint<T>(NTL::rep(tmp), vals[i]);
-	rowstream >> rows[i];
+	to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
+	rowstream >> matrix.l_rows[i];
     }
     valstream.close();
     rowstream.close();
-    cudaMemcpy(matrix.vals, vals, matrix.nvals * sizeof(T), cudaMemcpyHostToDevice);
-    cudaMemcpy(matrix.rows, rows, matrix.nvals * sizeof(uint), cudaMemcpyHostToDevice);
+    cudaMemcpy(matrix.d_vals, matrix.l_vals, matrix.nvals * sizeof(T),
+	cudaMemcpyHostToDevice);
+    cudaMemcpy(matrix.d_rows, matrix.l_rows, matrix.nvals * sizeof(uint),
+	cudaMemcpyHostToDevice);
 
     for (int i = 0; i < matrix.ncols; i++)
     {
-	colstream >> cols[i];
+	colstream >> matrix.l_cols[i];
     }
     colstream.close();
-    cudaMemcpy(matrix.cols, cols, matrix.ncols * sizeof(uint), cudaMemcpyHostToDevice);
-    
-    free(vals);
-    free(rows);
-    free(cols);
+    cudaMemcpy(matrix.d_cols, matrix.l_cols, matrix.ncols * sizeof(uint),
+	cudaMemcpyHostToDevice);
 }
 
 template <typename T>
 void freeMatrix(struct SparseMatrix<T> & matrix)
 {
-    cudaFree(matrix.vals);
-    cudaFree(matrix.cols);
-    cudaFree(matrix.rows);
+    free(matrix.l_vals);
+    free(matrix.l_rows);
+    free(matrix.l_cols);
+    cudaFree(matrix.d_vals);
+    cudaFree(matrix.d_cols);
+    cudaFree(matrix.d_rows);
 }
 
 template <typename T>
 void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret)
 {
-    const NTL::ZZ mu_zz = NTL::power2_ZZ(2 * BITS_PER_LIMB * LIMBS_IN(T)) / modulus_zz;
+    barret.l_modulus = modulus_zz;
+    barret.l_mu = NTL::power2_ZZ(2 * BITS_PER_LIMB * LIMBS_IN(T)) / modulus_zz;
     T modulus;
     to_uint<T>(modulus_zz, modulus);
     T mu;
-    to_uint<T>(mu_zz, mu); // loses high order bit!
+    to_uint<T>(barret.l_mu, mu); // loses high order bit (but PTX code compensates)!
 
+    barret.l_subtrahends.SetLength(barret.u);
     T * subtrahends = (T *)malloc(barret.u * 2 * sizeof(T));
     for (int i = 0; i < barret.u; ++i)
     {
-	NTL::ZZ subtrahend = ((NTL::to_ZZ(i) << (2 * BITS_PER_LIMB * LIMBS_IN(T))) / modulus_zz) * modulus_zz;
-	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i], subtrahend, 2*sizeof(T));
+	barret.l_subtrahends[i] = ((NTL::to_ZZ(i) << (2*BITS_PER_LIMB*LIMBS_IN(T)))
+	    / modulus_zz) * modulus_zz;
+	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i], barret.l_subtrahends[i],
+	    2 * sizeof(T));
     }
 
-    cudaMalloc((void**)&barret.modulus, sizeof(T));
-    cudaMemcpy(barret.modulus, &modulus, sizeof(T), cudaMemcpyHostToDevice);
+    cudaMalloc((void**)&barret.d_modulus, sizeof(T));
+    cudaMemcpy(barret.d_modulus, &modulus, sizeof(T), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void**)&barret.mu, sizeof(T));
-    cudaMemcpy(barret.mu, &mu, sizeof(T), cudaMemcpyHostToDevice);
+    cudaMalloc((void**)&barret.d_mu, sizeof(T));
+    cudaMemcpy(barret.d_mu, &mu, sizeof(T), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void**)&barret.subtrahends, 2 * barret.u * sizeof(T));
-    cudaMemcpy(barret.subtrahends, subtrahends, 2 * barret.u * sizeof(T), cudaMemcpyHostToDevice);
+    cudaMalloc((void**)&barret.d_subtrahends, 2 * barret.u * sizeof(T));
+    cudaMemcpy(barret.d_subtrahends, subtrahends, 2 * barret.u * sizeof(T),
+	cudaMemcpyHostToDevice);
 
     free(subtrahends);
 }
@@ -232,7 +286,10 @@ void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret)
 template<typename T>
 void freeBarret(struct BarretParams<T> & barret)
 {
-    cudaFree(barret.modulus);
-    cudaFree(barret.mu);
-    cudaFree(barret.subtrahends);
+    barret.l_subtrahends.kill();
+    barret.l_modulus.kill();
+    barret.l_mu.kill();
+    cudaFree(barret.d_modulus);
+    cudaFree(barret.d_mu);
+    cudaFree(barret.d_subtrahends);
 }

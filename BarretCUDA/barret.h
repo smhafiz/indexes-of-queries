@@ -32,9 +32,12 @@ struct BarretParams
     BarretParams(int u) : u(u) {}
     BarretParams() : u(MAX_U) {}
     const int u;
-    T * modulus;
-    T * mu;
-    T * subtrahends;
+    T * d_modulus;
+    T * d_mu;
+    T * d_subtrahends;
+    NTL::ZZ l_modulus;
+    NTL::ZZ l_mu;
+    NTL::vec_ZZ l_subtrahends;
 };
 
 template<typename T>
@@ -43,9 +46,12 @@ struct SparseMatrix
     uint nvals;
     uint nrows;
     uint ncols;
-    T * vals;
-    uint * cols;
-    uint * rows;
+    T * d_vals;
+    uint * d_cols;
+    uint * d_rows;
+    T * l_vals;
+    uint * l_cols;
+    uint * l_rows;
 };
 
 template <typename T>

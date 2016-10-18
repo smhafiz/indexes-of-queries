@@ -24,9 +24,9 @@ LIMBS=4
 NVCC=nvcc
 CXXFLAGS=-Wall -g -O2 -pedantic -std=c++11
 NVCCFLAGS=-std=c++11 -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__
-LDLIBS=-lntl -lgmp
+LDLIBS=-lntl -lgmp -L$(HOME)/sw/lib -I$(HOME)/sw/include
 
-barret: barret.cu uint.h uintX.h
+barret: barret.cu barret.h uint.h uintX.h
 	$(NVCC) $(NVCCFLAGS) -o $@ barret.cu $(LDLIBS)
 
 genuint: genuint.cc
