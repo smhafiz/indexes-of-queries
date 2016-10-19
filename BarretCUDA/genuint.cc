@@ -61,8 +61,8 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
-#define GET_DEST_REG(i)  	((i + limbs - 4) % (2 * limbs - 4))
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
+#define GET_DEST_REG(i)  	((i + limbs - 4) % (2 * limbs - 4))
 #define GET_FIRST_REG(p)	(2*limbs-4+p.second)//(2*limbs-1+p.second)
 #define GET_SECOND_REG(i,p)	(3*limbs-4+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 
@@ -433,12 +433,12 @@ void propagate_r2(int i, int limbs, bool c, int * state, vector< vector< pair<in
     //if (!c) cout << "\n";
     auto p = pairs[i].back();
     pairs[i].pop_back();
-    sprintf(r1, "%%%u", GET_FIRST_REG(p)-1);
-    sprintf(r2, "%%%u", GET_SECOND_REG(i,p)-1);
+    sprintf(r1, "%%%u", GET_FIRST_REG(p) - (limbs-4));//TODO::
+    sprintf(r2, "%%%u", GET_SECOND_REG(i,p) - (limbs-4));//TODO::
     printf("\"mad%s%s%s.u32\t%3s,%3s,%3s,%3s;\\n\\t\"", CARRY_IN_FLAG(c), LO_OR_HI(p), CARRY_OUT_FLAG(i), r0, r1, r2, (IS_OCCUPIED(i) ? r0 : "  0"));
     sprintf(r0, "r%u", i);
-    sprintf(r1, "r%u", GET_FIRST_REG(p)-1);
-    sprintf(r2, "r%u", GET_SECOND_REG(i,p)-1);
+    sprintf(r1, "r%u", GET_FIRST_REG(p) - (limbs-4));//TODO::
+    sprintf(r2, "r%u", GET_SECOND_REG(i,p) - (limbs-4));//TODO::
     printf("\t//%3s%s=[%3s*%3s]%s%s\n\t", r0, (IS_OCCUPIED(i) ? "+" : " "), r1, r2, LO_OR_HI(p), (c ? "+c" : "  "));
     MUL_IN(i);
     if (cc && i < limbs - 1) propagate_r2(i + 1, limbs, true, state, pairs);
