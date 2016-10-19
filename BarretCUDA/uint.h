@@ -56,6 +56,13 @@ static inline T & to_uint(const NTL::ZZ & n, T & ret)
 }
 
 template <typename T>
+static inline T & to_uint(const NTL::ZZ_p & n, T & ret)
+{
+    NTL::BytesFromZZ((unsigned char *)&ret, rep(n), sizeof(T));
+    return ret;
+}
+
+template <typename T>
 static inline NTL::ZZ_p to_ZZ_p(const T & n)
 {
     return NTL::to_ZZ_p(to_ZZ(n));
@@ -80,6 +87,21 @@ static inline void print_limbs(const NTL::ZZ & n)
 {
     T ret;
     print_limbs(to_uint<T>(n, ret));
+}
+
+template <typename T>
+static inline void print_limbs(const NTL::ZZ_p & n)
+{
+    T ret;
+    print_limbs(to_uint<T>(n, ret));
+}
+
+template <typename T>
+__device__ static inline void _print_limbs(const T & n)
+{
+    const uint * _n = (uint *)&n;
+    printf("%u", _n[0]);
+    for (int i = 1; i < LIMBS_IN(T); ++i) printf(".%u", _n[i]);
 }
 
 #endif

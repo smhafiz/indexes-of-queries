@@ -61,12 +61,14 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
+#define GET_DEST_REG_Q(i)  	((i + limbs - 4) % (2 * limbs - 4))
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
-#define GET_DEST_REG(i)  	((i + limbs - 4) % (2 * limbs - 4))
-#define GET_FIRST_REG(p)	(2*limbs-4+p.second)//(2*limbs-1+p.second)
-#define GET_SECOND_REG(i,p)	(3*limbs-4+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
-
+#define GET_FIRST_REG_Q(p)	(2*limbs-4+p.second)//(2*limbs-1+p.second)
+#define GET_SECOND_REG_Q(i,p)	(3*limbs-4+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 /// end get_q
+
+#define GET_FIRST_REG_R(p)	(limbs+p.second)
+#define GET_SECOND_REG_R(i,p)	(2*limbs+i-p.second-p.first)
 
 void wrap(const char * str, int width = 70, const char * afternl = "\t  ")
 {
@@ -177,11 +179,12 @@ static void print_to_uint(uint limbs)
 
 static void print_normalize(uint limbs)
 {
-    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uint" << BITS_IN(limbs) << " * s)\n";
+    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uint" << BITS_IN(limbs) << " & s_lo, const uint" << BITS_IN(limbs) << " & s_hi)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
-    cout << "    const uint * _s = (uint *)&s;\n";
+    cout << "    const uint * _s_lo = (uint *)&s_lo;\n";
+    cout << "    const uint * _s_hi = (uint *)&s_hi;\n";
     sprintf(r0, "%%%u", 0);
     sprintf(r2, "%%%u", 2 * limbs);
     printf("    asm(\"sub.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
@@ -205,8 +208,9 @@ static void print_normalize(uint limbs)
     wrap(iregs.str().c_str());
 
     std::stringstream oregs;
-    oregs << "\n\t: \"r\"(_s[0])";
-    for (int i = 1; i < 2 * limbs; i++) oregs << ", \"r\"(_s[" << i << "])";
+    oregs << "\n\t: \"r\"(_s_lo[0])";
+    for (int i = 1; i < limbs; i++) oregs << ", \"r\"(_s_lo[" << i << "])";
+    for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_s_hi[" << i << "])";
     oregs << ");\n";
     wrap(oregs.str().c_str());
     cout << "}\n\n";
@@ -319,7 +323,7 @@ static void print_mad(uint limbs)
 void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int,int> > > & pairs)
 {
     bool cc = DO_CARRY_OUT(i);
-    sprintf(r0, "%%%u", GET_DEST_REG(i));
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(i));
     //if (!c) cout << "\n";
 
     if (pairs[i].empty())
@@ -332,13 +336,13 @@ void propagate_q(int i, int limbs, bool c, int * state, vector< vector< pair<int
     {
 	auto p = pairs[i].back();
 	pairs[i].pop_back();
-	sprintf(r1, "%%%u", GET_FIRST_REG(p));
-	sprintf(r2, "%%%u", GET_SECOND_REG(i,p));
+	sprintf(r1, "%%%u", GET_FIRST_REG_Q(p));
+	sprintf(r2, "%%%u", GET_SECOND_REG_Q(i,p));
 	printf("\t\"mad%s%s%s.u32\t%3s,%3s,%3s,%3s;\\n\\t\"", CARRY_IN_FLAG(c), LO_OR_HI(p), CARRY_OUT_FLAG(i), r0, r1, r2, (IS_OCCUPIED(i) ? r0 : "  0"));
 	printf("\t//%3s%s=[%3s*%3s]%s%s", &(*r0='r'), (IS_OCCUPIED(i) ? "+" : " "), &(*r1='r'), &(*r2='r'), LO_OR_HI(p), (c ? "+c" : "  "));
 	MUL_IN(i);
     }
-    if (i < limbs - 1) cout << " (r" << (i - limbs + 1) << "=>r" << GET_DEST_REG(i) << ")";
+    if (i < limbs - 1) cout << " (r" << (i - limbs + 1) << "=>r" << GET_DEST_REG_Q(i) << ")";
     cout << "\n";
     if (cc && i < 2 * limbs - 1) propagate_q(i + 1,limbs, true, state, pairs);
 }
@@ -372,12 +376,12 @@ inline void print_get_q(int limbs)
     cout << "    uint * _mu = (uint *)&mu;\n";
 
     auto p = make_pair(1,0);
-    sprintf(r0, "%%%u", GET_DEST_REG(1));
-    sprintf(r1, "%%%u", GET_FIRST_REG(p));
-    sprintf(r2, "%%%u", GET_SECOND_REG(1,p));
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(1));
+    sprintf(r1, "%%%u", GET_FIRST_REG_Q(p));
+    sprintf(r2, "%%%u", GET_SECOND_REG_Q(1,p));
     printf("    asm(\"mul.hi.u32\t%3s,%3s,%3s    ;\\n\\t\"", r0, r1, r2);
     printf("\t//%3s =[%3s*%3s].hi  ", &(*r0='r'), &(*r1='r'), &(*r2='r'));
-    cout << " (r" << (2-limbs) << "=>r" << GET_DEST_REG(1) <<  ")\n";
+    cout << " (r" << (2-limbs) << "=>r" << GET_DEST_REG_Q(1) <<  ")\n";
     MUL_IN(1);
 
     for (int i = 0; i < 2 * limbs; i++)
@@ -389,22 +393,22 @@ inline void print_get_q(int limbs)
     }
 
     // handle the implicit 1-word
-    sprintf(r0, "%%%u", GET_DEST_REG(limbs-1));
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(limbs-1));
     sprintf(r1, "%%%u", 2 * limbs - 2-2);//TODO::CHECK
     printf("\t\"add.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s\n", &(*r0='r'), &(*r1='r'));
     for (int i = limbs; i < 2 * limbs - 2; i++)
     {
-	sprintf(r0, "%%%u", GET_DEST_REG(i));
+	sprintf(r0, "%%%u", GET_DEST_REG_Q(i));
 	sprintf(r1, "%%%u", i + limbs-2-1);//TODO::CHECK
 	printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
 	printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     }
-    sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 2));
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
     sprintf(r1, "%%%u", 3 * limbs - 4 -1);//TODO::CHECK
     printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
-    sprintf(r0, "%%%u", GET_DEST_REG(2 * limbs - 1));
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 1));
     printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
     printf("\t//%3s+=c\n", &(*r0='r'));
 
@@ -433,13 +437,10 @@ void propagate_r2(int i, int limbs, bool c, int * state, vector< vector< pair<in
     //if (!c) cout << "\n";
     auto p = pairs[i].back();
     pairs[i].pop_back();
-    sprintf(r1, "%%%u", GET_FIRST_REG(p) - (limbs-4));//TODO::
-    sprintf(r2, "%%%u", GET_SECOND_REG(i,p) - (limbs-4));//TODO::
+    sprintf(r1, "%%%u", GET_FIRST_REG_R(p));
+    sprintf(r2, "%%%u", GET_SECOND_REG_R(i,p));
     printf("\"mad%s%s%s.u32\t%3s,%3s,%3s,%3s;\\n\\t\"", CARRY_IN_FLAG(c), LO_OR_HI(p), CARRY_OUT_FLAG(i), r0, r1, r2, (IS_OCCUPIED(i) ? r0 : "  0"));
-    sprintf(r0, "r%u", i);
-    sprintf(r1, "r%u", GET_FIRST_REG(p) - (limbs-4));//TODO::
-    sprintf(r2, "r%u", GET_SECOND_REG(i,p) - (limbs-4));//TODO::
-    printf("\t//%3s%s=[%3s*%3s]%s%s\n\t", r0, (IS_OCCUPIED(i) ? "+" : " "), r1, r2, LO_OR_HI(p), (c ? "+c" : "  "));
+    printf("\t//%3s%s=[%3s*%3s]%s%s\n\t", &(*r0='r'), (IS_OCCUPIED(i) ? "+" : " "), &(*r1='r'), &(*r2='r'), LO_OR_HI(p), (c ? "+c" : "  "));
     MUL_IN(i);
     if (cc && i < limbs - 1) propagate_r2(i + 1, limbs, true, state, pairs);
 }
