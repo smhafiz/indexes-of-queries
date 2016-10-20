@@ -10,10 +10,14 @@ NTL_CLIENT
 
 int main(int argc, char **argv)
 {
-    int modulus = 65537;
-    int u = argc - 2;
+    NTL::ZZ modulus = NTL::RandomPrime_ZZ(atoi(argv[1])*32);
+    
+    //for(int d=0;d<argc;d++)cout << argv[d] << endl;
+    NTL::ZZ_p::init(modulus);
+    //int modulus = 65537;
+    int u = argc - 3;
 
-    std::ifstream xcoords(argv++[1], std::ifstream::in);
+    std::ifstream xcoords(argv[2], std::ifstream::in);
     std::ifstream * irow = new std::ifstream[u];
     std::ifstream * icol = new std::ifstream[u];
 
@@ -29,10 +33,10 @@ int main(int argc, char **argv)
     // open the files containing the sparse permutation-like matrices
     for (int i = 1; i <= u; ++i)
     {
-	char * infile = new char[strlen(argv[i]) + 4];
-	sprintf(infile, "%s.row", argv[i]);
+	char * infile = new char[strlen(argv[i+2]) + 4];
+	sprintf(infile, "%s.row", argv[i+2]);
 	irow[i - 1].open(infile, std::ifstream::in);
-	sprintf(infile, "%s.col", argv[i]);
+	sprintf(infile, "%s.col", argv[i+2]);
 	icol[i - 1].open(infile, std::ifstream::in);
 	delete [] infile;
     }

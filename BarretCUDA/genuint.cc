@@ -218,7 +218,7 @@ static void print_normalize(uint limbs)
 
 static void print_sub(uint limbs)
 {
-    cout << "__device__ __forceinline__ void sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
+    cout << "__device__ __forceinline__ int sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
@@ -250,6 +250,7 @@ static void print_sub(uint limbs)
     for (int i = 1; i < limbs + 1; i++) oregs << ", \"r\"(_r[" << i << "])";
     oregs << ");\n";
     wrap(oregs.str().c_str());
+    cout << "\treturn _a_hi[0];\n";
     cout << "}\n\n";
 }
 
@@ -452,6 +453,7 @@ inline void print_get_r2(uint limbs)
 
     for (int i = 0; i < limbs; ++i)
     {
+	state[i] = 0;
 	for (int j = 0; j <= limbs-i; j++)
 	{
 	    pairs[i+j].push_back(make_pair(LO, j));

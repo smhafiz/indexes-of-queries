@@ -1,0 +1,272 @@
+// This file is part of BarretCUDA v0.1
+//
+// BarretCUDA is a fast(ish) CUDA implementation of sparse matrix
+// multiplication modulo a multi-precision prime.
+//
+// Copyright (C) 2016, Ryan Henry and Syed Mahbub Hafiz
+//
+//
+// BarretCUDA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// BarretCUDA is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
+
+#include <atomic>
+#include "uintX128.h"
+#include <time.h>
+#include <chrono>
+#include <ratio>
+
+
+
+NTL_CLIENT
+
+template< typename T>
+struct BarretParams
+{
+	const int u = 16;
+	T * modulus;
+	T * mu;
+	T * subtrahends;
+};
+
+struct SparseMatrix
+{
+	SparseMatrix(uint nv, uint nc, uint nr) : nvals(nv), nrows(nr), ncols(nc) {}
+	const uint nvals;
+	uintX * vals;
+	const uint ncols;
+	uint * cols;
+	const uint nrows;
+	uint * rows;
+};
+
+template <typename T>
+void initBarret(const NTL::ZZ & modulus_zz, struct BarretParams<T> & barret)
+{
+	const NTL::ZZ mu_zz = NTL::power2_ZZ(2 * BITS_PER_LIMB * LIMBS_IN(T)) / modulus_zz;
+    T modulus;
+    to_uint<T>(modulus_zz, modulus);
+    T mu;
+    to_uint<T>(mu_zz, mu); // loses high order bit!
+	
+	cout<< "From InitBarret mu:\t" << conv<uint>(to_ZZ(mu)) <<"\t"<< conv<uint>(to_ZZ(mu) >> 32)<<"\t"<< conv<uint>(to_ZZ(mu) >> 64) <<"\t"<< conv<uint>(to_ZZ(mu) >> 96) <<"\n";
+
+	    T * subtrahends = (T *)malloc(barret.u * 2 * sizeof(T));
+    for (int i = 0; i < barret.u; ++i)
+    {
+	NTL::ZZ subtrahend = ((NTL::to_ZZ(i) << (2 * BITS_PER_LIMB * LIMBS_IN(T))) / modulus_zz) * modulus_zz;
+	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i], subtrahend, 2*sizeof(T));
+    }
+
+	cudaMalloc((void**) & barret.modulus, sizeof(T));
+	cudaMemcpy(barret.modulus, & modulus, sizeof(T), cudaMemcpyHostToDevice);
+
+	cudaMalloc((void**) & barret.mu, sizeof(T));
+	cudaMemcpy(barret.mu, & mu, sizeof(T), cudaMemcpyHostToDevice);
+
+	cudaMalloc((void**) & barret.subtrahends, 2 * barret.u * sizeof(T));
+	cudaMemcpy(barret.subtrahends, subtrahends, 2 * barret.u * sizeof(T), cudaMemcpyHostToDevice);
+
+	free(subtrahends);
+}
+
+template<typename T>
+void killBarret(struct BarretParams<T> & barret)
+{
+	cudaFree(barret.modulus);
+	cudaFree(barret.mu);
+	cudaFree(barret.subtrahends);
+}
+
+
+template <typename T>
+__global__ void smm_kernel(T * result, const T * query, const uint * rows, const uint * cols, const uintX * vals, const T * modulus, const T * mu, const T * subtrahends)
+{
+	printf("smm_kernel enter\n");
+	int i = blockDim.x * blockIdx.x + threadIdx.x;
+
+	T a = { 0 };
+	result[i] = {0}; 
+	uint overflow;
+	for (int j = cols[i]; j < cols[i+1]; ++j)
+	{
+		mad(result[i], a, overflow, vals[j], query[rows[j]]);
+	}
+	printf("Before normalize a:\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\n\n",result[i].x, result[i].y, result[i].z, result[i].w, a.x, a.y, a.z, a.w);
+	normalize(result[i], a, subtrahends + 2*overflow);
+	printf("After normalize a:\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\n\n",result[i].x, result[i].y, result[i].z, result[i].w, a.x, a.y, a.z, a.w);
+	uintXp<T> q = get_q(result[i], a, *mu);
+	printf("q:\t\t\t%u\t%u\t%u\t%u\t%u\n\n",q.lo.x,q.lo.y,q.lo.z,q.lo.w,q.hi);
+	uintXp<T> r2 = get_r2(q, *modulus);
+	printf("r2:\t\t\t%u\t%u\t%u\t%u\n\n",r2.lo.x,r2.lo.y,r2.lo.z,r2.lo.w);
+	sub(result[i], a, r2);
+	printf("a after sub r2:\t\t%u\t%u\t%u\t%u\n\n",result[i].x, result[i].y, result[i].z,result[i].w);
+}
+
+template <typename T>
+void smm(T * l_response, T * l_query, T * d_response, T * d_query, const cudaStream_t & stream, const uint nrows, const uint * rows, const uint ncols, const uint * cols, const uint nvals, const uintX * vals, const T * modulus, const T * mu, const T * subtrahends)
+{
+	//NTL::ZZ_pPush p(barret.modulus);
+
+	cudaMemcpy(d_query, l_query, nrows * sizeof(uintX), cudaMemcpyHostToDevice);
+	smm_kernel<uintX> <<< 1, 1, 0 >>> (d_response, d_query, rows, cols, vals, modulus, mu, subtrahends);
+	cudaMemcpy(l_response, d_response, (ncols-1) * sizeof(uintX), cudaMemcpyDeviceToHost);
+	
+	//printf("l_response:\t\t%u\t%u\t%u\n\n",l_response.x,l_response.y,l_response.z);
+
+	//    l_response.SetLength(matrix.ncols);
+	//    for (int i = 0; i < matrix.ncols; ++i)
+	//    {
+	//    	l_response[i] = to_ZZ_p<T>(d_response[i]);
+	//    }
+}
+
+int main(int argc, char ** argv)
+{
+	NTL::ZZ modulus_zz = NTL::RandomPrime_ZZ(128);
+	NTL::ZZ_p::init(modulus_zz);
+	const NTL::ZZ mu_zz = NTL::power2_ZZ(2 *  128) / modulus_zz;
+	uintX modulus = {0};
+	to_uint<uintX>(modulus_zz, modulus);
+	uintX mu = {0};
+	to_uint<uintX>(mu_zz,mu);
+	int nthreads = 1;
+
+	struct BarretParams<uintX> barret;
+	initBarret<uintX>(modulus_zz, barret);
+	
+	/*
+	 * ZZ test
+	 *
+	 */
+	ZZ b = RandomBnd(modulus_zz);
+	ZZ c = RandomBnd(modulus_zz);
+	cout << "\nb:\t\t\t" << (b) << "\nc:\t\t\t" << (c)  << "\nmodulus:\t\t" << (modulus_zz) << "\n\t\t\t" << conv<uint>(modulus_zz) << "\t" << conv<uint>(modulus_zz>>32) << "\t" << conv<uint>(modulus_zz>>64) << "\t" << conv<uint>(modulus_zz>>96) << "\n";
+	
+
+	//ZZ test start
+	const uint16_t limbs = 4;
+	const uint16_t bits_per_limb = 32;
+	const uint16_t bits_per_word = limbs * bits_per_limb;
+	const uint16_t bits_per_prod = 2 * bits_per_word;
+
+
+	ZZ b_zz = b;//to_ZZ("9390883632773946281");
+	ZZ c_zz = c;//to_ZZ("14286658463682830315");
+	ZZ a_zz = b_zz *c_zz;
+	cout << "b_zz:\t\t\t" << conv<uint>(b_zz) << "\t" << conv<uint>(b_zz>>32) << "\t" << conv<uint>(b_zz>>64) << "\t" << conv<uint>(b_zz>>96) << "\n";
+	cout << "c_zz:\t\t\t" << conv<uint>(c_zz) << "\t" << conv<uint>(c_zz>>32) << "\t" << conv<uint>(c_zz>>64) << "\t" << conv<uint>(c_zz>>96) << "\n";
+	cout<< "a_zz:\t\t\t" << a_zz << "\n\t\t\t" << conv<uint>(a_zz) << "\t" << conv<uint>(a_zz>>32) << "\t" << conv<uint>(a_zz>>64) << "\t" << conv<uint>(a_zz>>96)<< "\t" << conv<uint>(a_zz>>128) << "\t" << conv<uint>(a_zz>>160) << "\t" << conv<uint>(a_zz>>192) << "\t" << conv<uint>(a_zz>>224) << endl;
+	//Barret start
+	ZZ q1 = a_zz >> ((limbs - 1) * bits_per_limb);
+	ZZ q2 = q1 * mu_zz;
+	ZZ q3 = q2 >> ((limbs + 1) * bits_per_limb);
+	cout << "mu_zz: " << NumBits(mu_zz) << "\n";
+	cout << "a_zz: " << NumBits(a_zz) << "\n";
+	cout << "q1: " << NumBits(q1) << "\n";
+	cout << "q2: " << NumBits(q2) << "\n";
+	cout << "q3: " << NumBits(q3) << "\n\n";
+
+	cout << "q:\t\t\t" << conv<uint>(q3) << "\t" << conv<uint>(q3>>32) << "\t" << conv<uint>(q3>>64) << "\t" << conv<uint>(q3>>96) << "\n";
+
+	ZZ r1;
+	NTL::rem(r1, a_zz, power2_ZZ((limbs + 1) * bits_per_limb));
+	ZZ r2;
+	NTL::rem(r2, q3 * modulus_zz, power2_ZZ((limbs + 1) * bits_per_limb));
+
+	cout << "r:\t\t\t" << conv<uint>(r2) << "\t" << conv<uint>(r2>>32) << "\t" << conv<uint>(r2>>64) << "\t" << conv<uint>(r2>>96) << "\n";
+
+	ZZ r = r1 - r2;
+
+	cout << "r before subtrahends:\t" << r << "\n";
+	if (r < 0) r = r + power2_ZZ((limbs + 1) * bits_per_limb);
+	while (r >= modulus_zz) r = r - modulus_zz;
+	cout << "r after subtrahends:\t" << r << "\n";
+	cout << "Barrett result:\t\t" << r << "\n\t\t\t" << conv<uint>(r) << "\t" << conv<uint>(r>>32) << "\t" << conv<uint>(r>>64) << "\t" << conv<uint>(r>>96) << "\n";
+
+	//Barrett finish
+	ZZ res;
+	NTL::rem(res, a_zz, modulus_zz);
+	cout << "ZZ result:\t\t" << res << "\n\t\t\t" << conv<uint>(res) << "\t" << conv<uint>(res>>32) << "\t" << conv<uint>(res>>64) << "\t" << conv<uint>(res>>96) << "\n";
+
+	/*
+	 * ZZ test finished
+	 *
+	 */
+	uintX * vals = NULL;
+	uint * rows = NULL;
+	uint * cols = NULL;
+
+	struct SparseMatrix matrix(1, 2, 1);
+	vals = (uintX*)malloc(sizeof(uintX)*matrix.nvals);
+	cols  = (uint*)malloc(sizeof(uint)*matrix.ncols);
+	rows  = (uint*)malloc(sizeof(uint)*matrix.nrows);
+	//    struct SparseMatrix* matrix_d;
+
+	to_uint128(b,vals[0]);
+	cols[0] = 0;
+	cols[1] = 1;
+	rows[0] = 0;
+	cudaMalloc((void**)&matrix.vals, matrix.nvals * sizeof(uintX));
+	cudaMemcpy(matrix.vals, vals, matrix.nvals * sizeof(uintX), cudaMemcpyHostToDevice);
+	cudaMalloc((void**)&matrix.cols, matrix.ncols * sizeof(uint));
+	cudaMemcpy(matrix.cols, cols, matrix.ncols * sizeof(uint), cudaMemcpyHostToDevice);
+	cudaMalloc((void**)&matrix.rows, matrix.nrows * sizeof(uint));
+	cudaMemcpy(matrix.rows, rows, matrix.nrows * sizeof(uint), cudaMemcpyHostToDevice);
+	//    cudaMalloc((void**)&matrix_d, 1 * sizeof(SparseMatrix));
+	//    cudaMemcpy(matrix_d,&matrix,sizeof(SparseMatrix),cudaMemcpyHostToDevice);
+
+	uintX * l_query, * d_query;
+	cudaMallocHost((void**)&l_query, nthreads * matrix.nrows * sizeof(uintX));
+	to_uint128(c,l_query[0]);
+	
+	cudaMalloc((void**)&d_query, nthreads * matrix.nrows * sizeof(uintX));
+	uintX * l_response, * d_response;
+	cudaMallocHost((void**)&l_response, nthreads * (matrix.ncols-1) * sizeof(uintX));
+	cudaMalloc((void**)&d_response, nthreads * (matrix.ncols-1) * sizeof(uintX));
+
+	cudaStream_t * streams = new cudaStream_t[nthreads];
+	for (int i = 0; i < nthreads; ++i) cudaStreamCreate(&streams[i]);
+
+	std::atomic<int> cnt = ATOMIC_VAR_INIT(0);
+	auto start = std::chrono::high_resolution_clock::now();
+	std::chrono::nanoseconds onesec{1000000000};
+	/*    while(std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
+    {
+	smm<uintX>(l_response, l_query, d_response, d_query, streams[l++], matrix, barret);
+	std::atomic_fetch_add(&cnt, 1);
+    }*/
+
+	smm<uintX>(l_response, l_query, d_response, d_query, streams[0], matrix.nrows, matrix.rows, matrix.ncols, matrix.cols, matrix.nvals, matrix.vals, barret.modulus, barret.mu, barret.subtrahends);
+	std::atomic_fetch_add(&cnt, 1);
+
+
+	cout << "Response:\t\t" << conv<uint>(to_ZZ(*l_response)) << "\t" <<conv<uint>(to_ZZ(*l_response)>>32) << "\t" <<conv<uint>(to_ZZ(*l_response)>>64) << "\t" <<conv<uint>(to_ZZ(*l_response)>>96) <<endl;
+	delete [] streams;
+
+	cudaFreeHost(l_query);
+	cudaFree(d_query);
+	cudaFreeHost(l_response);
+	cudaFree(d_response);
+
+	free(vals);
+	free(rows);
+	free(cols);
+
+	cudaFree(matrix.vals);
+	cudaFree(matrix.cols);
+	cudaFree(matrix.rows);
+
+	killBarret<uintX>(barret);
+
+	return 0;
+}
