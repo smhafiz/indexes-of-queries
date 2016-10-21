@@ -62,7 +62,7 @@ char * r3;
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
 
-#define NUMBER_OF_TEMP_REQUIRED	((limbs-1)%3>0?limbs/3+1:limbs/3)
+#define NUMBER_OF_TEMP_REQUIRED	(((limbs-1)%3) > 0 ? ((limbs-1)/3)+1:((limbs-1)/3))
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
 #define GET_DEST_REG_Q(i)  	((i+NUMBER_OF_TEMP_REQUIRED) % (limbs+NUMBER_OF_TEMP_REQUIRED))// ((i + limbs - 3) % (2 * limbs - 3))
 #define GET_FIRST_REG_Q(p)	(limbs+NUMBER_OF_TEMP_REQUIRED+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
@@ -411,14 +411,6 @@ inline void print_get_q(int limbs)
 	printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
 	printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     }
-
-/*    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
-    sprintf(r1, "%%%u", 2*limbs);//TODO::CHECK
-    printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-    printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
-    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 1));
-    printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
-    printf("\t//%3s+=c\n", &(*r0='r'));*/
 
     sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
     sprintf(r1, "%%%u", 2*limbs-1+NUMBER_OF_TEMP_REQUIRED);//TODO::CHECK
