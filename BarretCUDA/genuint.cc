@@ -62,9 +62,9 @@ char * r3;
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
 
-#define NUMBER_OF_TEMP_REQUIRED	(limbs%3>0?limbs/3+1:limbs/3)
+#define NUMBER_OF_TEMP_REQUIRED	((limbs-1)%3>0?limbs/3+1:limbs/3)
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
-#define GET_DEST_REG_Q(i)  	((i+1) % (limbs+NUMBER_OF_TEMP_REQUIRED))// ((i + limbs - 3) % (2 * limbs - 3))
+#define GET_DEST_REG_Q(i)  	((i+NUMBER_OF_TEMP_REQUIRED) % (limbs+NUMBER_OF_TEMP_REQUIRED))// ((i + limbs - 3) % (2 * limbs - 3))
 #define GET_FIRST_REG_Q(p)	(limbs+NUMBER_OF_TEMP_REQUIRED+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
 #define GET_SECOND_REG_Q(i,p)	(2*limbs+NUMBER_OF_TEMP_REQUIRED+i-p.second-p.first)//(3*limbs-3+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 /// end get_q
