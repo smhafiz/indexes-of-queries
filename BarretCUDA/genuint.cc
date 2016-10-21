@@ -61,14 +61,18 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
-#define GET_DEST_REG_Q(i)  	((i+1) % (limbs+1))// ((i + limbs - 3) % (2 * limbs - 3))
+
+#define NUMBER_OF_TEMP_REQUIRED	(limbs%3>0?limbs/3+1:limbs/3)
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
-#define GET_FIRST_REG_Q(p)	(limbs+1+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
-#define GET_SECOND_REG_Q(i,p)	(2*limbs+1+i-p.second-p.first)//(3*limbs-3+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
+#define GET_DEST_REG_Q(i)  	((i+1) % (limbs+NUMBER_OF_TEMP_REQUIRED))// ((i + limbs - 3) % (2 * limbs - 3))
+#define GET_FIRST_REG_Q(p)	(limbs+NUMBER_OF_TEMP_REQUIRED+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
+#define GET_SECOND_REG_Q(i,p)	(2*limbs+NUMBER_OF_TEMP_REQUIRED+i-p.second-p.first)//(3*limbs-3+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 /// end get_q
 
 #define GET_FIRST_REG_R(p)	(limbs+p.second)
 #define GET_SECOND_REG_R(i,p)	(2*limbs+i-p.second-p.first)
+
+
 
 void wrap(const char * str, int width = 70, const char * afternl = "\t  ")
 {
@@ -369,8 +373,8 @@ inline void print_get_q(int limbs)
 
     cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo,\n\tconst uint" << BITS_IN(limbs-1) << " & a_hi, const uint" << BITS_IN(limbs-1) << " & mu)\n";
     cout << "{\n";
-    //for (int i = 0; i < (limbs-3); i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
-    cout << "    uint __attribute__((unused)) tmp;\n";
+    for (int i = 0; i <NUMBER_OF_TEMP_REQUIRED; i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
+    //cout << "    uint __attribute__((unused)) tmp;\n";
     cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q;\n";
     cout << "    uint * _q = (uint *)&q;\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
@@ -397,18 +401,27 @@ inline void print_get_q(int limbs)
 
     // handle the implicit 1-word
     sprintf(r0, "%%%u", GET_DEST_REG_Q(limbs-1));
-    sprintf(r1, "%%%u", limbs+1);//TODO::CHECK
+    sprintf(r1, "%%%u", limbs+NUMBER_OF_TEMP_REQUIRED);//TODO::CHECK
     printf("\t\"add.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s\n", &(*r0='r'), &(*r1='r'));
     for (int i = 1; i < limbs - 1; i++)
     {
 	sprintf(r0, "%%%u", GET_DEST_REG_Q(limbs-1+i));
-	sprintf(r1, "%%%u", limbs+1+i);//TODO::CHECK
+	sprintf(r1, "%%%u", limbs+NUMBER_OF_TEMP_REQUIRED+i);//TODO::CHECK
 	printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
 	printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     }
-    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
+
+/*    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
     sprintf(r1, "%%%u", 2*limbs);//TODO::CHECK
+    printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
+    printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 1));
+    printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
+    printf("\t//%3s+=c\n", &(*r0='r'));*/
+
+    sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
+    sprintf(r1, "%%%u", 2*limbs-1+NUMBER_OF_TEMP_REQUIRED);//TODO::CHECK
     printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
     printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
     sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 1));
@@ -418,8 +431,8 @@ inline void print_get_q(int limbs)
     std::stringstream iregs;
     iregs << "\t: \"+r\"(_q[0])";
     for (int i = 1; i < limbs; i++) iregs << ", \"=r\"(_q[" << i << "])";
-    //for (int i = 0; i < limbs-4; i++) iregs << ", \"=r\"(tmp" << i << ")";
-    iregs << ", \"=r\"(tmp)";
+    for (int i = 0; i < NUMBER_OF_TEMP_REQUIRED; i++) iregs << ", \"=r\"(tmp" << i << ")";
+    //iregs << ", \"=r\"(tmp)";
     wrap(iregs.str().c_str());
 
     std::stringstream oregs;
