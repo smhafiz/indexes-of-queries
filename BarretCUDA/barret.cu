@@ -47,21 +47,21 @@ template <typename T>
 	uintX & hi, const uint & overflow, const T * modulus,
 	const uintXp<T> * mu, const T * subtrahends)
 {
-printf("\n  a_lo:  \t"); _print_limbs<T>(response.lo);
-printf("\n  a_hi:  \t"); _print_limbs<T>(hi);
+printf("\n  a_lo:  \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);
+printf("\n  a_hi:  \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);
 printf("\n  over:  \t%u", overflow);
     normalize(response.lo, hi, subtrahends[2*overflow], subtrahends[2*overflow+1]);
-printf("\n  a_lo': \t"); _print_limbs<T>(response.lo);
-printf("\n  a_hi': \t"); _print_limbs<T>(hi);
+printf("\n  a_lo': \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);
+printf("\n  a_hi': \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);
     uintXp<T> q = get_q(response.lo, hi, *mu);
-printf("\n  mu:    \t"); _print_limbs<uintXp<T>>(*mu);
-printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo);
-printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi);
+printf("\n  mu:    \t"); _print_limbs<uintXp<T>>(*mu, LIMBS_PER_UINTX+1);
+printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo, LIMBS_PER_UINTX);
+printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi, 1);
     uintXp<T> r2 = get_r2(q, *modulus);
-printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2);
+printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);
     response.hi = sub(response.lo, hi, r2);
-printf("\n  a_lo'':\t"); _print_limbs<T>(response.lo);
-printf("\n  a_hi'':\t"); _print_limbs<uint>(response.hi);
+printf("\n  a_lo'':\t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);
+printf("\n  a_hi'':\t"); _print_limbs<uint>(response.hi, 1);
 }
 
 template <typename T>
@@ -94,7 +94,7 @@ cout << "\n\nSpMV_ntl:";
 	{
 	    response[i] += to_ZZ_p(matrix.l_vals[j]) * to_ZZ_p(query[matrix.l_rows[j]]);
 	}
-cout << "\n  a''': \t"; print_limbs<T>(response[i]);
+cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);
     }
 }
 
@@ -112,29 +112,29 @@ cout << "\n\nSpMV_ntl_barret:";
 	{
 	    response_ZZ[i] += to_ZZ(matrix.l_vals[j]) * to_ZZ(query[matrix.l_rows[j]]);
 	}
-if (i==0) {cout << "\n  a_lo:  \t"; print_limbs<T>(response_ZZ[i]);}
-if (i==0) {cout << "\n  a_hi:  \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)));}
-	uint overflow = (uint)trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_IN(T)), BITS_IN(sizeof(uint)));
+if (i==0) {cout << "\n  a_lo:  \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
+if (i==0) {cout << "\n  a_hi:  \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
+	uint overflow = (uint)trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_PER_UINTX), BITS_IN(sizeof(uint)));
 if (i==0) {cout << "\n  over:  \t" << overflow;}
 	response_ZZ[i] -= barret.l_subtrahends[overflow];
-if (i==0) {cout << "\n  a_lo': \t"; print_limbs<T>(response_ZZ[i]);}
-if (i==0) {cout << "\n  a_hi': \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)));}
+if (i==0) {cout << "\n  a_lo': \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
+if (i==0) {cout << "\n  a_hi': \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 
-	NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_IN(T)-1);
+	NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX-1);
 	NTL::ZZ q2 = q1 * barret.l_mu;
-	NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_IN(T)+1);
-if (i==0) {cout << "\n  mu:    \t"; print_limbs<uintXp<T>>(barret.l_mu);}
-//if (i==0) {cout << "\n  q_llo: \t"; print_limbs<T>(q2);}
-if (i==0) {cout << "\n  q_lo:  \t"; print_limbs<T>(q3);}
-if (i==0) {cout << "\n  q_hi:  \t"; print_limbs<uint>(q3 >> BITS_IN(LIMBS_IN(T)));}
-	NTL::ZZ r1 = response_ZZ[i] % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
-	NTL::ZZ r2 = q3 * barret.l_modulus % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
-if (i==0) {cout << "\n  r2:    \t"; print_limbs<uintXp<T>>(r2);}
-	NTL::ZZ r = (r1 - r2) % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
-if (i==0) {cout << "\n  a_lo'':\t"; print_limbs<T>(r);}
-if (i==0) {cout << "\n  a_hi'':\t"; print_limbs<uint>(r >> BITS_IN(LIMBS_IN(T)));}
+	NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_PER_UINTX+1);
+if (i==0) {cout << "\n  mu:    \t"; print_limbs<uintXp<T>>(barret.l_mu, LIMBS_PER_UINTX+1);}
+//if (i==0) {cout << "\n  q_llo: \t"; print_limbs<T>(q2, LIMBS_PER_UINTX);}
+if (i==0) {cout << "\n  q_lo:  \t"; print_limbs<T>(q3, LIMBS_PER_UINTX);}
+if (i==0) {cout << "\n  q_hi:  \t"; print_limbs<uint>(q3 >> BITS_IN(LIMBS_PER_UINTX), 1);}
+	NTL::ZZ r1 = response_ZZ[i] % power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
+	NTL::ZZ r2 = q3 * barret.l_modulus % power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
+if (i==0) {cout << "\n  r2:    \t"; print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
+	NTL::ZZ r = (r1 - r2) % power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
+if (i==0) {cout << "\n  a_lo'':\t"; print_limbs<T>(r, LIMBS_PER_UINTX);}
+if (i==0) {cout << "\n  a_hi'':\t"; print_limbs<NTL::ZZ>(r >> BITS_IN(LIMBS_PER_UINTX), 1);}
 	response[i] = NTL::to_ZZ_p(r);
-	cout << "\n  a''':     \t"; print_limbs<T>(response[i]);
+	cout << "\n  a''':     \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);
     }
 }
 
@@ -168,14 +168,16 @@ gpuErrchk( cudaPeekAtLastError() );
     for (int i = 0; i < matrix.ncols; ++i)
     {
 	response[i] = to_ZZ_p<T>(l_response[i].lo)
-	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_IN(T)));
-cout << "\n  a''': \t"; print_limbs<T>(response[i]);
+	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_PER_UINTX));
+cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);
     }
 //cout << "\n";
 }
 
 int main(int argc, char ** argv)
 {
+
+	cout << sizeof(uint160) << " == 5?\n";
     int nstreams = 1;
 
     if (argc < 3)
@@ -318,7 +320,7 @@ template <typename T>
 void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret)
 {
     barret.l_modulus = modulus_zz;
-    barret.l_mu = NTL::power2_ZZ(2 * BITS_PER_LIMB * LIMBS_IN(T)) / modulus_zz;
+    barret.l_mu = NTL::power2_ZZ(2 * BITS_PER_LIMB * LIMBS_PER_UINTX) / modulus_zz;
     T modulus;
     to_uint<T>(modulus_zz, modulus);
     uintXp<T> mu;
@@ -328,7 +330,7 @@ void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret)
     T * subtrahends = (T *)malloc(barret.u * 2 * sizeof(T));
     for (int i = 0; i < barret.u; ++i)
     {
-	barret.l_subtrahends[i] = ((NTL::to_ZZ(i) << (2*BITS_PER_LIMB*LIMBS_IN(T)))
+	barret.l_subtrahends[i] = ((NTL::to_ZZ(i) << (2*BITS_PER_LIMB*LIMBS_PER_UINTX))
 	    / modulus_zz) * modulus_zz;
 	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i], barret.l_subtrahends[i],
 	    2 * sizeof(T));

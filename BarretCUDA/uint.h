@@ -27,7 +27,6 @@
 
 #define BITS_PER_LIMB	(sizeof(uint) * 8)
 #define BITS_IN(limbs)	((limbs) * BITS_PER_LIMB)
-#define LIMBS_IN(x)	(sizeof(x) / sizeof(uint))
 
 typedef unsigned int uint;
 typedef uint  uint32;
@@ -75,33 +74,35 @@ static inline void print(const T & n)
 }
 
 template <typename T>
-static inline void print_limbs(const T & n)
+static inline void print_limbs(const T & n, const uint limbs)
 {
+    if (!limbs) return;
     const uint * _n = (uint *)&n;
     std::cout << _n[0];
-    for (int i = 1; i < LIMBS_IN(T); ++i) std::cout << "." << _n[i];
+    for (int i = 1; i < limbs; ++i) std::cout << "." << _n[i];
 }
 
 template <typename T>
-static inline void print_limbs(const NTL::ZZ & n)
+static inline void print_limbs(const NTL::ZZ & n, const uint limbs)
 {
     T ret;
-    print_limbs(to_uint<T>(n, ret));
+    print_limbs(to_uint(n, ret), limbs);
 }
 
 template <typename T>
-static inline void print_limbs(const NTL::ZZ_p & n)
+static inline void print_limbs(const NTL::ZZ_p & n, const uint limbs)
 {
     T ret;
-    print_limbs(to_uint<T>(n, ret));
+    print_limbs(to_uint(n, ret), limbs);
 }
 
 template <typename T>
-__device__ static inline void _print_limbs(const T & n)
+__device__ static inline void _print_limbs(const T & n, const uint limbs)
 {
+    if (!limbs) return;
     const uint * _n = (uint *)&n;
     printf("%u", _n[0]);
-    for (int i = 1; i < LIMBS_IN(T); ++i) printf(".%u", _n[i]);
+    for (int i = 1; i < limbs; ++i) printf(".%u", _n[i]);
 }
 
 #endif

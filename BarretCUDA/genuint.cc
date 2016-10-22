@@ -535,6 +535,8 @@ int main(int argc, char ** argv)
     cout << "    typedef uint" << BITS_IN(limbs) << " uintX;\n";
     cout << "#endif\n\n";
 
+    cout << "#define LIMBS_PER_UINTX " << limbs << "\n\n";
+
     //print_make_uint(limbs);
     print_to_ZZ(limbs);
     print_to_ZZ_p(limbs);
