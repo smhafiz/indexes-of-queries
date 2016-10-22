@@ -22,6 +22,8 @@
 #ifndef __BARRET_H_
 #define __BARRET_H_
 
+#include "uint.h"
+
 #include <NTL/vec_vec_ZZ_p.h>
 
 #define MAX_U 16
@@ -33,7 +35,7 @@ struct BarretParams
     BarretParams() : u(MAX_U) {}
     const int u;
     T * d_modulus;
-    T * d_mu;
+    uintXp<T> * d_mu;
     T * d_subtrahends;
     NTL::ZZ l_modulus;
     NTL::ZZ l_mu;

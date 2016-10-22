@@ -19,15 +19,11 @@
 // You should have received a copy of the GNU General Public License
 // along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdio.h>
+#include <string.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <stdint.h>
-#include <stdlib.h>
 #include <chrono>
-#include <string.h>
-#include <ctype.h>
 
 #define BITS_PER_LIMB	(sizeof(uint) * 8)
 #define BITS_IN(limbs)	((limbs) * BITS_PER_LIMB)
@@ -61,18 +57,21 @@ char * r3;
 #define CARRY_IN_FLAG(b)	(b ? "c" : "")
 #define LO_OR_HI(p)		(p.first == HI ? ".hi" : ".lo")
 
-
-#define NUMBER_OF_TEMP_REQUIRED	(((limbs-1)%3) > 0 ? ((limbs-1)/3)+1:((limbs-1)/3))
+#define GET_DEST_REG_Q(i)  	((i+1) % (limbs+1))// ((i + limbs - 3) % (2 * limbs - 3))
 //#define GET_DEST_REG(i)  	(i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
-#define GET_DEST_REG_Q(i)  	((i+NUMBER_OF_TEMP_REQUIRED) % (limbs+NUMBER_OF_TEMP_REQUIRED))// ((i + limbs - 3) % (2 * limbs - 3))
-#define GET_FIRST_REG_Q(p)	(limbs+NUMBER_OF_TEMP_REQUIRED+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
-#define GET_SECOND_REG_Q(i,p)	(2*limbs+NUMBER_OF_TEMP_REQUIRED+i-p.second-p.first)//(3*limbs-3+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
+#define GET_FIRST_REG_Q(p)	(limbs+1+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
+#define GET_SECOND_REG_Q(i,p)	(2*limbs+1+i-p.second-p.first)//(3*limbs-3+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
+/// end get_q
+
+#define NUM_TMP_REGS        (((limbs-1)%3) > 0 ? ((limbs-1)/3)+1:((limbs-1)/3))
+//#define GET_DEST_REG(i)   (i < limbs-1 ? i+2 : i-limbs+1)//(i < limbs-1 ? limbs+i-1 : i-1)
+#define GET_DEST_REG_Q(i)   ((i+NUM_TMP_REGS) % (limbs+NUM_TMP_REGS))// ((i + limbs - 3) % (2 * limbs - 3))
+#define GET_FIRST_REG_Q(p)  (limbs+NUM_TMP_REGS+p.second)//(2*limbs-3+p.second)//(2*limbs-1+p.second)
+#define GET_SECOND_REG_Q(i,p)   (2*limbs+NUM_TMP_REGS+i-p.second-p.first)//(3*limbs-3+i-p.second-p.first)//(3*limbs-1+i-p.second-p.first)
 /// end get_q
 
 #define GET_FIRST_REG_R(p)	(limbs+p.second)
 #define GET_SECOND_REG_R(i,p)	(2*limbs+i-p.second-p.first)
-
-
 
 void wrap(const char * str, int width = 70, const char * afternl = "\t  ")
 {
@@ -222,7 +221,7 @@ static void print_normalize(uint limbs)
 
 static void print_sub(uint limbs)
 {
-    cout << "__device__ __forceinline__ int sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
+    cout << "__device__ __forceinline__ uint sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
@@ -254,7 +253,7 @@ static void print_sub(uint limbs)
     for (int i = 1; i < limbs + 1; i++) oregs << ", \"r\"(_r[" << i << "])";
     oregs << ");\n";
     wrap(oregs.str().c_str());
-    cout << "\treturn _a_hi[0];\n";
+    cout << "    return _a_hi[0];\n";
     cout << "}\n\n";
 }
 
@@ -371,10 +370,9 @@ inline void print_get_q(int limbs)
 	}
     }
 
-    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo,\n\tconst uint" << BITS_IN(limbs-1) << " & a_hi, const uint" << BITS_IN(limbs-1) << " & mu)\n";
+    cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo,\n\tconst uint" << BITS_IN(limbs-1) << " & a_hi, const uintXp<uint" << BITS_IN(limbs-1) << "> & mu)\n";
     cout << "{\n";
-    for (int i = 0; i <NUMBER_OF_TEMP_REQUIRED; i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
-    //cout << "    uint __attribute__((unused)) tmp;\n";
+    for (int i = 0; i < NUM_TMP_REGS; i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
     cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q;\n";
     cout << "    uint * _q = (uint *)&q;\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
@@ -396,26 +394,27 @@ inline void print_get_q(int limbs)
 	{
 	    propagate_q(i, limbs, false, state, pairs);
 	}
-	cout << endl;
     }
 
     // handle the implicit 1-word
     sprintf(r0, "%%%u", GET_DEST_REG_Q(limbs-1));
-    sprintf(r1, "%%%u", limbs+NUMBER_OF_TEMP_REQUIRED);//TODO::CHECK
-    printf("\t\"add.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-    printf("\t//%3s+=%3s\n", &(*r0='r'), &(*r1='r'));
+    sprintf(r1, "%%%u", limbs+NUM_TMP_REGS);
+    sprintf(r2, "%%%u", 3*limbs+NUM_TMP_REGS-1);
+    printf("\t\"mad.lo.cc.u32\t%3s,%3s,%3s,%3s;\\n\\t\"",r0,r1,r2,r0);
+    printf("\t//%3s+=%3s*%3s\n", &(*r0='r'), &(*r1='r'), &(*r2='r'));
     for (int i = 1; i < limbs - 1; i++)
     {
 	sprintf(r0, "%%%u", GET_DEST_REG_Q(limbs-1+i));
-	sprintf(r1, "%%%u", limbs+NUMBER_OF_TEMP_REQUIRED+i);//TODO::CHECK
-	printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-	printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
+	sprintf(r1, "%%%u", limbs+NUM_TMP_REGS+i);
+	sprintf(r2, "%%%u", 3*limbs+NUM_TMP_REGS-1);
+	printf("\t\"madc.lo.cc.u32\t%3s,%3s,%3s,%3s;\\n\\t\"",r0,r1,r2,r0);
+	printf("\t//%3s+=%3s*%3s+c\n", &(*r0='r'), &(*r1='r'), &(*r2='r'));
     }
-
     sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 2));
-    sprintf(r1, "%%%u", 2*limbs-1+NUMBER_OF_TEMP_REQUIRED);//TODO::CHECK
-    printf("\t\"addc.cc.u32\t%3s,%3s,%3s    ;\\n\\t\"",r0,r0,r1);
-    printf("\t//%3s+=%3s+c\n", &(*r0='r'), &(*r1='r'));
+    sprintf(r1, "%%%u", 2*limbs-1+NUM_TMP_REGS);
+    sprintf(r2, "%%%u", 3*limbs+NUM_TMP_REGS-1);
+    printf("\t\"madc.lo.cc.u32\t%3s,%3s,%3s,%2s;\\n\\t\"",r0,r1,r2,r0);
+    printf("\t//%3s+=%3s*%3s+c\n", &(*r0='r'), &(*r1='r'), &(*r2='r'));
     sprintf(r0, "%%%u", GET_DEST_REG_Q(2 * limbs - 1));
     printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
     printf("\t//%3s+=c\n", &(*r0='r'));
@@ -423,14 +422,13 @@ inline void print_get_q(int limbs)
     std::stringstream iregs;
     iregs << "\t: \"+r\"(_q[0])";
     for (int i = 1; i < limbs; i++) iregs << ", \"=r\"(_q[" << i << "])";
-    for (int i = 0; i < NUMBER_OF_TEMP_REQUIRED; i++) iregs << ", \"=r\"(tmp" << i << ")";
-    //iregs << ", \"=r\"(tmp)";
+    for (int i = 0; i < NUM_TMP_REGS; i++) iregs << ", \"=r\"(tmp" << i << ")";
     wrap(iregs.str().c_str());
 
     std::stringstream oregs;
     oregs << "\n\t: \"r\"(_a_lo[" << (limbs-2) << "])";
     for (int i = 0; i < limbs-1; i++) oregs << ", \"r\"(_a_hi[" << i << "])";
-    for (int i = 0; i < limbs-1; i++) oregs << ", \"r\"(_mu[" << i << "])";
+    for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_mu[" << i << "])";
     oregs << ");\n\n";
     wrap(oregs.str().c_str());
     cout << "    return q;\n";
@@ -468,6 +466,7 @@ inline void print_get_r2(uint limbs)
 	    if ((i+j) < limbs) pairs[i+j+1].push_back(make_pair(HI, j));
 	}
     }
+    state[limbs] = 0;
 
     cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs) << "> get_r2(const uintXp<uint" << BITS_IN(limbs) << "> & q,\n\tconst uint" << BITS_IN(limbs) << " & modulus)\n";
     cout << "{\n";

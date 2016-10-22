@@ -18,50 +18,68 @@
 // 
 // You should have received a copy of the GNU General Public License
 // along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
-#include "barret.h"
-#include "uintX.h"
 
 #include <atomic>
 #include <chrono>
 #include <ratio>
 #include <fstream>
 
+#include "barret.h"
+#include "uintX.h"
 
-
-#define NUM_BLOCKS 		1//256
-#define THREADS_PER_BLOCK(n)	((n + NUM_BLOCKS - 1) / NUM_BLOCKS)
+#define NUM_BLOCKS(n) 		(n >= 256 ? 256 : n)
+#define THREADS_PER_BLOCK(n)	((n + NUM_BLOCKS(n) - 1) / NUM_BLOCKS(n))
 
 NTL_CLIENT
 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
+
 template <typename T>
-__global__ void SpMV_kernel(T * response, uint * o, const T * query, const uint nvals,
+ __device__ __forceinline__ void d_barret(uintXp<T> & response,
+	uintX & hi, const uint & overflow, const T * modulus,
+	const uintXp<T> * mu, const T * subtrahends)
+{
+printf("\n  a_lo:  \t"); _print_limbs<T>(response.lo);
+printf("\n  a_hi:  \t"); _print_limbs<T>(hi);
+printf("\n  over:  \t%u", overflow);
+    normalize(response.lo, hi, subtrahends[2*overflow], subtrahends[2*overflow+1]);
+printf("\n  a_lo': \t"); _print_limbs<T>(response.lo);
+printf("\n  a_hi': \t"); _print_limbs<T>(hi);
+    uintXp<T> q = get_q(response.lo, hi, *mu);
+printf("\n  mu:    \t"); _print_limbs<uintXp<T>>(*mu);
+printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo);
+printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi);
+    uintXp<T> r2 = get_r2(q, *modulus);
+printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2);
+    response.hi = sub(response.lo, hi, r2);
+printf("\n  a_lo'':\t"); _print_limbs<T>(response.lo);
+printf("\n  a_hi'':\t"); _print_limbs<uint>(response.hi);
+}
+
+template <typename T>
+__global__ void SpMV_kernel(uintXp<T> * response, const T * query, const uint nvals,
 	const T * vals, const uint ncols, const uint * cols, const uint * rows,
-	const T * modulus, const T * mu, const T * subtrahends)
+	const T * modulus, const uintXp<T> * mu, const T * subtrahends)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= ncols) return;
 
-    response[i] = { 0 };
+    response[i].lo = { 0 };
     T hi = { 0 };
     uint overflow = { 0 };
     for (int j = cols[i]; j < cols[i+1]; ++j)
     {
-	//printf("\nFrom %u to %u\n",cols[i],cols[i+1]);
-
-	mad(response[i], hi, overflow, vals[j], query[rows[j]]);
+	mad(response[i].lo, hi, overflow, vals[j], query[rows[j]]);
     }
-//if (i==1) {printf("\n\n  a_lo:\t"); _print_limbs<T>(response[i]);}
-//if (i==1) {printf("\n  a_hi:\t"); _print_limbs<T>(hi);}
-//if (i==1) {printf("\n  overflow:\t%u", overflow); }
-    normalize(response[i], hi, subtrahends[2*overflow], subtrahends[2*overflow+1]);
-//if (i==1) {printf("\n  a_lo':\t"); _print_limbs<T>(response[i]);}
-//if (i==1) {printf("\n  a_hi':\t"); _print_limbs<T>(hi);}
-    uintXp<T> q = get_q(response[i], hi, *mu);
-//if (i==1) {printf("\n  q:\t"); _print_limbs<T>(q.lo);}
-    uintXp<T> r2 = get_r2(q, *modulus);
-//if (i==1) {printf("\n  r2:\t"); _print_limbs<T>(r2.lo);}
-    o[i] = sub(response[i], hi, r2);
-//if (i==1) {printf("\n  a'':\t"); _print_limbs<T>(response[i]);}
+    d_barret<T>(response[i], hi, overflow, modulus, mu, subtrahends);
 }
 
 template <typename T>
@@ -76,7 +94,7 @@ cout << "\n\nSpMV_ntl:";
 	{
 	    response[i] += to_ZZ_p(matrix.l_vals[j]) * to_ZZ_p(query[matrix.l_rows[j]]);
 	}
-cout << "\n  a''':\t"; print_limbs<T>(response[i]);
+cout << "\n  a''': \t"; print_limbs<T>(response[i]);
     }
 }
 
@@ -89,68 +107,71 @@ cout << "\n\nSpMV_ntl_barret:";
     for (int i = 0; i < matrix.ncols; i++)
     {
 	response_ZZ[i] = NTL::to_ZZ(0);
-        //cout << "\nfrom " << matrix.l_cols[i] << " to " << matrix.l_cols[i+1] << endl;
+
 	for (int j = matrix.l_cols[i]; j < matrix.l_cols[i+1]; ++j)
 	{
 	    response_ZZ[i] += to_ZZ(matrix.l_vals[j]) * to_ZZ(query[matrix.l_rows[j]]);
 	}
-//if (i==1) {cout << "\n\n  a_lo:\t"; print_limbs<T>(response_ZZ[i]);}
-//if (i==1) {cout << "\n\n  a_hi:\t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)));}
-	int overflow = (int)trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_IN(T)), 32);
-//if (i==1) {cout << "\n  overflow:\t" << overflow;}
+if (i==0) {cout << "\n  a_lo:  \t"; print_limbs<T>(response_ZZ[i]);}
+if (i==0) {cout << "\n  a_hi:  \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)));}
+	uint overflow = (uint)trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_IN(T)), BITS_IN(sizeof(uint)));
+if (i==0) {cout << "\n  over:  \t" << overflow;}
 	response_ZZ[i] -= barret.l_subtrahends[overflow];
-//if (i==1) {cout << "\n  a_lo':\t"; print_limbs<T>(response_ZZ[i]);}
-//if (i==1) {cout << "\n  a_hi':\t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)));}
+if (i==0) {cout << "\n  a_lo': \t"; print_limbs<T>(response_ZZ[i]);}
+if (i==0) {cout << "\n  a_hi': \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_IN(T)));}
 
 	NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_IN(T)-1);
 	NTL::ZZ q2 = q1 * barret.l_mu;
 	NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_IN(T)+1);
-//if (i==1) {cout << "\n  q:\t"; print_limbs<T>(q3);}
+if (i==0) {cout << "\n  mu:    \t"; print_limbs<uintXp<T>>(barret.l_mu);}
+//if (i==0) {cout << "\n  q_llo: \t"; print_limbs<T>(q2);}
+if (i==0) {cout << "\n  q_lo:  \t"; print_limbs<T>(q3);}
+if (i==0) {cout << "\n  q_hi:  \t"; print_limbs<uint>(q3 >> BITS_IN(LIMBS_IN(T)));}
 	NTL::ZZ r1 = response_ZZ[i] % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
 	NTL::ZZ r2 = q3 * barret.l_modulus % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
-//if (i==1) {cout << "\n  r2:\t"; print_limbs<T>(r2);}
+if (i==0) {cout << "\n  r2:    \t"; print_limbs<uintXp<T>>(r2);}
 	NTL::ZZ r = (r1 - r2) % power2_ZZ(BITS_IN(LIMBS_IN(T)+1));
-//if (i==1) {cout << "\n  a'':\t"; print_limbs<T>(r);}
+if (i==0) {cout << "\n  a_lo'':\t"; print_limbs<T>(r);}
+if (i==0) {cout << "\n  a_hi'':\t"; print_limbs<uint>(r >> BITS_IN(LIMBS_IN(T)));}
 	response[i] = NTL::to_ZZ_p(r);
-	cout << "\n  a''':\t"; print_limbs<T>(response[i]);
+	cout << "\n  a''':     \t"; print_limbs<T>(response[i]);
     }
 }
 
 template <typename T>
-void SpMV(NTL::vec_ZZ_p & response, T * l_response, const T * l_query,
-	T * d_response,	T * d_query, const cudaStream_t & stream,
+void SpMV(NTL::vec_ZZ_p & response, uintXp<T> * l_response, const T * l_query,
+	uintXp<T> * d_response, T * d_query, const cudaStream_t & stream,
 	const SparseMatrix<T> & matrix, const BarretParams<T> & barret)
 {
 printf("\n\nSpMV_kernel:");
     cudaMemcpy(d_query, l_query, matrix.nrows * sizeof(T),
 	cudaMemcpyHostToDevice);
+//    cudaMemcpyAsync(d_query, l_query, matrix.nrows * sizeof(T),
+//	cudaMemcpyHostToDevice, stream);
 
-    const dim3 Dg(NUM_BLOCKS, 1, 1);
+    const dim3 Dg(NUM_BLOCKS(matrix.ncols), 1, 1);
     const dim3 Db(THREADS_PER_BLOCK(matrix.ncols), 1, 1);
     const size_t Ns = 0;
 
-uint * l_o = (uint *)malloc(matrix.ncols * sizeof(uint)), *d_o;
-cudaMalloc((void**)&d_o, matrix.ncols * sizeof(uint));
-
-    SpMV_kernel<T> <<< Dg, Db, Ns, stream >>> (d_response, d_o, d_query,
+    SpMV_kernel<T> <<< Dg, Db, Ns, stream >>> (d_response, d_query,
 	matrix.nvals, matrix.d_vals, matrix.ncols, matrix.d_cols, matrix.d_rows,
 	barret.d_modulus, barret.d_mu, barret.d_subtrahends);
-//cudaMemcpyAsync(l_o, d_o, matrix.ncols * sizeof(uint), cudaMemcpyDeviceToHost, stream);
-cudaMemcpy(l_o, d_o, matrix.ncols * sizeof(uint), cudaMemcpyDeviceToHost);
 
-//    cudaMemcpyAsync(l_response, d_response, matrix.ncols * sizeof(T),	cudaMemcpyDeviceToHost, stream);
-    cudaMemcpy(l_response, d_response, matrix.ncols * sizeof(T),	cudaMemcpyDeviceToHost);
+gpuErrchk( cudaPeekAtLastError() );
 
+    cudaMemcpy(l_response, d_response, matrix.ncols * sizeof(uintXp<T>),
+	cudaMemcpyDeviceToHost);
+//    cudaMemcpyAsync(l_response, d_response, matrix.ncols * sizeof(uintXp<T>),
+//	cudaMemcpyDeviceToHost, stream);
 
     response.SetLength(matrix.ncols);
     for (int i = 0; i < matrix.ncols; ++i)
     {
-	response[i] = to_ZZ_p<T>(l_response[i]);
-	if (l_o[i]) response[i] += NTL::to_ZZ_p(NTL::to_ZZ(l_o[i]) << BITS_IN(LIMBS_IN(T)));
-	//cout << "\n  o:\t" << l_o[i] << "\n";
-	cout << "\n  a''':\t"; print_limbs<T>(response[i]);
+	response[i] = to_ZZ_p<T>(l_response[i].lo)
+	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_IN(T)));
+cout << "\n  a''': \t"; print_limbs<T>(response[i]);
     }
-	cout << "\n";
+//cout << "\n";
 }
 
 int main(int argc, char ** argv)
@@ -169,23 +190,20 @@ int main(int argc, char ** argv)
 
     struct SparseMatrix<uintX> matrix;
     NTL::ZZ modulus;
+
     initMatrix(argv[1], argv[2], argv[3], modulus, matrix);
     NTL::ZZ_p::init(modulus);
 
     struct BarretParams<uintX> barret;
     initBarret<uintX>(modulus, barret);
 
-    cout << "Modulus length: " << NTL::NumBits(modulus) << " bits, \nmodulus:\t";
-    print_limbs<uintX>(modulus);
-    cout << "\nNNZ Values: " << matrix.nvals << ",\nRows(p): " << matrix.nrows << ",\nColumns (r): " << matrix.ncols << endl;
-
     uintX * l_query, * d_query;
     cudaMallocHost((void**)&l_query, nstreams * matrix.nrows * sizeof(uintX));
     cudaMalloc((void**)&d_query, nstreams * matrix.nrows * sizeof(uintX));
 
-    uintX * l_response, * d_response;
-    cudaMallocHost((void**)&l_response, nstreams * matrix.ncols * sizeof(uintX));
-    cudaMalloc((void**)&d_response, nstreams * matrix.ncols * sizeof(uintX));
+    uintXp<uintX> * l_response, * d_response;
+    cudaMallocHost((void**)&l_response, nstreams * matrix.ncols * sizeof(uintXp<uintX>));
+    cudaMalloc((void**)&d_response, nstreams * matrix.ncols * sizeof(uintXp<uintX>));
 
     cudaStream_t * streams = new cudaStream_t[nstreams];
     for (int i = 0; i < nstreams; ++i) cudaStreamCreate(&streams[i]);
@@ -203,16 +221,17 @@ int main(int argc, char ** argv)
 //    while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
     {
     	int i = cnt % nstreams;
-    	uintX * __l_response = l_response + i * matrix.ncols;
-    	uintX * __d_response = d_response + i * matrix.ncols;
-    	uintX * __l_query    = l_query    + i * matrix.nrows;
-    	uintX * __d_query    = d_query    + i * matrix.nrows;
-//cout << "!!!\n";
-	SpMV_ntl(responses[i], l_query, matrix);
-	SpMV_ntl_barret(responses[i], l_query, matrix, barret);
+    	uintXp<uintX> * __l_response = l_response + i * matrix.ncols;
+    	uintXp<uintX> * __d_response = d_response + i * matrix.ncols;
+    	uintX * __l_query = l_query + i * matrix.nrows;
+    	uintX * __d_query = d_query + i * matrix.nrows;
+
+	SpMV_ntl(responses[0], l_query, matrix);
+	SpMV_ntl_barret(responses[0], l_query, matrix, barret);
 
 	SpMV<uintX>(responses[i], __l_response, __l_query, __d_response,
 	    __d_query, streams[i], matrix, barret);
+
 	std::atomic_fetch_add(&cnt, 1);
 
 	for (int j = 0; j < matrix.nrows; j++)
@@ -223,6 +242,7 @@ int main(int argc, char ** argv)
     }
 
     // cleanup
+    for (int i = 0; i < nstreams; ++i) cudaStreamDestroy(streams[i]);
     delete [] streams;
     responses.kill();
 
@@ -243,26 +263,21 @@ void initMatrix(const char * valfile, const char * rowfile,
 	const char * colfile, NTL::ZZ & modulus,
 	struct SparseMatrix<T> & matrix)
 {
-
-    std::ifstream rowstream(rowfile, std::ifstream::in);
-    rowstream >> matrix.nrows;
-    rowstream >> matrix.nvals;//TODO
-    matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
-    cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
-
     std::ifstream valstream(valfile, std::ifstream::in);
     valstream >> modulus;
+    valstream >> matrix.nvals;
     matrix.l_vals = (T *)malloc(matrix.nvals * sizeof(T));
     cudaMalloc((void**)&matrix.d_vals, matrix.nvals * sizeof(T));
 
-
+    std::ifstream rowstream(rowfile, std::ifstream::in);
+    rowstream >> matrix.nrows;
+    matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
+    cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
 
     std::ifstream colstream(colfile, std::ifstream::in);
     colstream >> matrix.ncols;
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
     cudaMalloc((void**)&matrix.d_cols, (matrix.ncols+1) * sizeof(uint));
-
-
 
     NTL::ZZ_pPush p(modulus);
     for (int i = 0; i < matrix.nvals; i++)
@@ -282,7 +297,6 @@ void initMatrix(const char * valfile, const char * rowfile,
     for (int i = 0; i < matrix.ncols+1; i++)
     {
 	colstream >> matrix.l_cols[i];
-	
     }
     colstream.close();
     cudaMemcpy(matrix.d_cols, matrix.l_cols, (matrix.ncols+1) * sizeof(uint),
@@ -307,8 +321,8 @@ void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret)
     barret.l_mu = NTL::power2_ZZ(2 * BITS_PER_LIMB * LIMBS_IN(T)) / modulus_zz;
     T modulus;
     to_uint<T>(modulus_zz, modulus);
-    T mu;
-    to_uint<T>(barret.l_mu, mu); // loses high order bit (but PTX code compensates)!
+    uintXp<T> mu;
+    to_uint<uintXp<T>>(barret.l_mu, mu);
 
     barret.l_subtrahends.SetLength(barret.u);
     T * subtrahends = (T *)malloc(barret.u * 2 * sizeof(T));
@@ -323,8 +337,8 @@ void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret)
     cudaMalloc((void**)&barret.d_modulus, sizeof(T));
     cudaMemcpy(barret.d_modulus, &modulus, sizeof(T), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void**)&barret.d_mu, sizeof(T));
-    cudaMemcpy(barret.d_mu, &mu, sizeof(T), cudaMemcpyHostToDevice);
+    cudaMalloc((void**)&barret.d_mu, sizeof(uintXp<T>));
+    cudaMemcpy(barret.d_mu, &mu, sizeof(uintXp<T>), cudaMemcpyHostToDevice);
 
     cudaMalloc((void**)&barret.d_subtrahends, 2 * barret.u * sizeof(T));
     cudaMemcpy(barret.d_subtrahends, subtrahends, 2 * barret.u * sizeof(T),
