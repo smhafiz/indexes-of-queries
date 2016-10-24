@@ -31,9 +31,6 @@
 template<typename T>
 struct BarretParams
 {
-    BarretParams(int u) : u(u) {}
-    BarretParams() : u(MAX_U) {}
-    const int u;
     T * d_modulus;
     uintXp<T> * d_mu;
     T * d_subtrahends;
@@ -59,13 +56,14 @@ struct SparseMatrix
 template <typename T>
 void initMatrix(const char * valfile, const char * rowfile,
 	const char * colfile, NTL::ZZ & modulus,
-	struct SparseMatrix<T> & matrix);
+	struct SparseMatrix<T> & matrix, uint & max_overflow);
 
 template <typename T>
 void freeMatrix(struct SparseMatrix<T> & matrix);
 
 template <typename T>
-void initBarret(const NTL::ZZ & modulus_zz, struct BarretParams<T> & barret);
+void initBarret(const NTL::ZZ & modulus_zz, struct BarretParams<T> & barret,
+	const uint max_overflow);
 
 template<typename T>
 void freeBarret(struct BarretParams<T> & barret);
