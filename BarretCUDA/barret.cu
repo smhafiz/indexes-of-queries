@@ -39,24 +39,24 @@ template <typename T>
 	uintX & hi, const uint & overflow, const T * modulus,
 	const uintXp<T> * mu, const T * subtrahends)
 {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-if (i==DEBUG_IDX){printf("\n  a_lo:  \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){printf("\n  a_hi:  \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){printf("\n  over:  \t%u", overflow);}
-if (i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[overflow], LIMBS_PER_UINTX);}
-//if (i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
+//    int i = blockDim.x * blockIdx.x + threadIdx.x;
+//if (i==DEBUG_IDX){printf("\n  a_lo:  \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  a_hi:  \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  over:  \t%u", overflow);}
+//if (i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[overflow], LIMBS_PER_UINTX);}
+////if (i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
     normalize(response.lo, hi, subtrahends[overflow], (overflow ? -1: 0));
-if (i==DEBUG_IDX){printf("\n  a_lo': \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){printf("\n  a_hi': \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  a_lo': \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  a_hi': \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);}
     uintXp<T> q = get_q(response.lo, hi, *mu);
-if (i==DEBUG_IDX){printf("\n  mu:    \t"); _print_limbs<uintXp<T>>(*mu, LIMBS_PER_UINTX+1);}
-if (i==DEBUG_IDX){printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi, 1);}
+//if (i==DEBUG_IDX){printf("\n  mu:    \t"); _print_limbs<uintXp<T>>(*mu, LIMBS_PER_UINTX+1);}
+//if (i==DEBUG_IDX){printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi, 1);}
     uintXp<T> r2 = get_r2(q, *modulus);
-if (i==DEBUG_IDX){printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
+//if (i==DEBUG_IDX){printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
     response.hi = sub(response.lo, hi, r2);
-if (i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(response.hi, 1);}
+//if (i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(response.hi, 1);}
 }
 
 template <typename T>
@@ -67,21 +67,23 @@ __global__ void SpMV_kernel(uintXp<T> * response, const T * query, const uint nv
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= ncols) return;
 
-    response[i].lo = { 0 };
-    T hi = { 0 };
+    uintXp<T> res_lo = { 0 };
+    T res_hi = { 0 };
     uint overflow = { 0 };
     for (int j = cols[i]; j < cols[i+1]; ++j)
     {
-	mad(response[i].lo, hi, overflow, vals[j], query[rows[j]]);
+	mad(res_lo.lo, res_hi, overflow, vals[j], query[rows[j]]);
     }
-    d_barret<T>(response[i], hi, overflow, modulus, mu, subtrahends);
+    d_barret<T>(res_lo, res_hi, overflow, modulus, mu, subtrahends);
+    response[i].lo = res_lo.lo;
+    response[i].hi = res_lo.hi;
 }
 
 template <typename T>
 void SpMV_ntl(NTL::vec_ZZ_p & response, const T * query,
 	const SparseMatrix<T> & matrix)
 {
-if (DEBUG_IDX>=0){std::cout << "\n\nSpMV_ntl:";}
+//if (DEBUG_IDX>=0){std::cout << "\n\nSpMV_ntl:";}
     for (int i = 0; i < matrix.ncols; i++)
     {
 	response[i] = NTL::to_ZZ_p(0);
@@ -89,7 +91,7 @@ if (DEBUG_IDX>=0){std::cout << "\n\nSpMV_ntl:";}
 	{
 	    response[i] += to_ZZ_p(matrix.l_vals[j]) * to_ZZ_p(query[matrix.l_rows[j]]);
 	}
-if (i==DEBUG_IDX){std::cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
     }
 }
 
@@ -97,7 +99,7 @@ template <typename T>
 void SpMV_ntl_barret(NTL::vec_ZZ_p & response, const T * query,
 	const SparseMatrix<T> & matrix, struct BarretParams<T> & barret)
 {
-if (DEBUG_IDX>=0){std::cout << "\n\nSpMV_ntl_barret:";}
+//if (DEBUG_IDX>=0){std::cout << "\n\nSpMV_ntl_barret:";}
     NTL::vec_ZZ response_ZZ(INIT_SIZE, matrix.ncols);
     for (int i = 0; i < matrix.ncols; i++)
     {
@@ -107,29 +109,29 @@ if (DEBUG_IDX>=0){std::cout << "\n\nSpMV_ntl_barret:";}
 	{
 	    response_ZZ[i] += to_ZZ(matrix.l_vals[j]) * to_ZZ(query[matrix.l_rows[j]]);
 	}
-if (i==DEBUG_IDX){std::cout << "\n  a_lo:  \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){std::cout << "\n  a_hi:  \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a_lo:  \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a_hi:  \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 	uint overflow = (uint)trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_PER_UINTX), BITS_IN(sizeof(uint)));
-if (i==DEBUG_IDX){std::cout << "\n  over:  \t" << overflow;}
-if (i==DEBUG_IDX){std::cout << "\n  sub_lo:\t"; print_limbs<T>(barret.l_subtrahends[overflow], LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){std::cout << "\n  sub_hi:\t"; print_limbs<T>(barret.l_subtrahends[overflow] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  over:  \t" << overflow;}
+//if (i==DEBUG_IDX){std::cout << "\n  sub_lo:\t"; print_limbs<T>(barret.l_subtrahends[overflow], LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  sub_hi:\t"; print_limbs<T>(barret.l_subtrahends[overflow] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 	response_ZZ[i] -= barret.l_subtrahends[overflow];
-if (i==DEBUG_IDX){std::cout << "\n  a_lo': \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){std::cout << "\n  a_hi': \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a_lo': \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a_hi': \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 	NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX-1);
 	NTL::ZZ q2 = q1 * barret.l_mu;
 	NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_PER_UINTX+1);
-if (i==DEBUG_IDX){std::cout << "\n  mu:    \t"; print_limbs<uintXp<T>>(barret.l_mu, LIMBS_PER_UINTX+1);}
-if (i==DEBUG_IDX){std::cout << "\n  q_lo:  \t"; print_limbs<T>(q3, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){std::cout << "\n  q_hi:  \t"; print_limbs<uint>(q3 >> BITS_IN(LIMBS_PER_UINTX), 1);}
+//if (i==DEBUG_IDX){std::cout << "\n  mu:    \t"; print_limbs<uintXp<T>>(barret.l_mu, LIMBS_PER_UINTX+1);}
+//if (i==DEBUG_IDX){std::cout << "\n  q_lo:  \t"; print_limbs<T>(q3, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  q_hi:  \t"; print_limbs<uint>(q3 >> BITS_IN(LIMBS_PER_UINTX), 1);}
 	NTL::ZZ r1 = response_ZZ[i] % power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
 	NTL::ZZ r2 = q3 * barret.l_modulus % power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
-if (i==DEBUG_IDX){std::cout << "\n  r2:    \t"; print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
+//if (i==DEBUG_IDX){std::cout << "\n  r2:    \t"; print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
 	NTL::ZZ r = (r1 - r2) % power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
-if (i==DEBUG_IDX){std::cout << "\n  a_lo'':\t"; print_limbs<T>(r, LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){std::cout << "\n  a_hi'':\t"; print_limbs<uint>(r >> BITS_IN(LIMBS_PER_UINTX), 1);}
+//if (i==DEBUG_IDX){std::cout << "\n  a_lo'':\t"; print_limbs<T>(r, LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a_hi'':\t"; print_limbs<uint>(r >> BITS_IN(LIMBS_PER_UINTX), 1);}
 	response[i] = NTL::to_ZZ_p(r);
-if (i==DEBUG_IDX){std::cout << "\n  a''':     \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){std::cout << "\n  a''':     \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
     }
 }
 
@@ -138,7 +140,7 @@ void SpMV(NTL::vec_ZZ_p & response, uintXp<T> * l_response, const T * l_query,
 	uintXp<T> * d_response, T * d_query, const cudaStream_t & stream,
 	const SparseMatrix<T> & matrix, const BarretParams<T> & barret)
 {
-if (DEBUG_IDX>=0){printf("\n\nSpMV_kernel:");}
+//if (DEBUG_IDX>=0){printf("\n\nSpMV_kernel:");}
 //    cudaMemcpy(d_query, l_query, matrix.nrows * sizeof(T),
 //	cudaMemcpyHostToDevice);
     cudaMemcpyAsync(d_query, l_query, matrix.nrows * sizeof(T),
@@ -163,7 +165,7 @@ if (DEBUG_IDX>=0){printf("\n\nSpMV_kernel:");}
     {
 	response[i] = to_ZZ_p<T>(l_response[i].lo)
 	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_PER_UINTX));
-if (i==DEBUG_IDX){std::cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX); std::cout << "\n";}
+//if (i==DEBUG_IDX){std::cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX); std::cout << "\n";}
     }
 }
 
@@ -212,28 +214,30 @@ int main(int argc, char ** argv)
     std::atomic<int> cnt = ATOMIC_VAR_INIT(0);
     auto start = std::chrono::high_resolution_clock::now();
     std::chrono::nanoseconds onesec{1000000000};
-//    while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
-    {
-    	int i = cnt % nstreams;
-    	uintXp<uintX> * __l_response = l_response + i * matrix.ncols;
-    	uintXp<uintX> * __d_response = d_response + i * matrix.ncols;
-    	uintX * __l_query = l_query + i * matrix.nrows;
-    	uintX * __d_query = d_query + i * matrix.nrows;
 
-	SpMV_ntl(responses[0], l_query, matrix);
-	SpMV_ntl_barret(responses[0], l_query, matrix, barret);
+    while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
+    {
+	int i = cnt % nstreams;
+
+	uintXp<uintX> * __l_response = l_response + i * matrix.ncols;
+	uintXp<uintX> * __d_response = d_response + i * matrix.ncols;
+	uintX * __l_query = l_query + i * matrix.nrows;
+	uintX * __d_query = d_query + i * matrix.nrows;
 
 	SpMV<uintX>(responses[i], __l_response, __l_query, __d_response,
 	    __d_query, streams[i], matrix, barret);
-
 	std::atomic_fetch_add(&cnt, 1);
+
+//	SpMV_ntl(responses[0], l_query, matrix);
+//	SpMV_ntl_barret(responses[0], l_query, matrix, barret);
 
 	for (int j = 0; j < matrix.nrows; j++)
 	{
 	    to_uint<uintX>(NTL::rep(NTL::random_ZZ_p()), __l_query[j]);
 	}
-
     }
+
+    std::cout << "Count: " << cnt << "\n";
 
     // cleanup
     for (int i = 0; i < nstreams; ++i) cudaStreamDestroy(streams[i]);

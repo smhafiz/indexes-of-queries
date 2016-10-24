@@ -23,7 +23,7 @@ LIMBS=4
 
 NVCC=nvcc
 CXXFLAGS=-Wall -g -O2 -pedantic -std=c++11
-NVCCFLAGS=-std=c++11 -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__
+NVCCFLAGS=-std=c++11 -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__ -Xcompiler -fopenmp -lpthread
 LDLIBS=-lntl -lgmp -L$(HOME)/sw/lib -I$(HOME)/sw/include
 
 barret: barret.cu barret.h uint.h uintX.h
