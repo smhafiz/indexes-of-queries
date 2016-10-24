@@ -159,19 +159,19 @@ void SpMV(NTL::vec_ZZ_p & response, uintXp<T> * l_response, const T * l_query,
     cudaMemcpyAsync(l_response, d_response, matrix.ncols * sizeof(uintXp<T>),
 	cudaMemcpyDeviceToHost, stream);
 
-    cudaStreamSynchronize(stream);
-    response.SetLength(matrix.ncols);
-    for (int i = 0; i < matrix.ncols; ++i)
-    {
-	response[i] = to_ZZ_p<T>(l_response[i].lo)
-	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_PER_UINTX));
+//    cudaStreamSynchronize(stream);
+//    response.SetLength(matrix.ncols);
+//    for (int i = 0; i < matrix.ncols; ++i)
+//    {
+//	response[i] = to_ZZ_p<T>(l_response[i].lo)
+//	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_PER_UINTX));
 //if (i==DEBUG_IDX){std::cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX); std::cout << "\n";}
-    }
+//    }
 }
 
 int main(int argc, char ** argv)
 {
-    int nstreams = 1;
+    int nstreams = 4;
 
     if (argc < 3)
     {
@@ -217,23 +217,25 @@ int main(int argc, char ** argv)
 
     while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
     {
-	int i = cnt % nstreams;
-
-	uintXp<uintX> * __l_response = l_response + i * matrix.ncols;
-	uintXp<uintX> * __d_response = d_response + i * matrix.ncols;
-	uintX * __l_query = l_query + i * matrix.nrows;
-	uintX * __d_query = d_query + i * matrix.nrows;
-
-	SpMV<uintX>(responses[i], __l_response, __l_query, __d_response,
-	    __d_query, streams[i], matrix, barret);
-	std::atomic_fetch_add(&cnt, 1);
-
-//	SpMV_ntl(responses[0], l_query, matrix);
-//	SpMV_ntl_barret(responses[0], l_query, matrix, barret);
-
-	for (int j = 0; j < matrix.nrows; j++)
+	//int i = cnt % nstreams;
+	#pragma omp parallel
+	for (int i = 0; i < nstreams; i++)
 	{
-	    to_uint<uintX>(NTL::rep(NTL::random_ZZ_p()), __l_query[j]);
+	    uintXp<uintX> * __l_response = l_response + i * matrix.ncols;
+	    uintXp<uintX> * __d_response = d_response + i * matrix.ncols;
+	    uintX * __l_query = l_query + i * matrix.nrows;
+	    uintX * __d_query = d_query + i * matrix.nrows;		
+
+	    SpMV<uintX>(responses[i], __l_response, __l_query, __d_response,
+		__d_query, streams[i], matrix, barret);
+//	    SpMV_ntl(responses[i], __l_query, matrix);
+//	    SpMV_ntl_barret(responses[i], __l_query, matrix, barret);
+
+	    std::atomic_fetch_add(&cnt, 1);
+	    for (int j = 0; j < matrix.nrows; j++)
+	    {
+		to_uint<uintX>(NTL::rep(NTL::random_ZZ_p()), __l_query[j]);
+	    }
 	}
     }
 
