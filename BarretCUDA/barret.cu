@@ -43,9 +43,9 @@ template <typename T>
 if (i==DEBUG_IDX){printf("\n  a_lo:  \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
 if (i==DEBUG_IDX){printf("\n  a_hi:  \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);}
 if (i==DEBUG_IDX){printf("\n  over:  \t%u", overflow);}
-if (i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[2*overflow], LIMBS_PER_UINTX);}
-if (i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
-    normalize(response.lo, hi, subtrahends[2*overflow], subtrahends[2*overflow+1]);
+if (i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[overflow], LIMBS_PER_UINTX);}
+//if (i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
+    normalize(response.lo, hi, subtrahends[overflow], (overflow ? -1: 0));
 if (i==DEBUG_IDX){printf("\n  a_lo': \t"); _print_limbs<T>(response.lo, LIMBS_PER_UINTX);}
 if (i==DEBUG_IDX){printf("\n  a_hi': \t"); _print_limbs<T>(hi, LIMBS_PER_UINTX);}
     uintXp<T> q = get_q(response.lo, hi, *mu);
@@ -345,15 +345,15 @@ void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret,
     to_uint<uintXp<T>>(barret.l_mu, mu);
 
     barret.l_subtrahends.SetLength(max_overflow+1);
-    T * subtrahends = (T *)malloc((max_overflow+1) * 2 * sizeof(T));
+    T * subtrahends = (T *)malloc((max_overflow+1) * sizeof(T));
     for (int i = 0; i <= max_overflow; ++i)
     {
 	barret.l_subtrahends[i] = ((NTL::to_ZZ(i) << (2*BITS_PER_LIMB*LIMBS_PER_UINTX))
 	    / modulus_zz) * modulus_zz;
-	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i], barret.l_subtrahends[i],
+	NTL::BytesFromZZ((unsigned char *)&subtrahends[i], barret.l_subtrahends[i],
 	    LIMBS_PER_UINTX * sizeof(uint));
-	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i+1], barret.l_subtrahends[i] >> (BITS_PER_LIMB*LIMBS_PER_UINTX),
-	    LIMBS_PER_UINTX * sizeof(uint));
+//	NTL::BytesFromZZ((unsigned char *)&subtrahends[2*i+1], barret.l_subtrahends[i] >> (BITS_PER_LIMB*LIMBS_PER_UINTX),
+//	    LIMBS_PER_UINTX * sizeof(uint));
     }
 
     cudaMalloc((void**)&barret.d_modulus, sizeof(T));
@@ -362,8 +362,8 @@ void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret,
     cudaMalloc((void**)&barret.d_mu, sizeof(uintXp<T>));
     cudaMemcpy(barret.d_mu, &mu, sizeof(uintXp<T>), cudaMemcpyHostToDevice);
 
-    cudaMalloc((void**)&barret.d_subtrahends, 2 * (max_overflow+1) * sizeof(T));
-    cudaMemcpy(barret.d_subtrahends, subtrahends, 2 * (max_overflow+1) * sizeof(T),
+    cudaMalloc((void**)&barret.d_subtrahends, (max_overflow+1) * sizeof(T));
+    cudaMemcpy(barret.d_subtrahends, subtrahends, (max_overflow+1) * sizeof(T),
 	cudaMemcpyHostToDevice);
 
     free(subtrahends);

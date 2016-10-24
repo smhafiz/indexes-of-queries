@@ -182,12 +182,11 @@ static void print_to_uint(uint limbs)
 
 static void print_normalize(uint limbs)
 {
-    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uint" << BITS_IN(limbs) << " & s_lo, const uint" << BITS_IN(limbs) << " & s_hi)\n";
+    cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uint" << BITS_IN(limbs) << " & s_lo, const uint s_hi)\n";
     cout << "{\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
     cout << "    const uint * _s_lo = (uint *)&s_lo;\n";
-    cout << "    const uint * _s_hi = (uint *)&s_hi;\n";
     sprintf(r0, "%%%u", 0);
     sprintf(r2, "%%%u", 2 * limbs);
     printf("    asm(\"sub.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
@@ -195,12 +194,12 @@ static void print_normalize(uint limbs)
     for (int i = 1; i < 2 * limbs - 1; ++i)
     {
 	sprintf(r0, "%%%u", i);
-	sprintf(r2, "%%%u", 2 * limbs + i);
+	sprintf(r2, "%%%u", (i > limbs) ? 3 * limbs : 2 * limbs + i);
 	printf("\t\"subc.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
 	printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
     }
     sprintf(r0, "%%%u", 2 * limbs - 1);
-    sprintf(r2, "%%%u", 4 * limbs - 1);
+    sprintf(r2, "%%%u", 3 * limbs);
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
     
@@ -213,8 +212,7 @@ static void print_normalize(uint limbs)
     std::stringstream oregs;
     oregs << "\n\t: \"r\"(_s_lo[0])";
     for (int i = 1; i < limbs; i++) oregs << ", \"r\"(_s_lo[" << i << "])";
-    for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_s_hi[" << i << "])";
-    oregs << ");\n";
+    oregs << ", \"r\"(s_hi));\n";
     wrap(oregs.str().c_str());
     cout << "}\n\n";
 }
