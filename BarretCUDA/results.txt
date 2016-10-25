@@ -1,0 +1,3518 @@
+p: 2^2, r: 2^18, u: 1, limbs: 2
+seed: 1477385175
+Count: 5664
+Application 7000252 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~2550, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 3
+seed: 1477385198
+Count: 5664
+Application 7000253 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~2558, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 4
+seed: 1477385219
+Count: 4880
+Application 7000254 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~2567, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 5
+seed: 1477385244
+Count: 4608
+Application 7000255 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~2578, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 6
+seed: 1477385271
+Count: 4608
+Application 7000256 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~2590, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 7
+seed: 1477385299
+Count: 4608
+Application 7000257 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~2596, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 8
+seed: 1477385326
+Count: 4608
+Application 7000258 resources: utime ~8s, stime ~2s, Rss ~628868, inblocks ~2609, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 9
+seed: 1477385354
+Count: 4480
+Application 7000259 resources: utime ~10s, stime ~3s, Rss ~694612, inblocks ~2625, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 10
+seed: 1477385385
+Count: 4480
+Application 7000260 resources: utime ~10s, stime ~3s, Rss ~729220, inblocks ~2641, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 11
+seed: 1477385415
+Count: 4480
+Application 7000261 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~2658, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 12
+seed: 1477385446
+Count: 4480
+Application 7000262 resources: utime ~10s, stime ~3s, Rss ~767128, inblocks ~2564, outblocks ~4438
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 13
+seed: 1477385476
+Count: 4400
+Application 7000263 resources: utime ~13s, stime ~3s, Rss ~867344, inblocks ~2568, outblocks ~4465
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 14
+seed: 1477385511
+Count: 4400
+Application 7000264 resources: utime ~13s, stime ~3s, Rss ~867464, inblocks ~2571, outblocks ~4492
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 15
+seed: 1477385545
+Count: 4400
+Application 7000265 resources: utime ~13s, stime ~3s, Rss ~902440, inblocks ~2574, outblocks ~4521
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 16
+seed: 1477385580
+Count: 4400
+Application 7000266 resources: utime ~13s, stime ~3s, Rss ~934212, inblocks ~2776, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 17
+seed: 1477385613
+Count: 4352
+Application 7000267 resources: utime ~15s, stime ~3s, Rss ~1002616, inblocks ~2582, outblocks ~4582
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 18
+seed: 1477385651
+Count: 4352
+Application 7000268 resources: utime ~15s, stime ~3s, Rss ~1037548, inblocks ~2586, outblocks ~4623
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 19
+seed: 1477385689
+Count: 4352
+Application 7000269 resources: utime ~15s, stime ~3s, Rss ~1072268, inblocks ~2588, outblocks ~4657
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 20
+seed: 1477385727
+Count: 4352
+Application 7000270 resources: utime ~15s, stime ~3s, Rss ~1072420, inblocks ~2594, outblocks ~4699
+**************************
+p: 2^2, r: 2^18, u: 1, limbs: 21
+seed: 1477385766
+Count: 4320
+Application 7000271 resources: utime ~18s, stime ~3s, Rss ~1172664, inblocks ~2602, outblocks ~4744
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 2
+seed: 1477385806
+Count: 5664
+Application 7000272 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3063, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 3
+seed: 1477385831
+Count: 5664
+Application 7000273 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3070, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 4
+seed: 1477385855
+Count: 4880
+Application 7000274 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3079, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 5
+seed: 1477385881
+Count: 4608
+Application 7000275 resources: utime ~8s, stime ~2s, Rss ~559136, inblocks ~3091, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 6
+seed: 1477385911
+Count: 4608
+Application 7000276 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3103, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 7
+seed: 1477385940
+Count: 4608
+Application 7000277 resources: utime ~8s, stime ~2s, Rss ~594004, inblocks ~3109, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 8
+seed: 1477385969
+Count: 4608
+Application 7000280 resources: utime ~8s, stime ~2s, Rss ~628868, inblocks ~3122, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 9
+seed: 1477385998
+Count: 4480
+Application 7000283 resources: utime ~10s, stime ~2s, Rss ~694612, inblocks ~3138, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 10
+seed: 1477386030
+Count: 4480
+Application 7000286 resources: utime ~10s, stime ~3s, Rss ~729216, inblocks ~3154, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 11
+seed: 1477386061
+Count: 4480
+Application 7000287 resources: utime ~10s, stime ~2s, Rss ~764076, inblocks ~3172, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 12
+seed: 1477386092
+Count: 4480
+Application 7000288 resources: utime ~10s, stime ~3s, Rss ~764108, inblocks ~3194, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 13
+seed: 1477386125
+Count: 4400
+Application 7000289 resources: utime ~13s, stime ~3s, Rss ~864448, inblocks ~3218, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 14
+seed: 1477386162
+Count: 4400
+Application 7000290 resources: utime ~13s, stime ~3s, Rss ~864460, inblocks ~3241, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 15
+seed: 1477386196
+Count: 4400
+Application 7000291 resources: utime ~13s, stime ~3s, Rss ~899344, inblocks ~3265, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 16
+seed: 1477386230
+Count: 4400
+Application 7000292 resources: utime ~13s, stime ~3s, Rss ~934216, inblocks ~3291, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 17
+seed: 1477386263
+Count: 4352
+Application 7000293 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3318, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 18
+seed: 1477386300
+Count: 4352
+Application 7000294 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3345, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 19
+seed: 1477386337
+Count: 4352
+Application 7000295 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3376, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 20
+seed: 1477386374
+Count: 4352
+Application 7000296 resources: utime ~15s, stime ~3s, Rss ~1069500, inblocks ~3407, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 3, limbs: 21
+seed: 1477386410
+Count: 4320
+Application 7000297 resources: utime ~17s, stime ~3s, Rss ~1169856, inblocks ~3444, outblocks ~4394
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 2
+seed: 1477386450
+Count: 5664
+Application 7000298 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3063, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 3
+seed: 1477386472
+Count: 5664
+Application 7000299 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3071, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 4
+seed: 1477386496
+Count: 4880
+Application 7000300 resources: utime ~6s, stime ~2s, Rss ~458796, inblocks ~3080, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 5
+seed: 1477386522
+Count: 4608
+Application 7000301 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3092, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 6
+seed: 1477386551
+Count: 4608
+Application 7000302 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3104, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 7
+seed: 1477386582
+Count: 4608
+Application 7000303 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3109, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 8
+seed: 1477386610
+Count: 4608
+Application 7000304 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3123, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 9
+seed: 1477386639
+Count: 4480
+Application 7000305 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3139, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 10
+seed: 1477386671
+Count: 4480
+Application 7000306 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3155, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 11
+seed: 1477386703
+Count: 4480
+Application 7000307 resources: utime ~10s, stime ~3s, Rss ~764084, inblocks ~3173, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 12
+seed: 1477386735
+Count: 4480
+Application 7000308 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3196, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 13
+seed: 1477386768
+Count: 4400
+Application 7000309 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3220, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 14
+seed: 1477386802
+Count: 4400
+Application 7000310 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3241, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 15
+seed: 1477386837
+Count: 4400
+Application 7000311 resources: utime ~12s, stime ~3s, Rss ~899348, inblocks ~3268, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 16
+seed: 1477386869
+Count: 4400
+Application 7000312 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3294, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 17
+seed: 1477386904
+Count: 4352
+Application 7000313 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3320, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 18
+seed: 1477386941
+Count: 4352
+Application 7000314 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3348, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 19
+seed: 1477386979
+Count: 4352
+Application 7000315 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3376, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 20
+seed: 1477387016
+Count: 4352
+Application 7000316 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3409, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 5, limbs: 21
+seed: 1477387054
+Count: 4320
+Application 7000317 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~3447, outblocks ~4394
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 2
+seed: 1477387095
+Count: 5664
+Application 7000318 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3063, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 3
+seed: 1477387121
+Count: 5664
+Application 7000319 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3071, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 4
+seed: 1477387146
+Count: 4880
+Application 7000320 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3081, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 5
+seed: 1477387172
+Count: 4608
+Application 7000321 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3092, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 6
+seed: 1477387203
+Count: 4608
+Application 7000322 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3105, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 7
+seed: 1477387233
+Count: 4608
+Application 7000323 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3111, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 8
+seed: 1477387263
+Count: 4608
+Application 7000324 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3124, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 9
+seed: 1477387293
+Count: 4480
+Application 7000325 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3141, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 10
+seed: 1477387324
+Count: 4480
+Application 7000326 resources: utime ~10s, stime ~3s, Rss ~729220, inblocks ~3157, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 11
+seed: 1477387356
+Count: 4480
+Application 7000327 resources: utime ~10s, stime ~3s, Rss ~764084, inblocks ~3174, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 12
+seed: 1477387387
+Count: 4480
+Application 7000328 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3197, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 13
+seed: 1477387418
+Count: 4400
+Application 7000329 resources: utime ~12s, stime ~3s, Rss ~864452, inblocks ~3221, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 14
+seed: 1477387452
+Count: 4400
+Application 7000330 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3243, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 15
+seed: 1477387486
+Count: 4400
+Application 7000331 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3269, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 16
+seed: 1477387521
+Count: 4400
+Application 7000334 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3296, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 17
+seed: 1477387554
+Count: 4352
+Application 7000335 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3322, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 18
+seed: 1477387592
+Count: 4352
+Application 7000336 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3350, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 19
+seed: 1477387629
+Count: 4352
+Application 7000337 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3379, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 20
+seed: 1477387666
+Count: 4352
+Application 7000338 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3412, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 7, limbs: 21
+seed: 1477387703
+Count: 4320
+Application 7000339 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~3447, outblocks ~4394
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 2
+seed: 1477387741
+Count: 5664
+Application 7000340 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3064, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 3
+seed: 1477387764
+Count: 5664
+Application 7000343 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3072, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 4
+seed: 1477387786
+Count: 4880
+Application 7000344 resources: utime ~6s, stime ~2s, Rss ~458796, inblocks ~3081, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 5
+seed: 1477387811
+Count: 4608
+Application 7000345 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3093, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 6
+seed: 1477387840
+Count: 4608
+Application 7000346 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3106, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 7
+seed: 1477387868
+Count: 4608
+Application 7000347 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3110, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 8
+seed: 1477387896
+Count: 4608
+Application 7000348 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3125, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 9
+seed: 1477387924
+Count: 4480
+Application 7000349 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3142, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 10
+seed: 1477387954
+Count: 4480
+Application 7000350 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3159, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 11
+seed: 1477387986
+Count: 4480
+Application 7000351 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3176, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 12
+seed: 1477388017
+Count: 4480
+Application 7000352 resources: utime ~10s, stime ~3s, Rss ~764112, inblocks ~3200, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 13
+seed: 1477388049
+Count: 4400
+Application 7000353 resources: utime ~12s, stime ~3s, Rss ~864452, inblocks ~3222, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 14
+seed: 1477388082
+Count: 4400
+Application 7000354 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3247, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 15
+seed: 1477388116
+Count: 4400
+Application 7000355 resources: utime ~12s, stime ~3s, Rss ~899348, inblocks ~3271, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 16
+seed: 1477388151
+Count: 4400
+Application 7000356 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3294, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 17
+seed: 1477388185
+Count: 4352
+Application 7000357 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3324, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 18
+seed: 1477388221
+Count: 4352
+Application 7000358 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3352, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 19
+seed: 1477388259
+Count: 4352
+Application 7000359 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3382, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 20
+seed: 1477388297
+Count: 4352
+Application 7000360 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3414, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 9, limbs: 21
+seed: 1477388335
+Count: 4320
+Application 7000361 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~3451, outblocks ~4394
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 2
+seed: 1477388373
+Count: 5664
+Application 7000362 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3064, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 3
+seed: 1477388395
+Count: 5664
+Application 7000363 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3072, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 4
+seed: 1477388417
+Count: 4880
+Application 7000364 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3082, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 5
+seed: 1477388443
+Count: 4608
+Application 7000365 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3094, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 6
+seed: 1477388471
+Count: 4608
+Application 7000366 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3106, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 7
+seed: 1477388500
+Count: 4608
+Application 7000367 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3113, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 8
+seed: 1477388528
+Count: 4608
+Application 7000368 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3126, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 9
+seed: 1477388557
+Count: 4480
+Application 7000369 resources: utime ~10s, stime ~3s, Rss ~694616, inblocks ~3142, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 10
+seed: 1477388587
+Count: 4480
+Application 7000370 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3159, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 11
+seed: 1477388618
+Count: 4480
+Application 7000371 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3178, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 12
+seed: 1477388650
+Count: 4480
+Application 7000372 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3200, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 13
+seed: 1477388681
+Count: 4400
+Application 7000373 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3223, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 14
+seed: 1477388715
+Count: 4400
+Application 7000374 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3247, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 15
+seed: 1477388748
+Count: 4400
+Application 7000375 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3272, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 16
+seed: 1477388781
+Count: 4400
+Application 7000376 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3299, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 17
+seed: 1477388816
+Count: 4352
+Application 7000377 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3328, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 18
+seed: 1477388852
+Count: 4352
+Application 7000378 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3355, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 19
+seed: 1477388888
+Count: 4352
+Application 7000379 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3386, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 20
+seed: 1477388925
+Count: 4352
+Application 7000380 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3417, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 11, limbs: 21
+seed: 1477388962
+Count: 4320
+Application 7000381 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~3452, outblocks ~4394
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 2
+seed: 1477389000
+Count: 5664
+Application 7000382 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3064, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 3
+seed: 1477389023
+Count: 5664
+Application 7000383 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3073, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 4
+seed: 1477389046
+Count: 4880
+Application 7000384 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3083, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 5
+seed: 1477389072
+Count: 4608
+Application 7000385 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3094, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 6
+seed: 1477389100
+Count: 4608
+Application 7000386 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3107, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 7
+seed: 1477389129
+Count: 4608
+Application 7000387 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3113, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 8
+seed: 1477389158
+Count: 4608
+Application 7000388 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3127, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 9
+seed: 1477389188
+Count: 4480
+Application 7000389 resources: utime ~10s, stime ~3s, Rss ~694620, inblocks ~3145, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 10
+seed: 1477389219
+Count: 4480
+Application 7000390 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3161, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 11
+seed: 1477389250
+Count: 4480
+Application 7000391 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3178, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 12
+seed: 1477389284
+Count: 4480
+Application 7000392 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3202, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 13
+seed: 1477389315
+Count: 4400
+Application 7000393 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3225, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 14
+seed: 1477389348
+Count: 4400
+Application 7000394 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3247, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 15
+seed: 1477389382
+Count: 4400
+Application 7000395 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3276, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 16
+seed: 1477389417
+Count: 4400
+Application 7000396 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3301, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 17
+seed: 1477389452
+Count: 4352
+Application 7000397 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3329, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 18
+seed: 1477389489
+Count: 4352
+Application 7000398 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3356, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 19
+seed: 1477389526
+Count: 4352
+Application 7000399 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3387, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 20
+seed: 1477389564
+Count: 4352
+Application 7000400 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3418, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 13, limbs: 21
+seed: 1477389601
+Count: 4320
+Application 7000401 resources: utime ~18s, stime ~3s, Rss ~1169864, inblocks ~3457, outblocks ~4394
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 2
+seed: 1477389641
+Count: 5664
+Application 7000402 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3577, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 3
+seed: 1477389664
+Count: 5664
+Application 7000403 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3585, outblocks ~4257
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 4
+seed: 1477389688
+Count: 4880
+Application 7000404 resources: utime ~6s, stime ~2s, Rss ~458796, inblocks ~3595, outblocks ~4265
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 5
+seed: 1477389715
+Count: 4608
+Application 7000405 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3607, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 6
+seed: 1477389744
+Count: 4608
+Application 7000406 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3620, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 7
+seed: 1477389773
+Count: 4608
+Application 7000407 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3626, outblocks ~4266
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 8
+seed: 1477389802
+Count: 4608
+Application 7000408 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3640, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 9
+seed: 1477389830
+Count: 4480
+Application 7000409 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3658, outblocks ~4274
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 10
+seed: 1477389861
+Count: 4480
+Application 7000410 resources: utime ~10s, stime ~3s, Rss ~729224, inblocks ~3673, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 11
+seed: 1477389892
+Count: 4480
+Application 7000411 resources: utime ~10s, stime ~3s, Rss ~764088, inblocks ~3692, outblocks ~4282
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 12
+seed: 1477389924
+Count: 4480
+Application 7000412 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3715, outblocks ~4298
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 13
+seed: 1477389955
+Count: 4400
+Application 7000413 resources: utime ~13s, stime ~3s, Rss ~864448, inblocks ~3738, outblocks ~4306
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 14
+seed: 1477389988
+Count: 4400
+Application 7000414 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3762, outblocks ~4314
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 15
+seed: 1477390023
+Count: 4400
+Application 7000415 resources: utime ~13s, stime ~3s, Rss ~899344, inblocks ~3274, outblocks ~4322
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 16
+seed: 1477390056
+Count: 4400
+Application 7000416 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3817, outblocks ~4330
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 17
+seed: 1477390089
+Count: 4352
+Application 7000417 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3840, outblocks ~4338
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 18
+seed: 1477390126
+Count: 4352
+Application 7000418 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3870, outblocks ~4354
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 19
+seed: 1477390163
+Count: 4352
+Application 7000419 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3902, outblocks ~4362
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 20
+seed: 1477390199
+Count: 4352
+Application 7000420 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3934, outblocks ~4378
+**************************
+p: 2^2, r: 2^18, u: 15, limbs: 21
+seed: 1477390235
+Count: 4320
+Application 7000421 resources: utime ~17s, stime ~4s, Rss ~1169864, inblocks ~3972, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 2
+seed: 1477390272
+Count: 5664
+Application 7000422 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3062, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 3
+seed: 1477390294
+Count: 5664
+Application 7000423 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3070, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 4
+seed: 1477390316
+Count: 4880
+Application 7000424 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3079, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 5
+seed: 1477390342
+Count: 4608
+Application 7000425 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3091, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 6
+seed: 1477390370
+Count: 4608
+Application 7000426 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3103, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 7
+seed: 1477390398
+Count: 4608
+Application 7000427 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3108, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 8
+seed: 1477390426
+Count: 4608
+Application 7000428 resources: utime ~8s, stime ~2s, Rss ~628868, inblocks ~3122, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 9
+seed: 1477390454
+Count: 4480
+Application 7000429 resources: utime ~10s, stime ~2s, Rss ~694612, inblocks ~3138, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 10
+seed: 1477390484
+Count: 4480
+Application 7000430 resources: utime ~10s, stime ~2s, Rss ~729216, inblocks ~3153, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 11
+seed: 1477390514
+Count: 4480
+Application 7000431 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~3171, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 12
+seed: 1477390544
+Count: 4480
+Application 7000432 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3194, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 13
+seed: 1477390574
+Count: 4400
+Application 7000433 resources: utime ~12s, stime ~3s, Rss ~864448, inblocks ~3217, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 14
+seed: 1477390609
+Count: 4400
+Application 7000434 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3240, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 15
+seed: 1477390643
+Count: 4400
+Application 7000435 resources: utime ~13s, stime ~3s, Rss ~899344, inblocks ~3265, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 16
+seed: 1477390675
+Count: 4400
+Application 7000436 resources: utime ~13s, stime ~3s, Rss ~934216, inblocks ~3291, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 17
+seed: 1477390708
+Count: 4352
+Application 7000437 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3317, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 18
+seed: 1477390746
+Count: 4352
+Application 7000438 resources: utime ~15s, stime ~3s, Rss ~1034592, inblocks ~3345, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 19
+seed: 1477390783
+Count: 4352
+Application 7000439 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3374, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 20
+seed: 1477390821
+Count: 4352
+Application 7000442 resources: utime ~15s, stime ~3s, Rss ~1069496, inblocks ~3406, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 1, limbs: 21
+seed: 1477390857
+Count: 4320
+Application 7000443 resources: utime ~17s, stime ~3s, Rss ~1169856, inblocks ~3443, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 2
+seed: 1477390895
+Count: 5664
+Application 7000444 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3063, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 3
+seed: 1477390917
+Count: 5664
+Application 7000445 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3071, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 4
+seed: 1477390940
+Count: 4880
+Application 7000446 resources: utime ~5s, stime ~2s, Rss ~458800, inblocks ~3081, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 5
+seed: 1477390965
+Count: 4608
+Application 7000447 resources: utime ~8s, stime ~2s, Rss ~559136, inblocks ~3092, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 6
+seed: 1477390993
+Count: 4608
+Application 7000448 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3105, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 7
+seed: 1477391023
+Count: 4608
+Application 7000449 resources: utime ~8s, stime ~2s, Rss ~594000, inblocks ~3110, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 8
+seed: 1477391052
+Count: 4608
+Application 7000450 resources: utime ~8s, stime ~2s, Rss ~628868, inblocks ~3124, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 9
+seed: 1477391081
+Count: 4480
+Application 7000451 resources: utime ~10s, stime ~2s, Rss ~694612, inblocks ~3141, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 10
+seed: 1477391112
+Count: 4480
+Application 7000452 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3157, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 11
+seed: 1477391146
+Count: 4480
+Application 7000453 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~3174, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 12
+seed: 1477391179
+Count: 4480
+Application 7000454 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3198, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 13
+seed: 1477391212
+Count: 4400
+Application 7000455 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3221, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 14
+seed: 1477391247
+Count: 4400
+Application 7000456 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3243, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 15
+seed: 1477391281
+Count: 4400
+Application 7000457 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3270, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 16
+seed: 1477391315
+Count: 4400
+Application 7000458 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3294, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 17
+seed: 1477391348
+Count: 4352
+Application 7000459 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3322, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 18
+seed: 1477391387
+Count: 4352
+Application 7000460 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3350, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 19
+seed: 1477391424
+Count: 4352
+Application 7000461 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3379, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 20
+seed: 1477391461
+Count: 4352
+Application 7000462 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3412, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 3, limbs: 21
+seed: 1477391499
+Count: 4320
+Application 7000463 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~3449, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 2
+seed: 1477391538
+Count: 5664
+Application 7000464 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3064, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 3
+seed: 1477391561
+Count: 5664
+Application 7000465 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3072, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 4
+seed: 1477391584
+Count: 4880
+Application 7000466 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3082, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 5
+seed: 1477391610
+Count: 4608
+Application 7000467 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3094, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 6
+seed: 1477391638
+Count: 4608
+Application 7000468 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3107, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 7
+seed: 1477391666
+Count: 4608
+Application 7000469 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3112, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 8
+seed: 1477391697
+Count: 4608
+Application 7000470 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3127, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 9
+seed: 1477391726
+Count: 4480
+Application 7000471 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3143, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 10
+seed: 1477391756
+Count: 4480
+Application 7000472 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3159, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 11
+seed: 1477391787
+Count: 4480
+Application 7000473 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3178, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 12
+seed: 1477391818
+Count: 4480
+Application 7000474 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3201, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 13
+seed: 1477391849
+Count: 4400
+Application 7000475 resources: utime ~12s, stime ~3s, Rss ~864452, inblocks ~3224, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 14
+seed: 1477391883
+Count: 4400
+Application 7000476 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3248, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 15
+seed: 1477391917
+Count: 4400
+Application 7000477 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3272, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 16
+seed: 1477391951
+Count: 4400
+Application 7000478 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3300, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 17
+seed: 1477391984
+Count: 4352
+Application 7000479 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3326, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 18
+seed: 1477392021
+Count: 4352
+Application 7000480 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3354, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 19
+seed: 1477392057
+Count: 4352
+Application 7000481 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3385, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 20
+seed: 1477392093
+Count: 4352
+Application 7000482 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3417, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 5, limbs: 21
+seed: 1477392131
+Count: 4320
+Application 7000483 resources: utime ~17s, stime ~3s, Rss ~1169864, inblocks ~3454, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 2
+seed: 1477392170
+Count: 5664
+Application 7000484 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3577, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 3
+seed: 1477392193
+Count: 5664
+Application 7000485 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3585, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 4
+seed: 1477392216
+Count: 4880
+Application 7000486 resources: utime ~6s, stime ~2s, Rss ~458796, inblocks ~3595, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 5
+seed: 1477392240
+Count: 4608
+Application 7000487 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3608, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 6
+seed: 1477392268
+Count: 4608
+Application 7000488 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3621, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 7
+seed: 1477392296
+Count: 4608
+Application 7000489 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3626, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 8
+seed: 1477392323
+Count: 4608
+Application 7000490 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3641, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 9
+seed: 1477392350
+Count: 4480
+Application 7000491 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3658, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 10
+seed: 1477392381
+Count: 4480
+Application 7000492 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3675, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 11
+seed: 1477392412
+Count: 4480
+Application 7000493 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3693, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 12
+seed: 1477392442
+Count: 4480
+Application 7000494 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3716, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 13
+seed: 1477392474
+Count: 4400
+Application 7000495 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3740, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 14
+seed: 1477392507
+Count: 4400
+Application 7000496 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3764, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 15
+seed: 1477392540
+Count: 4400
+Application 7000497 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3789, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 16
+seed: 1477392573
+Count: 4400
+Application 7000498 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3816, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 17
+seed: 1477392607
+Count: 4352
+Application 7000499 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3329, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 18
+seed: 1477392645
+Count: 4352
+Application 7000500 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3873, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 19
+seed: 1477392682
+Count: 4352
+Application 7000502 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3902, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 20
+seed: 1477392719
+Count: 4352
+Application 7000503 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3936, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 7, limbs: 21
+seed: 1477392757
+Count: 4320
+Application 7000504 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~3972, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 2
+seed: 1477392796
+Count: 5664
+Application 7000505 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3578, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 3
+seed: 1477392818
+Count: 5664
+Application 7000506 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3586, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 4
+seed: 1477392842
+Count: 4880
+Application 7000507 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3597, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 5
+seed: 1477392867
+Count: 4608
+Application 7000508 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3609, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 6
+seed: 1477392896
+Count: 4608
+Application 7000510 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3622, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 7
+seed: 1477392925
+Count: 4608
+Application 7000511 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3629, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 8
+seed: 1477392954
+Count: 4608
+Application 7000512 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3643, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 9
+seed: 1477392983
+Count: 4480
+Application 7000513 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3661, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 10
+seed: 1477393015
+Count: 4480
+Application 7000514 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3678, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 11
+seed: 1477393046
+Count: 4480
+Application 7000515 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3696, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 12
+seed: 1477393077
+Count: 4480
+Application 7000516 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3720, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 13
+seed: 1477393108
+Count: 4400
+Application 7000517 resources: utime ~13s, stime ~3s, Rss ~864448, inblocks ~3745, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 14
+seed: 1477393141
+Count: 4400
+Application 7000518 resources: utime ~12s, stime ~3s, Rss ~864472, inblocks ~3768, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 15
+seed: 1477393175
+Count: 4400
+Application 7000519 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3793, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 16
+seed: 1477393208
+Count: 4400
+Application 7000520 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3821, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 17
+seed: 1477393243
+Count: 4352
+Application 7000521 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3847, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 18
+seed: 1477393280
+Count: 4352
+Application 7000522 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3876, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 19
+seed: 1477393316
+Count: 4352
+Application 7000523 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3909, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 20
+seed: 1477393352
+Count: 4352
+Application 7000524 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~3940, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 9, limbs: 21
+seed: 1477393389
+Count: 4320
+Application 7000525 resources: utime ~17s, stime ~3s, Rss ~1169864, inblocks ~3976, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 2
+seed: 1477393428
+Count: 5664
+Application 7000526 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3578, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 3
+seed: 1477393450
+Count: 5664
+Application 7000527 resources: utime ~3s, stime ~1s, Rss ~358480, inblocks ~3587, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 4
+seed: 1477393472
+Count: 4880
+Application 7000528 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3598, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 5
+seed: 1477393497
+Count: 4608
+Application 7000529 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3611, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 6
+seed: 1477393525
+Count: 4608
+Application 7000530 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3624, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 7
+seed: 1477393552
+Count: 4608
+Application 7000531 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3631, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 8
+seed: 1477393579
+Count: 4608
+Application 7000532 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3645, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 9
+seed: 1477393607
+Count: 4480
+Application 7000533 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3662, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 10
+seed: 1477393637
+Count: 4480
+Application 7000534 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3681, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 11
+seed: 1477393666
+Count: 4480
+Application 7000535 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3699, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 12
+seed: 1477393697
+Count: 4480
+Application 7000536 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3723, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 13
+seed: 1477393727
+Count: 4400
+Application 7000537 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3747, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 14
+seed: 1477393760
+Count: 4400
+Application 7000538 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3771, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 15
+seed: 1477393794
+Count: 4400
+Application 7000539 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3798, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 16
+seed: 1477393827
+Count: 4400
+Application 7000540 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3825, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 17
+seed: 1477393861
+Count: 4352
+Application 7000541 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3851, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 18
+seed: 1477393897
+Count: 4352
+Application 7000542 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3883, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 19
+seed: 1477393933
+Count: 4352
+Application 7000543 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3913, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 20
+seed: 1477393969
+Count: 4352
+Application 7000544 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3944, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 11, limbs: 21
+seed: 1477394005
+Count: 4320
+Application 7000545 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~3985, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 2
+seed: 1477394044
+Count: 5664
+Application 7000546 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3579, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 3
+seed: 1477394065
+Count: 5664
+Application 7000547 resources: utime ~3s, stime ~1s, Rss ~358480, inblocks ~3588, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 4
+seed: 1477394088
+Count: 4880
+Application 7000548 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3599, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 5
+seed: 1477394113
+Count: 4608
+Application 7000549 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3613, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 6
+seed: 1477394141
+Count: 4608
+Application 7000550 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3625, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 7
+seed: 1477394169
+Count: 4608
+Application 7000551 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3633, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 8
+seed: 1477394196
+Count: 4608
+Application 7000552 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3649, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 9
+seed: 1477394225
+Count: 4480
+Application 7000553 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3665, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 10
+seed: 1477394257
+Count: 4480
+Application 7000554 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3682, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 11
+seed: 1477394287
+Count: 4480
+Application 7000555 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3701, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 12
+seed: 1477394318
+Count: 4480
+Application 7000556 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3727, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 13
+seed: 1477394350
+Count: 4400
+Application 7000557 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3753, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 14
+seed: 1477394384
+Count: 4400
+Application 7000558 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3774, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 15
+seed: 1477394417
+Count: 4400
+Application 7000559 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3801, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 16
+seed: 1477394450
+Count: 4400
+Application 7000560 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3826, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 17
+seed: 1477394485
+Count: 4352
+Application 7000561 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3858, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 18
+seed: 1477394522
+Count: 4352
+Application 7000562 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3888, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 19
+seed: 1477394559
+Count: 4352
+Application 7000563 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3917, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 20
+seed: 1477394596
+Count: 4352
+Application 7000566 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3953, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 13, limbs: 21
+seed: 1477394633
+Count: 4320
+Application 7000567 resources: utime ~17s, stime ~3s, Rss ~1169864, inblocks ~3988, outblocks ~4394
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 2
+seed: 1477394673
+Count: 5664
+Application 7000568 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3580, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 3
+seed: 1477394695
+Count: 5664
+Application 7000569 resources: utime ~3s, stime ~1s, Rss ~358480, inblocks ~3589, outblocks ~4257
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 4
+seed: 1477394717
+Count: 4880
+Application 7000570 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3601, outblocks ~4265
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 5
+seed: 1477394744
+Count: 4608
+Application 7000573 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3614, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 6
+seed: 1477394772
+Count: 4608
+Application 7000578 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3627, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 7
+seed: 1477394802
+Count: 4608
+Application 7000581 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3634, outblocks ~4266
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 8
+seed: 1477394831
+Count: 4608
+Application 7000590 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3650, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 9
+seed: 1477394860
+Count: 4480
+Application 7000591 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3669, outblocks ~4274
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 10
+seed: 1477394891
+Count: 4480
+Application 7000592 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3684, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 11
+seed: 1477394923
+Count: 4480
+Application 7000593 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3704, outblocks ~4282
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 12
+seed: 1477394954
+Count: 4480
+Application 7000596 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3729, outblocks ~4298
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 13
+seed: 1477394986
+Count: 4400
+Application 7000597 resources: utime ~13s, stime ~3s, Rss ~864456, inblocks ~3756, outblocks ~4306
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 14
+seed: 1477395018
+Count: 4400
+Application 7000598 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3779, outblocks ~4314
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 15
+seed: 1477395052
+Count: 4400
+Application 7000599 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3805, outblocks ~4322
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 16
+seed: 1477395086
+Count: 4400
+Application 7000600 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3834, outblocks ~4330
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 17
+seed: 1477395121
+Count: 4352
+Application 7000601 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3863, outblocks ~4338
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 18
+seed: 1477395159
+Count: 4352
+Application 7000602 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3892, outblocks ~4354
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 19
+seed: 1477395196
+Count: 4352
+Application 7000603 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3923, outblocks ~4362
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 20
+seed: 1477395232
+Count: 4352
+Application 7000604 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~3956, outblocks ~4378
+**************************
+p: 2^3, r: 2^18, u: 15, limbs: 21
+seed: 1477395269
+Count: 4320
+Application 7000605 resources: utime ~17s, stime ~3s, Rss ~1169864, inblocks ~3993, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 2
+seed: 1477395306
+Count: 5664
+Application 7000606 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3063, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 3
+seed: 1477395329
+Count: 5664
+Application 7000607 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3071, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 4
+seed: 1477395350
+Count: 4880
+Application 7000608 resources: utime ~6s, stime ~2s, Rss ~458796, inblocks ~3080, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 5
+seed: 1477395376
+Count: 4608
+Application 7000609 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3092, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 6
+seed: 1477395404
+Count: 4608
+Application 7000610 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3104, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 7
+seed: 1477395432
+Count: 4608
+Application 7000611 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3109, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 8
+seed: 1477395460
+Count: 4608
+Application 7000612 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3123, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 9
+seed: 1477395488
+Count: 4480
+Application 7000613 resources: utime ~10s, stime ~3s, Rss ~694616, inblocks ~3140, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 10
+seed: 1477395518
+Count: 4480
+Application 7000614 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3155, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 11
+seed: 1477395549
+Count: 4480
+Application 7000615 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~3173, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 12
+seed: 1477395579
+Count: 4480
+Application 7000616 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3197, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 13
+seed: 1477395610
+Count: 4400
+Application 7000617 resources: utime ~13s, stime ~3s, Rss ~864444, inblocks ~3219, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 14
+seed: 1477395644
+Count: 4400
+Application 7000618 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3241, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 15
+seed: 1477395677
+Count: 4400
+Application 7000619 resources: utime ~13s, stime ~3s, Rss ~899340, inblocks ~3267, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 16
+seed: 1477395711
+Count: 4400
+Application 7000620 resources: utime ~13s, stime ~3s, Rss ~934212, inblocks ~3293, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 17
+seed: 1477395745
+Count: 4352
+Application 7000621 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3320, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 18
+seed: 1477395782
+Count: 4352
+Application 7000622 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3347, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 19
+seed: 1477395818
+Count: 4352
+Application 7000623 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3377, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 20
+seed: 1477395855
+Count: 4352
+Application 7000624 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3410, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 1, limbs: 21
+seed: 1477395893
+Count: 4320
+Application 7000625 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~3446, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 2
+seed: 1477395931
+Count: 5664
+Application 7000626 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3065, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 3
+seed: 1477395953
+Count: 5664
+Application 7000627 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3073, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 4
+seed: 1477395977
+Count: 4880
+Application 7000628 resources: utime ~5s, stime ~2s, Rss ~458800, inblocks ~3083, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 5
+seed: 1477396003
+Count: 4608
+Application 7000629 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3095, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 6
+seed: 1477396031
+Count: 4608
+Application 7000630 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3107, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 7
+seed: 1477396059
+Count: 4608
+Application 7000631 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3114, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 8
+seed: 1477396088
+Count: 4608
+Application 7000632 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3128, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 9
+seed: 1477396116
+Count: 4480
+Application 7000633 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3145, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 10
+seed: 1477396147
+Count: 4480
+Application 7000634 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3162, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 11
+seed: 1477396177
+Count: 4480
+Application 7000635 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~3180, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 12
+seed: 1477396207
+Count: 4480
+Application 7000636 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3203, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 13
+seed: 1477396239
+Count: 4400
+Application 7000637 resources: utime ~13s, stime ~3s, Rss ~864448, inblocks ~3228, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 14
+seed: 1477396272
+Count: 4400
+Application 7000638 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3251, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 15
+seed: 1477396305
+Count: 4400
+Application 7000639 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3276, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 16
+seed: 1477396341
+Count: 4400
+Application 7000640 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3302, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 17
+seed: 1477396375
+Count: 4352
+Application 7000641 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3330, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 18
+seed: 1477396411
+Count: 4352
+Application 7000642 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3359, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 19
+seed: 1477396448
+Count: 4352
+Application 7000643 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3389, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 20
+seed: 1477396487
+Count: 4352
+Application 7000644 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~3422, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 3, limbs: 21
+seed: 1477396524
+Count: 4320
+Application 7000645 resources: utime ~17s, stime ~4s, Rss ~1169864, inblocks ~3457, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 2
+seed: 1477396563
+Count: 5664
+Application 7000646 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3578, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 3
+seed: 1477396585
+Count: 5664
+Application 7000647 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3587, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 4
+seed: 1477396607
+Count: 4880
+Application 7000648 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3598, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 5
+seed: 1477396633
+Count: 4608
+Application 7000649 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3611, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 6
+seed: 1477396662
+Count: 4608
+Application 7000650 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3624, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 7
+seed: 1477396691
+Count: 4608
+Application 7000651 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3630, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 8
+seed: 1477396719
+Count: 4608
+Application 7000652 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3646, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 9
+seed: 1477396746
+Count: 4480
+Application 7000653 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3663, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 10
+seed: 1477396777
+Count: 4480
+Application 7000654 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3679, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 11
+seed: 1477396809
+Count: 4480
+Application 7000655 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3699, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 12
+seed: 1477396840
+Count: 4480
+Application 7000656 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3723, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 13
+seed: 1477396873
+Count: 4400
+Application 7000657 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3748, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 14
+seed: 1477396906
+Count: 4400
+Application 7000658 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3770, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 15
+seed: 1477396939
+Count: 4400
+Application 7000659 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3797, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 16
+seed: 1477396974
+Count: 4400
+Application 7000660 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3824, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 17
+seed: 1477397009
+Count: 4352
+Application 7000661 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3852, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 18
+seed: 1477397049
+Count: 4352
+Application 7000662 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3882, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 19
+seed: 1477397087
+Count: 4352
+Application 7000663 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3910, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 20
+seed: 1477397124
+Count: 4352
+Application 7000664 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~3944, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 5, limbs: 21
+seed: 1477397161
+Count: 4320
+Application 7000665 resources: utime ~17s, stime ~4s, Rss ~1169864, inblocks ~3982, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 2
+seed: 1477397200
+Count: 5664
+Application 7000666 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3580, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 3
+seed: 1477397223
+Count: 5664
+Application 7000667 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3590, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 4
+seed: 1477397245
+Count: 4880
+Application 7000668 resources: utime ~5s, stime ~2s, Rss ~458804, inblocks ~3600, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 5
+seed: 1477397271
+Count: 4608
+Application 7000669 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3614, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 6
+seed: 1477397300
+Count: 4608
+Application 7000670 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3628, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 7
+seed: 1477397329
+Count: 4608
+Application 7000671 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3635, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 8
+seed: 1477397357
+Count: 4608
+Application 7000672 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3651, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 9
+seed: 1477397385
+Count: 4480
+Application 7000673 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3669, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 10
+seed: 1477397415
+Count: 4480
+Application 7000674 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3687, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 11
+seed: 1477397448
+Count: 4480
+Application 7000675 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3705, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 12
+seed: 1477397478
+Count: 4480
+Application 7000676 resources: utime ~10s, stime ~3s, Rss ~764112, inblocks ~3730, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 13
+seed: 1477397510
+Count: 4400
+Application 7000677 resources: utime ~13s, stime ~3s, Rss ~864456, inblocks ~3756, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 14
+seed: 1477397544
+Count: 4400
+Application 7000678 resources: utime ~12s, stime ~3s, Rss ~864468, inblocks ~3778, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 15
+seed: 1477397577
+Count: 4400
+Application 7000679 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3806, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 16
+seed: 1477397610
+Count: 4400
+Application 7000680 resources: utime ~13s, stime ~3s, Rss ~934224, inblocks ~3834, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 17
+seed: 1477397645
+Count: 4352
+Application 7000681 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3861, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 18
+seed: 1477397686
+Count: 4352
+Application 7000682 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3893, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 19
+seed: 1477397723
+Count: 4352
+Application 7000683 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3924, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 20
+seed: 1477397760
+Count: 4352
+Application 7000684 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~3957, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 7, limbs: 21
+seed: 1477397797
+Count: 4320
+Application 7000685 resources: utime ~18s, stime ~3s, Rss ~1169864, inblocks ~3995, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 2
+seed: 1477397836
+Count: 5664
+Application 7000686 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3582, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 3
+seed: 1477397861
+Count: 5664
+Application 7000687 resources: utime ~3s, stime ~1s, Rss ~358480, inblocks ~3592, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 4
+seed: 1477397885
+Count: 4880
+Application 7000688 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3603, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 5
+seed: 1477397913
+Count: 4608
+Application 7000689 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3617, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 6
+seed: 1477397943
+Count: 4608
+Application 7000690 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3632, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 7
+seed: 1477397973
+Count: 4608
+Application 7000691 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3639, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 8
+seed: 1477398003
+Count: 4608
+Application 7000692 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3656, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 9
+seed: 1477398034
+Count: 4480
+Application 7000693 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3675, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 10
+seed: 1477398065
+Count: 4480
+Application 7000694 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3692, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 11
+seed: 1477398099
+Count: 4480
+Application 7000695 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~3711, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 12
+seed: 1477398132
+Count: 4480
+Application 7000696 resources: utime ~10s, stime ~2s, Rss ~764104, inblocks ~3738, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 13
+seed: 1477398165
+Count: 4400
+Application 7000697 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3762, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 14
+seed: 1477398202
+Count: 4400
+Application 7000698 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3788, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 15
+seed: 1477398239
+Count: 4400
+Application 7000699 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3816, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 16
+seed: 1477398274
+Count: 4400
+Application 7000700 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3844, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 17
+seed: 1477398312
+Count: 4352
+Application 7000701 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3872, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 18
+seed: 1477398353
+Count: 4352
+Application 7000702 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3901, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 19
+seed: 1477398392
+Count: 4352
+Application 7000703 resources: utime ~15s, stime ~3s, Rss ~1069468, inblocks ~3935, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 20
+seed: 1477398432
+Count: 4352
+Application 7000704 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3968, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 9, limbs: 21
+seed: 1477398471
+Count: 4320
+Application 7000705 resources: utime ~17s, stime ~3s, Rss ~1169856, inblocks ~4008, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 2
+seed: 1477398512
+Count: 5664
+Application 7000706 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3584, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 3
+seed: 1477398536
+Count: 5664
+Application 7000707 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3594, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 4
+seed: 1477398560
+Count: 4880
+Application 7000708 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3606, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 5
+seed: 1477398588
+Count: 4608
+Application 7000709 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3621, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 6
+seed: 1477398617
+Count: 4608
+Application 7000710 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3636, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 7
+seed: 1477398647
+Count: 4608
+Application 7000711 resources: utime ~8s, stime ~2s, Rss ~594004, inblocks ~3645, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 8
+seed: 1477398676
+Count: 4608
+Application 7000712 resources: utime ~8s, stime ~2s, Rss ~628868, inblocks ~3660, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 9
+seed: 1477398706
+Count: 4480
+Application 7000713 resources: utime ~10s, stime ~2s, Rss ~694612, inblocks ~3680, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 10
+seed: 1477398740
+Count: 4480
+Application 7000714 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3697, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 11
+seed: 1477398774
+Count: 4480
+Application 7000715 resources: utime ~10s, stime ~3s, Rss ~764088, inblocks ~3719, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 12
+seed: 1477398806
+Count: 4480
+Application 7000716 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3745, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 13
+seed: 1477398840
+Count: 4400
+Application 7000717 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3770, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 14
+seed: 1477398878
+Count: 4400
+Application 7000718 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3796, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 15
+seed: 1477398915
+Count: 4400
+Application 7000719 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3824, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 16
+seed: 1477398954
+Count: 4400
+Application 7000720 resources: utime ~13s, stime ~3s, Rss ~934216, inblocks ~3852, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 17
+seed: 1477398994
+Count: 4352
+Application 7000721 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3882, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 18
+seed: 1477399034
+Count: 4352
+Application 7000722 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3912, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 19
+seed: 1477399076
+Count: 4352
+Application 7000723 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3944, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 20
+seed: 1477399115
+Count: 4352
+Application 7000724 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3981, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 11, limbs: 21
+seed: 1477399156
+Count: 4320
+Application 7000725 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~4020, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 2
+seed: 1477399199
+Count: 5664
+Application 7000726 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3585, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 3
+seed: 1477399223
+Count: 5664
+Application 7000727 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3596, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 4
+seed: 1477399246
+Count: 4880
+Application 7000728 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3609, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 5
+seed: 1477399273
+Count: 4608
+Application 7000729 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3624, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 6
+seed: 1477399301
+Count: 4608
+Application 7000730 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3640, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 7
+seed: 1477399329
+Count: 4608
+Application 7000731 resources: utime ~8s, stime ~2s, Rss ~594004, inblocks ~3649, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 8
+seed: 1477399359
+Count: 4608
+Application 7000732 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3665, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 9
+seed: 1477399387
+Count: 4480
+Application 7000733 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3685, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 10
+seed: 1477399420
+Count: 4480
+Application 7000734 resources: utime ~10s, stime ~2s, Rss ~729216, inblocks ~3705, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 11
+seed: 1477399452
+Count: 4480
+Application 7000735 resources: utime ~10s, stime ~2s, Rss ~764084, inblocks ~3725, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 12
+seed: 1477399483
+Count: 4480
+Application 7000736 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3754, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 13
+seed: 1477399513
+Count: 4400
+Application 7000737 resources: utime ~12s, stime ~3s, Rss ~864452, inblocks ~3780, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 14
+seed: 1477399548
+Count: 4400
+Application 7000738 resources: utime ~12s, stime ~3s, Rss ~864468, inblocks ~3805, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 15
+seed: 1477399581
+Count: 4400
+Application 7000739 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3833, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 16
+seed: 1477399616
+Count: 4400
+Application 7000740 resources: utime ~12s, stime ~3s, Rss ~934220, inblocks ~3863, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 17
+seed: 1477399651
+Count: 4352
+Application 7000741 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3893, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 18
+seed: 1477399689
+Count: 4352
+Application 7000742 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3925, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 19
+seed: 1477399727
+Count: 4352
+Application 7000743 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3957, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 20
+seed: 1477399764
+Count: 4352
+Application 7000744 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3992, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 13, limbs: 21
+seed: 1477399801
+Count: 4320
+Application 7000745 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~4033, outblocks ~4394
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 2
+seed: 1477399841
+Count: 5664
+Application 7000746 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3587, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 3
+seed: 1477399865
+Count: 5664
+Application 7000747 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3599, outblocks ~4257
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 4
+seed: 1477399891
+Count: 4880
+Application 7000748 resources: utime ~6s, stime ~2s, Rss ~458800, inblocks ~3612, outblocks ~4265
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 5
+seed: 1477399917
+Count: 4608
+Application 7000749 resources: utime ~8s, stime ~2s, Rss ~559136, inblocks ~3628, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 6
+seed: 1477399946
+Count: 4608
+Application 7000750 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3643, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 7
+seed: 1477399975
+Count: 4608
+Application 7000751 resources: utime ~8s, stime ~2s, Rss ~594004, inblocks ~3654, outblocks ~4266
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 8
+seed: 1477400003
+Count: 4608
+Application 7000752 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3671, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 9
+seed: 1477400032
+Count: 4480
+Application 7000753 resources: utime ~10s, stime ~2s, Rss ~694612, inblocks ~3692, outblocks ~4274
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 10
+seed: 1477400065
+Count: 4480
+Application 7000754 resources: utime ~10s, stime ~3s, Rss ~729220, inblocks ~3712, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 11
+seed: 1477400097
+Count: 4480
+Application 7000755 resources: utime ~10s, stime ~3s, Rss ~764088, inblocks ~3732, outblocks ~4282
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 12
+seed: 1477400130
+Count: 4480
+Application 7000756 resources: utime ~10s, stime ~3s, Rss ~764112, inblocks ~3759, outblocks ~4298
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 13
+seed: 1477400161
+Count: 4400
+Application 7000757 resources: utime ~13s, stime ~3s, Rss ~864444, inblocks ~3787, outblocks ~4306
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 14
+seed: 1477400195
+Count: 4400
+Application 7000758 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3814, outblocks ~4314
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 15
+seed: 1477400228
+Count: 4400
+Application 7000762 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3842, outblocks ~4322
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 16
+seed: 1477400263
+Count: 4400
+Application 7000763 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3873, outblocks ~4330
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 17
+seed: 1477400297
+Count: 4352
+Application 7000764 resources: utime ~15s, stime ~3s, Rss ~999708, inblocks ~3903, outblocks ~4338
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 18
+seed: 1477400336
+Count: 4352
+Application 7000765 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3937, outblocks ~4354
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 19
+seed: 1477400374
+Count: 4352
+Application 7000766 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3966, outblocks ~4362
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 20
+seed: 1477400411
+Count: 4352
+Application 7000767 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~4005, outblocks ~4378
+**************************
+p: 2^4, r: 2^18, u: 15, limbs: 21
+seed: 1477400448
+Count: 4320
+Application 7000768 resources: utime ~18s, stime ~3s, Rss ~1169860, inblocks ~4045, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 2
+seed: 1477400487
+Count: 5664
+Application 7000769 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3064, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 3
+seed: 1477400510
+Count: 5664
+Application 7000770 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3072, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 4
+seed: 1477400534
+Count: 4880
+Application 7000771 resources: utime ~6s, stime ~2s, Rss ~458792, inblocks ~3081, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 5
+seed: 1477400561
+Count: 4608
+Application 7000772 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3094, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 6
+seed: 1477400589
+Count: 4608
+Application 7000773 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3106, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 7
+seed: 1477400618
+Count: 4608
+Application 7000774 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3112, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 8
+seed: 1477400647
+Count: 4608
+Application 7000775 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3126, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 9
+seed: 1477400677
+Count: 4480
+Application 7000776 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3143, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 10
+seed: 1477400709
+Count: 4480
+Application 7000778 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3158, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 11
+seed: 1477400741
+Count: 4480
+Application 7000780 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3176, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 12
+seed: 1477400773
+Count: 4480
+Application 7000781 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3200, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 13
+seed: 1477400805
+Count: 4400
+Application 7000783 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3223, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 14
+seed: 1477400840
+Count: 4400
+Application 7000784 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3247, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 15
+seed: 1477400874
+Count: 4400
+Application 7000786 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3272, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 16
+seed: 1477400908
+Count: 4400
+Application 7000787 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3299, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 17
+seed: 1477400943
+Count: 4352
+Application 7000788 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3325, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 18
+seed: 1477400979
+Count: 4352
+Application 7000789 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3354, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 19
+seed: 1477401017
+Count: 4352
+Application 7000790 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3384, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 20
+seed: 1477401055
+Count: 4352
+Application 7000791 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3416, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 1, limbs: 21
+seed: 1477401093
+Count: 4320
+Application 7000792 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~3453, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 2
+seed: 1477401132
+Count: 5664
+Application 7000793 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3579, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 3
+seed: 1477401155
+Count: 5664
+Application 7000794 resources: utime ~3s, stime ~1s, Rss ~358480, inblocks ~3589, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 4
+seed: 1477401179
+Count: 4880
+Application 7000795 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3600, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 5
+seed: 1477401204
+Count: 4608
+Application 7000796 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3613, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 6
+seed: 1477401233
+Count: 4608
+Application 7000797 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3626, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 7
+seed: 1477401262
+Count: 4608
+Application 7000798 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3633, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 8
+seed: 1477401291
+Count: 4608
+Application 7000799 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3648, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 9
+seed: 1477401318
+Count: 4480
+Application 7000800 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3667, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 10
+seed: 1477401350
+Count: 4480
+Application 7000801 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3684, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 11
+seed: 1477401381
+Count: 4480
+Application 7000802 resources: utime ~10s, stime ~3s, Rss ~764088, inblocks ~3702, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 12
+seed: 1477401411
+Count: 4480
+Application 7000803 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3728, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 13
+seed: 1477401442
+Count: 4400
+Application 7000804 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3752, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 14
+seed: 1477401476
+Count: 4400
+Application 7000805 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3775, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 15
+seed: 1477401510
+Count: 4400
+Application 7000806 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3803, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 16
+seed: 1477401546
+Count: 4400
+Application 7000807 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3830, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 17
+seed: 1477401580
+Count: 4352
+Application 7000808 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3858, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 18
+seed: 1477401616
+Count: 4352
+Application 7000809 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3888, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 19
+seed: 1477401653
+Count: 4352
+Application 7000810 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~3918, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 20
+seed: 1477401691
+Count: 4352
+Application 7000811 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~3952, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 3, limbs: 21
+seed: 1477401730
+Count: 4320
+Application 7000812 resources: utime ~17s, stime ~3s, Rss ~1169864, inblocks ~3989, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 2
+seed: 1477401769
+Count: 5664
+Application 7000813 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3583, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 3
+seed: 1477401791
+Count: 5664
+Application 7000814 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3594, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 4
+seed: 1477401814
+Count: 4880
+Application 7000815 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3606, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 5
+seed: 1477401839
+Count: 4608
+Application 7000817 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3620, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 6
+seed: 1477401867
+Count: 4608
+Application 7000818 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3635, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 7
+seed: 1477401895
+Count: 4608
+Application 7000819 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3643, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 8
+seed: 1477401924
+Count: 4608
+Application 7000822 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3659, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 9
+seed: 1477401952
+Count: 4480
+Application 7000823 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3678, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 10
+seed: 1477401983
+Count: 4480
+Application 7000824 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3697, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 11
+seed: 1477402014
+Count: 4480
+Application 7000825 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3717, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 12
+seed: 1477402046
+Count: 4480
+Application 7000826 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3743, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 13
+seed: 1477402077
+Count: 4400
+Application 7000827 resources: utime ~13s, stime ~3s, Rss ~864448, inblocks ~3769, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 14
+seed: 1477402112
+Count: 4400
+Application 7000828 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3793, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 15
+seed: 1477402145
+Count: 4400
+Application 7000829 resources: utime ~13s, stime ~3s, Rss ~899344, inblocks ~3822, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 16
+seed: 1477402178
+Count: 4400
+Application 7000830 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3850, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 17
+seed: 1477402213
+Count: 4352
+Application 7000831 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3879, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 18
+seed: 1477402250
+Count: 4352
+Application 7000832 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3911, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 19
+seed: 1477402287
+Count: 4352
+Application 7000833 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3943, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 20
+seed: 1477402323
+Count: 4352
+Application 7000835 resources: utime ~15s, stime ~3s, Rss ~1069500, inblocks ~3979, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 5, limbs: 21
+seed: 1477402361
+Count: 4320
+Application 7000836 resources: utime ~17s, stime ~4s, Rss ~1169856, inblocks ~4016, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 2
+seed: 1477402400
+Count: 5664
+Application 7000837 resources: utime ~3s, stime ~1s, Rss ~358468, inblocks ~3586, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 3
+seed: 1477402423
+Count: 5664
+Application 7000838 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3598, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 4
+seed: 1477402446
+Count: 4880
+Application 7000839 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3611, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 5
+seed: 1477402472
+Count: 4608
+Application 7000840 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3627, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 6
+seed: 1477402500
+Count: 4608
+Application 7000843 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3643, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 7
+seed: 1477402528
+Count: 4608
+Application 7000844 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3653, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 8
+seed: 1477402556
+Count: 4608
+Application 7000845 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3669, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 9
+seed: 1477402585
+Count: 4480
+Application 7000846 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3690, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 10
+seed: 1477402615
+Count: 4480
+Application 7000847 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3710, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 11
+seed: 1477402646
+Count: 4480
+Application 7000848 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3732, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 12
+seed: 1477402677
+Count: 4480
+Application 7000849 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3758, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 13
+seed: 1477402708
+Count: 4400
+Application 7000852 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3785, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 14
+seed: 1477402742
+Count: 4400
+Application 7000856 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3812, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 15
+seed: 1477402775
+Count: 4400
+Application 7000858 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3840, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 16
+seed: 1477402809
+Count: 4400
+Application 7000859 resources: utime ~12s, stime ~3s, Rss ~934220, inblocks ~3871, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 17
+seed: 1477402843
+Count: 4352
+Application 7000860 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3900, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 18
+seed: 1477402880
+Count: 4352
+Application 7000861 resources: utime ~15s, stime ~3s, Rss ~1034592, inblocks ~3932, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 19
+seed: 1477402917
+Count: 4352
+Application 7000862 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3965, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 20
+seed: 1477402954
+Count: 4352
+Application 7000863 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~4002, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 7, limbs: 21
+seed: 1477402992
+Count: 4320
+Application 7000866 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~4043, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 2
+seed: 1477403031
+Count: 5664
+Application 7000867 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3591, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 3
+seed: 1477403054
+Count: 5664
+Application 7000868 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3603, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 4
+seed: 1477403077
+Count: 4880
+Application 7000869 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3618, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 5
+seed: 1477403102
+Count: 4608
+Application 7000870 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3634, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 6
+seed: 1477403129
+Count: 4608
+Application 7000871 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3651, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 7
+seed: 1477403158
+Count: 4608
+Application 7000872 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3662, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 8
+seed: 1477403185
+Count: 4608
+Application 7000875 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3681, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 9
+seed: 1477403214
+Count: 4480
+Application 7000878 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3701, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 10
+seed: 1477403245
+Count: 4480
+Application 7000879 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3722, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 11
+seed: 1477403276
+Count: 4480
+Application 7000880 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3745, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 12
+seed: 1477403307
+Count: 4480
+Application 7000881 resources: utime ~10s, stime ~3s, Rss ~764112, inblocks ~3774, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 13
+seed: 1477403338
+Count: 4400
+Application 7000883 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3802, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 14
+seed: 1477403372
+Count: 4400
+Application 7000884 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3828, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 15
+seed: 1477403407
+Count: 4400
+Application 7000885 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3860, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 16
+seed: 1477403442
+Count: 4400
+Application 7000898 resources: utime ~12s, stime ~3s, Rss ~934220, inblocks ~3889, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 17
+seed: 1477403477
+Count: 4352
+Application 7000900 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3922, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 18
+seed: 1477403515
+Count: 4352
+Application 7000901 resources: utime ~15s, stime ~3s, Rss ~1034596, inblocks ~3956, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 19
+seed: 1477403552
+Count: 4352
+Application 7000902 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3990, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 20
+seed: 1477403589
+Count: 4352
+Application 7000903 resources: utime ~15s, stime ~3s, Rss ~1069500, inblocks ~4026, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 9, limbs: 21
+seed: 1477403627
+Count: 4320
+Application 7000905 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~4070, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 2
+seed: 1477403666
+Count: 5664
+Application 7000909 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3595, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 3
+seed: 1477403688
+Count: 5664
+Application 7000915 resources: utime ~3s, stime ~1s, Rss ~358480, inblocks ~3608, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 4
+seed: 1477403712
+Count: 4880
+Application 7000916 resources: utime ~6s, stime ~2s, Rss ~458808, inblocks ~3623, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 5
+seed: 1477403738
+Count: 4608
+Application 7000917 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3641, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 6
+seed: 1477403767
+Count: 4608
+Application 7000919 resources: utime ~8s, stime ~2s, Rss ~559156, inblocks ~3659, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 7
+seed: 1477403795
+Count: 4608
+Application 7000920 resources: utime ~8s, stime ~2s, Rss ~594016, inblocks ~3671, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 8
+seed: 1477403824
+Count: 4608
+Application 7000921 resources: utime ~8s, stime ~2s, Rss ~628880, inblocks ~3691, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 9
+seed: 1477403853
+Count: 4480
+Application 7000922 resources: utime ~10s, stime ~3s, Rss ~694624, inblocks ~3713, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 10
+seed: 1477403888
+Count: 4480
+Application 7000923 resources: utime ~10s, stime ~2s, Rss ~729228, inblocks ~3736, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 11
+seed: 1477403921
+Count: 4480
+Application 7000924 resources: utime ~10s, stime ~2s, Rss ~764092, inblocks ~3760, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 12
+seed: 1477403954
+Count: 4480
+Application 7000925 resources: utime ~11s, stime ~2s, Rss ~764116, inblocks ~3787, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 13
+seed: 1477403986
+Count: 4400
+Application 7000927 resources: utime ~13s, stime ~3s, Rss ~864456, inblocks ~3820, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 14
+seed: 1477404023
+Count: 4400
+Application 7000929 resources: utime ~12s, stime ~3s, Rss ~864472, inblocks ~3846, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 15
+seed: 1477404057
+Count: 4400
+Application 7000931 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3877, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 16
+seed: 1477404094
+Count: 4400
+Application 7000932 resources: utime ~12s, stime ~3s, Rss ~934224, inblocks ~3910, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 17
+seed: 1477404129
+Count: 4352
+Application 7000934 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3943, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 18
+seed: 1477404167
+Count: 4352
+Application 7000936 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3978, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 19
+seed: 1477404204
+Count: 4352
+Application 7000939 resources: utime ~15s, stime ~3s, Rss ~1069480, inblocks ~4012, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 20
+seed: 1477404242
+Count: 4352
+Application 7000941 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~4052, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 11, limbs: 21
+seed: 1477404281
+Count: 4320
+Application 7000943 resources: utime ~17s, stime ~3s, Rss ~1169864, inblocks ~4094, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 2
+seed: 1477404320
+Count: 5664
+Application 7000944 resources: utime ~3s, stime ~1s, Rss ~358484, inblocks ~3598, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 3
+seed: 1477404346
+Count: 5664
+Application 7000945 resources: utime ~3s, stime ~1s, Rss ~358484, inblocks ~3613, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 4
+seed: 1477404370
+Count: 4880
+Application 7000946 resources: utime ~6s, stime ~2s, Rss ~458812, inblocks ~3630, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 5
+seed: 1477404396
+Count: 4608
+Application 7000948 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3648, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 6
+seed: 1477404424
+Count: 4608
+Application 7000949 resources: utime ~8s, stime ~2s, Rss ~559160, inblocks ~3668, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 7
+seed: 1477404453
+Count: 4608
+Application 7000951 resources: utime ~8s, stime ~2s, Rss ~594020, inblocks ~3681, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 8
+seed: 1477404482
+Count: 4608
+Application 7000952 resources: utime ~8s, stime ~2s, Rss ~628884, inblocks ~3703, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 9
+seed: 1477404511
+Count: 4480
+Application 7000954 resources: utime ~10s, stime ~2s, Rss ~694628, inblocks ~3725, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 10
+seed: 1477404542
+Count: 4480
+Application 7000956 resources: utime ~10s, stime ~3s, Rss ~729232, inblocks ~3749, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 11
+seed: 1477404573
+Count: 4480
+Application 7000957 resources: utime ~10s, stime ~2s, Rss ~764092, inblocks ~3773, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 12
+seed: 1477404607
+Count: 4480
+Application 7000958 resources: utime ~10s, stime ~2s, Rss ~764120, inblocks ~3805, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 13
+seed: 1477404638
+Count: 4400
+Application 7000960 resources: utime ~13s, stime ~3s, Rss ~864460, inblocks ~3833, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 14
+seed: 1477404673
+Count: 4400
+Application 7000962 resources: utime ~13s, stime ~3s, Rss ~864476, inblocks ~3865, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 15
+seed: 1477404707
+Count: 4400
+Application 7000964 resources: utime ~13s, stime ~3s, Rss ~899352, inblocks ~3896, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 16
+seed: 1477404740
+Count: 4400
+Application 7000965 resources: utime ~12s, stime ~3s, Rss ~934224, inblocks ~3929, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 17
+seed: 1477404775
+Count: 4352
+Application 7000966 resources: utime ~15s, stime ~3s, Rss ~999724, inblocks ~3966, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 18
+seed: 1477404813
+Count: 4352
+Application 7000967 resources: utime ~15s, stime ~3s, Rss ~1034872, inblocks ~3998, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 19
+seed: 1477404850
+Count: 4352
+Application 7000968 resources: utime ~15s, stime ~3s, Rss ~1069484, inblocks ~4036, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 20
+seed: 1477404888
+Count: 4352
+Application 7000969 resources: utime ~15s, stime ~3s, Rss ~1069512, inblocks ~4077, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 13, limbs: 21
+seed: 1477404925
+Count: 4320
+Application 7000971 resources: utime ~17s, stime ~3s, Rss ~1169868, inblocks ~4121, outblocks ~4394
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 2
+seed: 1477404963
+Count: 5664
+Application 7000974 resources: utime ~3s, stime ~1s, Rss ~358484, inblocks ~3602, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 3
+seed: 1477404986
+Count: 5664
+Application 7000979 resources: utime ~3s, stime ~1s, Rss ~358484, inblocks ~3617, outblocks ~4257
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 4
+seed: 1477405008
+Count: 4880
+Application 7000982 resources: utime ~6s, stime ~2s, Rss ~458812, inblocks ~3636, outblocks ~4265
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 5
+seed: 1477405033
+Count: 4608
+Application 7000984 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3656, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 6
+seed: 1477405061
+Count: 4608
+Application 7000985 resources: utime ~8s, stime ~2s, Rss ~559160, inblocks ~3676, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 7
+seed: 1477405090
+Count: 4608
+Application 7000986 resources: utime ~8s, stime ~2s, Rss ~594020, inblocks ~3692, outblocks ~4266
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 8
+seed: 1477405121
+Count: 4608
+Application 7000987 resources: utime ~8s, stime ~2s, Rss ~628884, inblocks ~3712, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 9
+seed: 1477405150
+Count: 4480
+Application 7000988 resources: utime ~10s, stime ~3s, Rss ~694628, inblocks ~3737, outblocks ~4274
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 10
+seed: 1477405182
+Count: 4480
+Application 7000989 resources: utime ~10s, stime ~2s, Rss ~729232, inblocks ~3762, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 11
+seed: 1477405214
+Count: 4480
+Application 7000990 resources: utime ~10s, stime ~2s, Rss ~764092, inblocks ~3787, outblocks ~4282
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 12
+seed: 1477405246
+Count: 4480
+Application 7000991 resources: utime ~10s, stime ~2s, Rss ~764116, inblocks ~3820, outblocks ~4298
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 13
+seed: 1477405279
+Count: 4400
+Application 7000993 resources: utime ~13s, stime ~3s, Rss ~864460, inblocks ~3852, outblocks ~4306
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 14
+seed: 1477405313
+Count: 4400
+Application 7000995 resources: utime ~13s, stime ~3s, Rss ~864480, inblocks ~3880, outblocks ~4314
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 15
+seed: 1477405347
+Count: 4400
+Application 7000996 resources: utime ~13s, stime ~3s, Rss ~899356, inblocks ~3914, outblocks ~4322
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 16
+seed: 1477405380
+Count: 4400
+Application 7000998 resources: utime ~13s, stime ~3s, Rss ~934228, inblocks ~3951, outblocks ~4330
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 17
+seed: 1477405415
+Count: 4352
+Application 7000999 resources: utime ~15s, stime ~3s, Rss ~999728, inblocks ~3984, outblocks ~4338
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 18
+seed: 1477405452
+Count: 4352
+Application 7001004 resources: utime ~15s, stime ~3s, Rss ~1034872, inblocks ~4021, outblocks ~4354
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 19
+seed: 1477405488
+Count: 4352
+Application 7001006 resources: utime ~15s, stime ~3s, Rss ~1069484, inblocks ~4059, outblocks ~4362
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 20
+seed: 1477405525
+Count: 4352
+Application 7001024 resources: utime ~15s, stime ~3s, Rss ~1069512, inblocks ~4100, outblocks ~4378
+**************************
+p: 2^5, r: 2^18, u: 15, limbs: 21
+seed: 1477405563
+Count: 4320
+Application 7001025 resources: utime ~17s, stime ~4s, Rss ~1169868, inblocks ~4147, outblocks ~4394
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 2
+seed: 1477405601
+Count: 5664
+Application 7001026 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3578, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 3
+seed: 1477405624
+Count: 5664
+Application 7001029 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3586, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 4
+seed: 1477405647
+Count: 4880
+Application 7001031 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3596, outblocks ~4265
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 5
+seed: 1477405671
+Count: 4608
+Application 7001032 resources: utime ~8s, stime ~2s, Rss ~559144, inblocks ~3609, outblocks ~4266
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 6
+seed: 1477405700
+Count: 4608
+Application 7001034 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3622, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 7
+seed: 1477405728
+Count: 4608
+Application 7001035 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3629, outblocks ~4266
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 8
+seed: 1477405757
+Count: 4608
+Application 7001036 resources: utime ~8s, stime ~2s, Rss ~628872, inblocks ~3643, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 9
+seed: 1477405785
+Count: 4480
+Application 7001037 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3661, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 10
+seed: 1477405815
+Count: 4480
+Application 7001038 resources: utime ~10s, stime ~2s, Rss ~729224, inblocks ~3677, outblocks ~4282
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 11
+seed: 1477405846
+Count: 4480
+Application 7001039 resources: utime ~10s, stime ~3s, Rss ~764084, inblocks ~3696, outblocks ~4282
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 12
+seed: 1477405876
+Count: 4480
+Application 7001040 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3720, outblocks ~4298
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 13
+seed: 1477405908
+Count: 4400
+Application 7001041 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3744, outblocks ~4306
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 14
+seed: 1477405941
+Count: 4400
+Application 7001043 resources: utime ~13s, stime ~3s, Rss ~864472, inblocks ~3767, outblocks ~4314
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 15
+seed: 1477405974
+Count: 4400
+Application 7001044 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3794, outblocks ~4322
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 16
+seed: 1477406007
+Count: 4400
+Application 7001046 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3820, outblocks ~4330
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 17
+seed: 1477406040
+Count: 4352
+Application 7001047 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3848, outblocks ~4338
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 18
+seed: 1477406075
+Count: 4352
+Application 7001048 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3876, outblocks ~4354
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 19
+seed: 1477406112
+Count: 4352
+Application 7001049 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3908, outblocks ~4362
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 20
+seed: 1477406149
+Count: 4352
+Application 7001050 resources: utime ~15s, stime ~3s, Rss ~1069504, inblocks ~3941, outblocks ~4378
+**************************
+p: 2^6, r: 2^18, u: 1, limbs: 21
+seed: 1477406187
+Count: 4320
+Application 7001051 resources: utime ~17s, stime ~4s, Rss ~1169860, inblocks ~3978, outblocks ~4394
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 2
+seed: 1477406225
+Count: 5664
+Application 7001056 resources: utime ~3s, stime ~1s, Rss ~358472, inblocks ~3585, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 3
+seed: 1477406247
+Count: 5664
+Application 7001059 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3596, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 4
+seed: 1477406269
+Count: 4880
+Application 7001060 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3609, outblocks ~4265
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 5
+seed: 1477406295
+Count: 4608
+Application 7001065 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3624, outblocks ~4266
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 6
+seed: 1477406323
+Count: 4608
+Application 7001066 resources: utime ~8s, stime ~2s, Rss ~559148, inblocks ~3639, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 7
+seed: 1477406350
+Count: 4608
+Application 7001069 resources: utime ~8s, stime ~2s, Rss ~594008, inblocks ~3648, outblocks ~4266
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 8
+seed: 1477406379
+Count: 4608
+Application 7001070 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3665, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 9
+seed: 1477406406
+Count: 4480
+Application 7001071 resources: utime ~10s, stime ~2s, Rss ~694616, inblocks ~3685, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 10
+seed: 1477406436
+Count: 4480
+Application 7001072 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3704, outblocks ~4282
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 11
+seed: 1477406468
+Count: 4480
+Application 7001073 resources: utime ~10s, stime ~2s, Rss ~764088, inblocks ~3725, outblocks ~4282
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 12
+seed: 1477406499
+Count: 4480
+Application 7001074 resources: utime ~10s, stime ~2s, Rss ~764108, inblocks ~3752, outblocks ~4298
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 13
+seed: 1477406530
+Count: 4400
+Application 7001075 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3778, outblocks ~4306
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 14
+seed: 1477406563
+Count: 4400
+Application 7001076 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3803, outblocks ~4314
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 15
+seed: 1477406596
+Count: 4400
+Application 7001077 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3832, outblocks ~4322
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 16
+seed: 1477406628
+Count: 4400
+Application 7001078 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3861, outblocks ~4330
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 17
+seed: 1477406663
+Count: 4352
+Application 7001079 resources: utime ~15s, stime ~3s, Rss ~999716, inblocks ~3891, outblocks ~4338
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 18
+seed: 1477406700
+Count: 4352
+Application 7001080 resources: utime ~15s, stime ~3s, Rss ~1034592, inblocks ~3921, outblocks ~4354
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 19
+seed: 1477406736
+Count: 4352
+Application 7001081 resources: utime ~15s, stime ~3s, Rss ~1069472, inblocks ~3956, outblocks ~4362
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 20
+seed: 1477406773
+Count: 4352
+Application 7001086 resources: utime ~15s, stime ~3s, Rss ~1069500, inblocks ~3991, outblocks ~4378
+**************************
+p: 2^6, r: 2^18, u: 3, limbs: 21
+seed: 1477406809
+Count: 4320
+Application 7001100 resources: utime ~17s, stime ~4s, Rss ~1169856, inblocks ~4030, outblocks ~4394
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 2
+seed: 1477406847
+Count: 5664
+Application 7001102 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3593, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 3
+seed: 1477406869
+Count: 5664
+Application 7001105 resources: utime ~3s, stime ~1s, Rss ~358476, inblocks ~3606, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 4
+seed: 1477406891
+Count: 4880
+Application 7001108 resources: utime ~6s, stime ~2s, Rss ~458804, inblocks ~3621, outblocks ~4265
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 5
+seed: 1477406914
+Count: 4608
+Application 7001109 resources: utime ~8s, stime ~2s, Rss ~559140, inblocks ~3638, outblocks ~4266
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 6
+seed: 1477406941
+Count: 4608
+Application 7001110 resources: utime ~8s, stime ~2s, Rss ~559152, inblocks ~3656, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 7
+seed: 1477406968
+Count: 4608
+Application 7001111 resources: utime ~8s, stime ~2s, Rss ~594012, inblocks ~3668, outblocks ~4266
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 8
+seed: 1477406997
+Count: 4608
+Application 7001113 resources: utime ~8s, stime ~2s, Rss ~628876, inblocks ~3686, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 9
+seed: 1477407028
+Count: 4480
+Application 7001115 resources: utime ~10s, stime ~2s, Rss ~694620, inblocks ~3709, outblocks ~4274
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 10
+seed: 1477407059
+Count: 4480
+Application 7001116 resources: utime ~10s, stime ~2s, Rss ~729220, inblocks ~3731, outblocks ~4282
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 11
+seed: 1477407093
+Count: 4480
+Application 7001117 resources: utime ~10s, stime ~3s, Rss ~764088, inblocks ~3753, outblocks ~4282
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 12
+seed: 1477407123
+Count: 4480
+Application 7001128 resources: utime ~10s, stime ~2s, Rss ~764112, inblocks ~3783, outblocks ~4298
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 13
+seed: 1477407155
+Count: 4400
+Application 7001138 resources: utime ~13s, stime ~3s, Rss ~864452, inblocks ~3812, outblocks ~4306
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 14
+seed: 1477407188
+Count: 4400
+Application 7001140 resources: utime ~13s, stime ~3s, Rss ~864468, inblocks ~3840, outblocks ~4314
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 15
+seed: 1477407223
+Count: 4400
+Application 7001141 resources: utime ~13s, stime ~3s, Rss ~899348, inblocks ~3870, outblocks ~4322
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 16
+seed: 1477407257
+Count: 4400
+Application 7001142 resources: utime ~13s, stime ~3s, Rss ~934220, inblocks ~3902, outblocks ~4330
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 17
+seed: 1477407290
+Count: 4352
+Application 7001143 resources: utime ~15s, stime ~3s, Rss ~999720, inblocks ~3933, outblocks ~4338
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 18
+seed: 1477407327
+Count: 4352
+Application 7001144 resources: utime ~15s, stime ~3s, Rss ~1034600, inblocks ~3968, outblocks ~4354
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 19
+seed: 1477407364
+Count: 4352
+Application 7001145 resources: utime ~15s, stime ~3s, Rss ~1069476, inblocks ~4003, outblocks ~4362
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 20
+seed: 1477407403
+Count: 4352
+Application 7001150 resources: utime ~15s, stime ~3s, Rss ~1069508, inblocks ~4040, outblocks ~4378
+**************************
+p: 2^6, r: 2^18, u: 5, limbs: 21
+seed: 1477407440
+Count: 4320
+Application 7001151 resources: utime ~17s, stime ~3s, Rss ~1169860, inblocks ~4081, outblocks ~4394
+**************************
+p: 2^6, r: 2^18, u: 7, limbs: 2
+seed: 1477407479
+Count: 5664
+Application 7001152 resources: utime ~3s, stime ~1s, Rss ~358484, inblocks ~3601, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 7, limbs: 3
+seed: 1477407501
+Count: 5664
+Application 7001155 resources: utime ~3s, stime ~1s, Rss ~358484, inblocks ~3616, outblocks ~4257
+**************************
+p: 2^6, r: 2^18, u: 7, limbs: 4
+seed: 1477407525
+Count: 4880
+Application 7001162 resources: utime ~6s, stime ~2s, Rss ~458812, inblocks ~3633, outblocks ~4265
+**************************
+p: 2^6, r: 2^18, u: 7, limbs: 5
+seed: 1477407552
+Count: 4608
