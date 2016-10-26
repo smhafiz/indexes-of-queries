@@ -184,9 +184,9 @@ static void print_normalize(uint limbs)
 {
     cout << "__device__ __forceinline__ void normalize(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uint" << BITS_IN(limbs) << " & s_lo, const uint s_hi)\n";
     cout << "{\n";
-    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    /*cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
-    cout << "    const uint * _s_lo = (uint *)&s_lo;\n";
+    cout << "    const uint * _s_lo = (uint *)&s_lo;\n";*/
     sprintf(r0, "%%%u", 0);
     sprintf(r2, "%%%u", 2 * limbs);
     printf("    asm(\"sub.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
@@ -203,17 +203,30 @@ static void print_normalize(uint limbs)
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
     
-    std::stringstream iregs;
+    /*std::stringstream iregs;
     iregs << "\t: \"+r\"(_a_lo[0])";
     for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
     for (int i = 0; i < limbs; i++) iregs << ", \"+r\"(_a_hi[" << i << "])";
-    wrap(iregs.str().c_str());
+    wrap(iregs.str().c_str());*/
 
-    std::stringstream oregs;
+    std::stringstream iregs2;
+    iregs2 << "\t: \"+r\"(a_lo.w0.x)";
+    for (int i = 1; i < limbs; i++) iregs2 << ", \"+r\"(a_lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    for (int i = 0; i < limbs; i++) iregs2 << ", \"+r\"(a_hi.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    wrap(iregs2.str().c_str());
+
+    /*std::stringstream oregs;
     oregs << "\n\t: \"r\"(_s_lo[0])";
     for (int i = 1; i < limbs; i++) oregs << ", \"r\"(_s_lo[" << i << "])";
     oregs << ", \"r\"(s_hi));\n";
     wrap(oregs.str().c_str());
+    cout << "}\n\n";*/
+
+    std::stringstream oregs2;
+    oregs2 << "\n\t: \"r\"(s_lo.w0.x)";
+    for (int i = 1; i < limbs; i++) oregs2 << ", \"r\"(s_lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    oregs2 << ", \"r\"(s_hi));\n";
+    wrap(oregs2.str().c_str());
     cout << "}\n\n";
 }
 
@@ -221,9 +234,9 @@ static void print_sub(uint limbs)
 {
     cout << "__device__ __forceinline__ uint sub(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tconst uintXp<uint" << BITS_IN(limbs) << "> & r)\n";
     cout << "{\n";
-    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    /*cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
-    cout << "    const uint * _r = (uint *)&r;\n";
+    cout << "    const uint * _r = (uint *)&r;\n";*/
     sprintf(r0, "%%%u", 0);
     sprintf(r2, "%%%u", limbs + 1);
     printf("    asm(\"sub.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
@@ -240,18 +253,33 @@ static void print_sub(uint limbs)
     printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
     printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
 
-    std::stringstream iregs;
+    /*std::stringstream iregs;
     iregs << "\t: \"+r\"(_a_lo[0])";
     for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
     iregs << ", \"+r\"(_a_hi[0])";
-    wrap(iregs.str().c_str());
+    wrap(iregs.str().c_str());*/
 
-    std::stringstream oregs;
+    std::stringstream iregs2;
+    iregs2 << "\t: \"+r\"(a_lo.w0.x)";
+    for (int i = 1; i < limbs; i++) iregs2 << ", \"+r\"(a_lo.w"<< ((i)/4)*4 <<"."<< coords[i%4] <<")";
+    iregs2 << ", \"+r\"(a_hi.w0.x)";
+    wrap(iregs2.str().c_str());
+
+    /*std::stringstream oregs;
     oregs << "\n\t: \"r\"(_r[0])";
     for (int i = 1; i < limbs + 1; i++) oregs << ", \"r\"(_r[" << i << "])";
     oregs << ");\n";
     wrap(oregs.str().c_str());
     cout << "    return _a_hi[0];\n";
+    cout << "}\n\n";*/
+
+    std::stringstream oregs2;
+    oregs2 << "\n\t: \"r\"(r.lo.w0.x)";
+    for (int i = 1; i < limbs; i++) oregs2 << ", \"r\"(r.lo.w"<< ((i)/4)*4 <<"."<< coords[i%4] <<")";
+    oregs2 << ", \"r\"(r.hi)";
+    oregs2 << ");\n";
+    wrap(oregs2.str().c_str());
+    cout << "    return a_hi.w0.x;\n";
     cout << "}\n\n";
 }
 
@@ -265,10 +293,10 @@ static void print_mad(uint limbs)
     
     cout << "__device__ __forceinline__ void mad(uint" << BITS_IN(limbs) << " & a_lo, uint" << BITS_IN(limbs) << " & a_hi,\n\tuint & overflow, const uint" << BITS_IN(limbs) << " & b, const uint" << BITS_IN(limbs) << " & c)\n";
     cout << "{\n";
-    cout << "    uint * _a_lo = (uint *)&a_lo;\n";
+    /*cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
     cout << "    const uint * _b = (uint *)&b;\n";
-    cout << "    const uint * _c = (uint *)&c;\n\n";
+    cout << "    const uint * _c = (uint *)&c;\n\n";*/
     cout << "    asm(";
     int curr = 0;
     while (curr < 2 * limbs)
@@ -306,19 +334,34 @@ static void print_mad(uint limbs)
 	    printf("\t//%3s+=c\n\t", &(*r0='r'));
 	}
     }
-    std::stringstream iregs;
+    /*std::stringstream iregs;
     iregs << ": \"+r\"(_a_lo[0])";
     for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
     for (int i = 0; i < limbs; i++) iregs << ", \"+r\"(_a_hi[" << i << "])";
     iregs << ", \"+r\"(overflow)";
-    wrap(iregs.str().c_str());
+    wrap(iregs.str().c_str());*/
 
-    std::stringstream oregs;
+    std::stringstream iregs2;
+    iregs2 << ": \"+r\"(a_lo.w0.x)";
+    for (int i = 1; i < limbs; i++) iregs2 << ", \"+r\"(a_lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    for (int i = 0; i < limbs; i++) iregs2 << ", \"+r\"(a_hi.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    iregs2 << ", \"+r\"(overflow)";
+    wrap(iregs2.str().c_str());
+
+    /*std::stringstream oregs;
     oregs << "\n\t: \"r\"(_b[0])";
     for (int i = 1; i < limbs; i++) oregs << ", \"r\"(_b[" << i << "])";
     for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_c[" << i << "])";
     oregs << ");\n";
     wrap(oregs.str().c_str());
+    cout << "}\n\n";*/
+
+    std::stringstream oregs2;
+    oregs2 << "\n\t: \"r\"(b.w0.x)";
+    for (int i = 1; i < limbs; i++) oregs2 << ", \"r\"(b.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    for (int i = 0; i < limbs; i++) oregs2 << ", \"r\"(c.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    oregs2 << ");\n";
+    wrap(oregs2.str().c_str());
     cout << "}\n\n";
 }
 
@@ -371,11 +414,11 @@ inline void print_get_q(int limbs)
     cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs-1) << "> get_q(const uint" << BITS_IN(limbs-1) << " & a_lo,\n\tconst uint" << BITS_IN(limbs-1) << " & a_hi, const uintXp<uint" << BITS_IN(limbs-1) << "> & mu)\n";
     cout << "{\n";
     for (int i = 0; i < NUM_TMP_REGS; i++) cout << "    uint __attribute__((unused)) tmp" << i << ";\n";
-    cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q;\n";
-    cout << "    uint * _q = (uint *)&q;\n";
+    cout << "    uintXp<uint" << BITS_IN(limbs-1) << "> q = {0};\n";
+    /*cout << "    uint * _q = (uint *)&q;\n";
     cout << "    uint * _a_lo = (uint *)&a_lo;\n";
     cout << "    uint * _a_hi = (uint *)&a_hi;\n";
-    cout << "    uint * _mu = (uint *)&mu;\n";
+    cout << "    uint * _mu = (uint *)&mu;\n";*/
 
     auto p = make_pair(1,0);
     sprintf(r0, "%%%u", GET_DEST_REG_Q(1));
@@ -417,18 +460,37 @@ inline void print_get_q(int limbs)
     printf("\t\"addc.u32\t%3s,%3s,  0    ;\\n\\t\"", r0, r0);
     printf("\t//%3s+=c\n", &(*r0='r'));
 
-    std::stringstream iregs;
+
+    /*std::stringstream iregs;
     iregs << "\t: \"+r\"(_q[0])";
     for (int i = 1; i < limbs; i++) iregs << ", \"=r\"(_q[" << i << "])";
     for (int i = 0; i < NUM_TMP_REGS; i++) iregs << ", \"=r\"(tmp" << i << ")";
-    wrap(iregs.str().c_str());
+    wrap(iregs.str().c_str());*/
 
-    std::stringstream oregs;
+    std::stringstream iregs2;
+    iregs2 << "\t: \"+r\"(q.lo.w0.x)";
+    for (int i = 1; i < limbs-1; i++) iregs2 << ", \"=r\"(q.lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    iregs2 << ", \"=r\"(q.hi)";
+    for (int i = 0; i < NUM_TMP_REGS; i++) iregs2 << ", \"=r\"(tmp" << i << ")";
+    wrap(iregs2.str().c_str());
+
+
+    /*std::stringstream oregs;
     oregs << "\n\t: \"r\"(_a_lo[" << (limbs-2) << "])";
     for (int i = 0; i < limbs-1; i++) oregs << ", \"r\"(_a_hi[" << i << "])";
     for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_mu[" << i << "])";
     oregs << ");\n\n";
     wrap(oregs.str().c_str());
+    cout << "    return q;\n";
+    cout << "}\n\n";*/
+
+    std::stringstream oregs2;
+    oregs2 << "\n\t: \"r\"(a_lo.w"<< ((limbs-2)/4)*4 <<"."<< coords[(limbs-2)%4] <<" )";
+    for (int i = 0; i < limbs-1; i++) oregs2 << ", \"r\"(a_hi.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    for (int i = 0; i < limbs-1; i++) oregs2 << ", \"r\"(mu.lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    oregs2 << ", \"r\"(mu.hi)";
+    oregs2 << ");\n\n";
+    wrap(oregs2.str().c_str());
     cout << "    return q;\n";
     cout << "}\n\n";
 
@@ -468,10 +530,10 @@ inline void print_get_r2(uint limbs)
 
     cout << "__device__ __forceinline__ uintXp<uint" << BITS_IN(limbs) << "> get_r2(const uintXp<uint" << BITS_IN(limbs) << "> & q,\n\tconst uint" << BITS_IN(limbs) << " & modulus)\n";
     cout << "{\n";
-    cout << "    uintXp<uint" << BITS_IN(limbs) << "> r;\n";
-    cout << "    uint * _r = (uint *)&r;\n";
+    cout << "    uintXp<uint" << BITS_IN(limbs) << "> r = {0};\n";
+    /*cout << "    uint * _r = (uint *)&r;\n";
     cout << "    uint * _q = (uint *)&q;\n";
-    cout << "    uint * _m = (uint *)&modulus;\n\n";
+    cout << "    uint * _m = (uint *)&modulus;\n\n";*/
 
     cout << "    asm(";    
     for (int i = 0; i <= limbs; i++)
@@ -482,19 +544,36 @@ inline void print_get_r2(uint limbs)
 	}
     }
 
-    std::stringstream iregs;
+    /*std::stringstream iregs;
     iregs << ": \"+r\"(_r[0])";
     for (int i = 1; i <= limbs; i++) iregs << ", \"=r\"(_r[" << i << "])";
-    wrap(iregs.str().c_str());
+    wrap(iregs.str().c_str());*/
 
-    std::stringstream oregs;
+    std::stringstream iregs2;
+    iregs2 << ": \"+r\"(r.lo.w0.x)";
+    for (int i = 1; i < limbs; i++) iregs2 << ", \"=r\"(r.lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    iregs2 << ", \"=r\"(r.hi)";
+    wrap(iregs2.str().c_str());
+
+    /*std::stringstream oregs;
     oregs << "\n\t: \"r\"(_q[0])";
     for (int i = 1; i <= limbs; i++) oregs << ", \"r\"(_q[" << i << "])";
     for (int i = 0; i < limbs; i++) oregs << ", \"r\"(_m[" << i << "])";
     oregs << ");\n\n";
     wrap(oregs.str().c_str());
     cout << "    return r;\n";
+    cout << "}\n\n";*/
+
+    std::stringstream oregs2;
+    oregs2 << "\n\t: \"r\"(q.lo.w0.x)";
+    for (int i = 1; i < limbs; i++) oregs2 << ", \"r\"(q.lo.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    oregs2 << ", \"r\"(q.hi)";
+    for (int i = 0; i < limbs; i++) oregs2 << ", \"r\"(modulus.w"<< (i/4)*4 <<"."<< coords[i%4] <<")";
+    oregs2 << ");\n\n";
+    wrap(oregs2.str().c_str());
+    cout << "    return r;\n";
     cout << "}\n\n";
+
 
     delete [] state;
 }
@@ -510,9 +589,9 @@ int main(int argc, char ** argv)
     	cout << "Usage: " << argv[0] << " LIMBS > uintX.h\n\n";
     	return -1;
     }
-    if (limbs < 3)
+    if (limbs < 2)
     {
-    	cout << "Error: number of limbs must be at least 3\n\n";
+    	cout << "Error: number of limbs must be at least 2\n\n";
     	return -1;
     }
 
