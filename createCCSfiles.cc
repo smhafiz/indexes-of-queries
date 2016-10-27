@@ -44,6 +44,7 @@ int main(int argc, char ** argv)
 	p = 1L << (atoi(argv[2]));
 	r = 1L << (atoi(argv[3]));
 	u = atoi(argv[4]);
+	//std::cout << "r: " << r << " p: " << p << std::endl ;
 	//const long max_u =2, r = 1L << 4;
 	//for (long p = 2; p <= r; p <<= 1)
 	//{
@@ -100,7 +101,7 @@ int main(int argc, char ** argv)
 				int *columnPtr = (int*)malloc(sizeof(int)*(lengthOfColumnPtr));
 
 				int t=0;
-				int sum=0;
+				//int sum=0;
 				columnPtr[0] = 0;
 				int lengthOfCPReduced = 0;
 				ccsCol << " " << 0;
@@ -111,13 +112,13 @@ int main(int argc, char ** argv)
 						rowIndex[t++] = (*it)-1;
 						ccsRow << " " << rowIndex[t-1];
 					}
-					if (cols[i].size())
-					{
+					//if (cols[i].size())
+					//{
 						columnPtr[lengthOfCPReduced+1]=columnPtr[lengthOfCPReduced]+cols[i].size();
 						ccsCol << " " << columnPtr[lengthOfCPReduced+1];
 						lengthOfCPReduced++;
-					}
-					sum+=cols[i].size();
+					//}
+					//sum+=cols[i].size();
 				}
 
 				//std::cout << "\n\nCol (" << cols.size() <<"): ";
@@ -167,6 +168,5 @@ void printVector2(unsigned long long int *a,int c) {
 	}
 	printf("\n");
 }
-
 
 
