@@ -5,6 +5,7 @@
 
 #include <NTL/ZZ_pX.h>
 #include <NTL/vec_ZZ_p.h>
+#include <NTL/vec_vec_ZZ_p.h>
 
 NTL_CLIENT
 
@@ -24,10 +25,12 @@ int main(int argc, char **argv)
     // determine how many servers, and what evals they will hold
     int num_servers;
     xcoords >> num_servers;
-    uint16_t * server_xcoord = new uint16_t[num_servers];
+    NTL::vec_ZZ_p server_xcoord(INIT_SIZE, num_servers);
     for (int i = 0; i < num_servers; ++i)
     {
-	xcoords >> server_xcoord[i];
+    	uint16_t tmp;
+	xcoords >> tmp;
+	server_xcoord[i] = to_ZZ_p(tmp);
     }
 
     // open the files containing the sparse permutation-like matrices
@@ -68,7 +71,7 @@ int main(int argc, char **argv)
     char * outfile = new char[9];
     for (int i = 0; i < num_servers; ++i)
     {
-	sprintf(outfile, "val.%d", server_xcoord[i]);
+	sprintf(outfile, "val.%lu", trunc_long(rep(server_xcoord[i]), 16));
 	oval[i].open(outfile, std::ofstream::out);
 	oval[i] << modulus << " ";
     }
@@ -107,14 +110,25 @@ int main(int argc, char **argv)
 	NTL::mul(lagrange[i], tmp, NTL::inv(w));
     }
 
+    vec_vec_ZZ_p precomp(INIT_SIZE, num_servers, vec_ZZ_p(INIT_SIZE, u));
+    for (int i = 0; i < num_servers; i++)
+    {
+    	for (int j = 0; j < u; j++)
+    	{
+    	    precomp[i][j] = eval(lagrange[j], server_xcoord[i]);
+    	}
+    }
+
     // read the input matrices and create the index in CCS format, on the fly
     int * prev_col = new int[u];
     memset(prev_col, 0, sizeof(int)*u);
 
     int num_vals = 0;
-
-    vec_ZZ_pX buffer(INIT_SIZE, p, upoly);
+    vec_vec_ZZ_p buffer(INIT_SIZE, num_servers, vec_ZZ_p(INIT_SIZE, p));
+    //vec_ZZ_pX polybuf(INIT_SIZE, p, upoly);
     int next_col = 0;
+    bool * nz = new bool[p];
+    for (int i = 0; i < p; i++) nz[i] = false;
     for (int j = 0; j < r; ++j)
     {
 	for (int i = 0; i < u; ++i)
@@ -122,28 +136,34 @@ int main(int argc, char **argv)
 	    int to_read = prev_col[i];
 	    icol[i] >> prev_col[i];
 	    to_read = prev_col[i] - to_read;
-
 	    while (to_read--)
 	    {
 		int which_row;
 		irow[i] >> which_row;
-		NTL::add(buffer[which_row], buffer[which_row], lagrange[i]);
+		//NTL::add(polybuf[which_row], polybuf[which_row], lagrange[i]);
+		for (int k = 0; k < num_servers; k++)
+		{
+			NTL::add(buffer[k][which_row], buffer[k][which_row], precomp[k][i]);
+		}
+		nz[which_row] = true;
 	    }
 	}
 	for (int i = 0; i < p; ++i)
 	{
-	    if (!NTL::IsZero(buffer[i]))
+	    if (nz[i])
 	    {
 		next_col++;
 		orow << i << " ";
-		opoly << buffer[i] << " ";
+		//opoly << polybuf[i] << " ";
 		for (int k = 0; k < num_servers; ++k)
 		{
-		    oval[k] << eval(buffer[i], to_ZZ_p(server_xcoord[k])) << " ";
+		    oval[k] << buffer[k][i] << " ";
+		    NTL::clear(buffer[k][i]);
 		}
                 num_vals++;
 	    }
-	    NTL::clear(buffer[i]);
+	    nz[i] = false;
+	    //NTL::clear(polybuf[i]);
 	}
 	ocol << next_col << " ";
     }
@@ -169,6 +189,7 @@ int main(int argc, char **argv)
     opoly.close();
     lagrange.kill();
     buffer.kill();
+    delete [] nz;
 
     return 0;
 }
