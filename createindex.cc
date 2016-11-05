@@ -11,7 +11,7 @@ NTL_CLIENT
 
 int main(int argc, char **argv)
 {
-    NTL::ZZ modulus = NTL::RandomPrime_ZZ(atoi(argv[1])*32);
+    NTL::ZZ modulus = NTL::RandomPrime_ZZ(atoi(argv[1])*8);//to support GF(2^8)
     
     //for(int d=0;d<argc;d++)cout << argv[d] << endl;
     NTL::ZZ_p::init(modulus);
