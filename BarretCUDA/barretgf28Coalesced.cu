@@ -44,11 +44,14 @@ __global__ void SpMV_kernel(uint8_t * response, const uint8_t * query, const uin
 
     if (i >= ncols) return;
 
-	uint8_t temp = 0;
-	for(int j=i,k=0;j<i+4;++j,++k) {
-		temp ^= d_GF28_mult_table[((vals[j]>>(k*8))&0xFF)*256 + query[rows[cols[i]]]];
-//		temp ^= vals[j] * query[rows[j]];
-	}
+    register const uint val = vals[i];
+    register uint col = cols[i];
+	register uint8_t temp = 0;
+	temp ^= d_GF28_mult_table[( val       & 0xFF)*256 + query[rows[col++]]];
+    temp ^= d_GF28_mult_table[((val >> 8) & 0xFF)*256 + query[rows[col++]]];
+    temp ^= d_GF28_mult_table[((val >> 16)& 0xFF)*256 + query[rows[col++]]];
+    temp ^= d_GF28_mult_table[((val >> 24)& 0xFF)*256 + query[rows[col++]]];
+    response[i] = temp;
 }
 
 void SpMV(uint8_t * l_response, const uint8_t * l_query,
