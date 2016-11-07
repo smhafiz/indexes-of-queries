@@ -26,8 +26,8 @@ CXXFLAGS=-Wall -g -O2 -pedantic -std=c++11
 NVCCFLAGS=-std=c++11 -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -D__STRICT_ANSI__ -Xcompiler -fopenmp -lpthread
 LDLIBS=-lntl -lgmp -L$(HOME)/sw/lib -I$(HOME)/sw/include
 
-barret: barret.cu barret.h uint.h uintX.h
-	$(NVCC) $(NVCCFLAGS) -o $@ barret.cu $(LDLIBS)
+barret: barret.cu barret.h uint.h uintX.h gf2e.h gf2e.cc
+	$(NVCC) $(NVCCFLAGS) -o $@ barret.cu gf2e.cc $(LDLIBS)
 
 genuint: genuint.cc
 	$(CXX) $(CXXFLAGS) -o $@ $^

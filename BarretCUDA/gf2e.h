@@ -22,12 +22,12 @@
 
 #include <stdint.h>
 
-typedef unsigned char GF28_Element;
+typedef uint8_t GF28_Element;
 
 typedef uint16_t GF216_Element;
 
 /* Use the same representation as AES */
-static const unsigned char GF28_Generator = 0x1b;
+static const GF28_Element GF28_Generator = 0x1b;
 
 extern const GF28_Element GF28_mult_table[256][256];
 
