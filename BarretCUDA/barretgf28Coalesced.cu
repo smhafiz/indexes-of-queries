@@ -38,22 +38,22 @@ typedef uint8_t uintX;
 
 
 __global__ void SpMV_kernel(uint8_t * response, const uint8_t * query, const uint nvals,
-	const uint8_t * vals, const uint ncols, const uint * cols, const uint * rows, const uint8_t * d_GF28_mult_table)
+	const uint * vals, const uint ncols, const uint * cols, const uint * rows, const uint8_t * d_GF28_mult_table)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (i >= ncols) return;
 
 	uint8_t temp = 0;
-	for(int j=cols[i];j<cols[i+1];++j) {
-		temp ^= d_GF28_mult_table[vals[j]*256 + query[rows[j]]];
+	for(int j=i,k=0;j<i+4;++j,++k) {
+		temp ^= d_GF28_mult_table[((vals[j]>>(k*8))&0xFF)*256 + query[rows[cols[i]]]];
 //		temp ^= vals[j] * query[rows[j]];
 	}
 }
 
 void SpMV(uint8_t * l_response, const uint8_t * l_query,
 	uint8_t * d_response, uint8_t * d_query, const cudaStream_t & stream,
-	const SparseMatrix<uintX> & matrix, const uint8_t * d_GF28_mult_table)
+	const SparseMatrix<uint> & matrix, const uint8_t * d_GF28_mult_table)
 {
 //if (DEBUG_IDX>=0){printf("\n\nSpMV_kernel:");}
 //    cudaMemcpy(d_query, l_query, matrix.nrows * sizeof(T),
@@ -101,8 +101,8 @@ void initMatrix(const char * valfile, const char * rowfile,
     rowstream >> matrix.nvals;
     matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
     cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
-    matrix.l_vals = (T *)malloc(matrix.nvals);
-    cudaMalloc((void**)&matrix.d_vals, matrix.nvals);
+    matrix.l_vals = (uint *)malloc(matrix.ncols* sizeof(uint));
+    cudaMalloc((void**)&matrix.d_vals, matrix.ncols* sizeof(uint));
 
     colstream >> matrix.ncols;
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
@@ -113,30 +113,44 @@ void initMatrix(const char * valfile, const char * rowfile,
 //std::cout << "matrix.ncols:\t" << matrix.ncols << "\n";
 //std::cout << "matrix.nvals:\t" << matrix.nvals << "\n";
 
-    NTL::ZZ_pPush p(modulus);
-    for (int i = 0; i < matrix.nvals; i++)
-    {
-	uint8_t tmp;
-	valstream >> tmp;
-	//to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
-	matrix.l_vals[i] = tmp;
-	rowstream >> matrix.l_rows[i];
-    }
-    valstream.close();
-    rowstream.close();
-    cudaMemcpy(matrix.d_vals, matrix.l_vals, matrix.nvals,
-	cudaMemcpyHostToDevice);
-    cudaMemcpy(matrix.d_rows, matrix.l_rows, matrix.nvals* sizeof(uint),
-	cudaMemcpyHostToDevice);
-
     for (int i = 0; i < matrix.ncols+1; i++)
     {
 	colstream >> matrix.l_cols[i];
     }
     colstream.close();
 
+
     cudaMemcpy(matrix.d_cols, matrix.l_cols, (matrix.ncols+1) * sizeof(uint),
 	cudaMemcpyHostToDevice);
+
+
+
+    NTL::ZZ_pPush p(modulus);
+    for (int i = 0; i < matrix.nvals; i++)
+    {
+	rowstream >> matrix.l_rows[i];
+    }
+    rowstream.close();
+    cudaMemcpy(matrix.d_rows, matrix.l_rows, matrix.nvals* sizeof(uint),
+	cudaMemcpyHostToDevice);
+
+	for(int i=0;i<matrix.ncols;i++)
+	{	int number_of_nnz_in_a_col = matrix.l_cols[i+1] - matrix.l_cols[i];
+		for(int j=matrix.l_cols[i]; j < (number_of_nnz_in_a_col<4?number_of_nnz_in_a_col:4);j++)
+		{
+			uint tmp;
+			valstream >> tmp;
+			matrix.l_vals[i] +=  tmp<<(8*j);		
+		}
+	}
+	//to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
+
+    valstream.close();
+
+    cudaMemcpy(matrix.d_vals, matrix.l_vals, matrix.ncols* sizeof(uint),
+	cudaMemcpyHostToDevice);
+
+
 }
 
 template <typename T>
@@ -163,7 +177,7 @@ int main(int argc, char ** argv)
     NTL::SetSeed(to_ZZ(t0));
     std::cout << "seed: " << t0 << "\n";
 
-    struct SparseMatrix<uintX> matrix = { 0 };
+    struct SparseMatrix<uint> matrix = { 0 };
     NTL::ZZ modulus;
 
     initMatrix(argv[1], argv[2], argv[3], modulus, matrix);
@@ -226,7 +240,7 @@ int main(int argc, char ** argv)
     cudaFree(d_response);
     cudaFree(d_GF28_mult_table);
 
-    freeMatrix<uintX>(matrix);
+    freeMatrix<uint>(matrix);
 
     return 0;
 }
