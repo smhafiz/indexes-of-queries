@@ -206,11 +206,11 @@ int main(int argc, char ** argv)
 //	    SpMV_ntl_barret(responses[i], __l_query, matrix, barret);
 
 	    std::atomic_fetch_add(&cnt, 1);
-	    for (int j = 0; j < matrix.nrows; j++)
-	    {	__l_query[j] = 99;
+//	    for (int j = 0; j < matrix.nrows; j++)
+//	    {	__l_query[j] = 99;
 		//to_uint<uintX>(NTL::rep(NTL::random_ZZ_p()), __l_query[j]);
 		//NTL::BytesFromZZ((unsigned char *)&__l_query[j], NTL::RandomPrime_ZZ(8), 1);//conv<uint>();
-	    }
+//	    }
 	}
     }
 
