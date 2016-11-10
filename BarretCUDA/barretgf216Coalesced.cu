@@ -33,52 +33,64 @@ using namespace std;
 
 #define DEBUG_IDX 4
 
-typedef uint8_t uintX;
+typedef uint16_t uintX;
+
+int u;
 
 
+/*__device__ __forceinline__ uint16_t multiply_GF216_Element(const uint16_t x, const uint16_t y,  const uint16_t * d_GF216_log_table, const uint16_t * d_GF216_exp_table)
+{
+    if(x == 0 || y == 0) return 0;
+    return d_GF216_exp_table[d_GF216_log_table[x]+d_GF216_log_table[y]];
+}*/
 
-__global__ void SpMV_kernel(uint8_t * response, const uint8_t * query, const uint nvals,
-	const uint8_t * vals, const uint ncols, const uint * cols, const uint * rows, const uint8_t * d_GF28_mult_table)
+__global__ void SpMV_kernel(int u_wrap, uint16_t * response, const uint16_t * query, const uint nvals,
+	const uint * vals, const uint ncols, const uint * cols, const uint * rows,  const uint16_t * d_GF216_log_table, const uint16_t * d_GF216_exp_table)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (i >= ncols) return;
 
-	uint8_t temp = 0;
-	for(int j=cols[i];j<cols[i+1];++j) {
-		temp ^= d_GF28_mult_table[vals[j]*256 + query[rows[j]]];
-//		temp ^= vals[j] * query[rows[j]];
-	}
+    register uint col = cols[i];
+    register uint16_t temp = 0;
+
+    for (int j = 0; j < u_wrap; j++)
+    {
+	register const uint val = vals[i + j * ncols];
+	/*temp ^= d_GF216_exp_table[((val      )& 0xFFFF)];
+	temp ^= d_GF216_exp_table[query[rows[col++]]];*/
+
+	temp ^= d_GF216_exp_table[d_GF216_log_table[((val      )& 0xFFFF)]+d_GF216_log_table[query[rows[col++]]]];
+	temp ^= d_GF216_exp_table[d_GF216_log_table[((val >> 16)& 0xFFFF)]+d_GF216_log_table[query[rows[col++]]]];
+
+    }
+    response[i] = temp;
 }
 
-void SpMV(uint8_t * l_response, const uint8_t * l_query,
-	uint8_t * d_response, uint8_t * d_query, const cudaStream_t & stream,
-	const SparseMatrix<uintX> & matrix, const uint8_t * d_GF28_mult_table)
+void SpMV(int u_wrap, uint16_t * l_response, const uint16_t * l_query,
+	uint16_t * d_response, uint16_t * d_query, const cudaStream_t & stream,
+	const SparseMatrix<uint> & matrix, const uint16_t * d_GF216_log_table, const uint16_t * d_GF216_exp_table)
 {
 //if (DEBUG_IDX>=0){printf("\n\nSpMV_kernel:");}
 //    cudaMemcpy(d_query, l_query, matrix.nrows * sizeof(T),
 //	cudaMemcpyHostToDevice);
-    cudaMemcpyAsync(d_query, l_query, matrix.nrows,
-	cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(d_query, l_query, matrix.nrows*sizeof(uint16_t), cudaMemcpyHostToDevice, stream);
 
     const dim3 Dg(NUM_BLOCKS(matrix.ncols), 1, 1);
     const dim3 Db(THREADS_PER_BLOCK(matrix.ncols), 1, 1);
     const size_t Ns = 0;
 
-    SpMV_kernel<<< Dg, Db, Ns, stream >>> (d_response, d_query,
-	matrix.nvals, matrix.d_vals, matrix.ncols, matrix.d_cols, matrix.d_rows, d_GF28_mult_table);
+    SpMV_kernel<<< Dg, Db, Ns, stream >>> (u_wrap, d_response, d_query, matrix.nvals, matrix.d_vals, matrix.ncols, matrix.d_cols, matrix.d_rows, d_GF216_log_table,d_GF216_exp_table);
 
-//    cudaMemcpy(l_response, d_response, matrix.ncols * sizeof(uint8_t<T>),
+//    cudaMemcpy(l_response, d_response, matrix.ncols * sizeof(uint16_t<T>),
 //	cudaMemcpyDeviceToHost);
-    cudaMemcpyAsync(l_response, d_response, matrix.ncols,
-	cudaMemcpyDeviceToHost, stream);
+    cudaMemcpyAsync(l_response, d_response, matrix.ncols*sizeof(uint16_t), cudaMemcpyDeviceToHost, stream);
 	//printf("%02hhX\n",l_response);
 //    cudaStreamSynchronize(stream);
 //    response.SetLength(matrix.ncols);
 //    for (int i = 0; i < matrix.ncols; ++i)
 //    {
-//	response[i] = to_ZZ_p<T>(l_response[i].lo)
-//	    + NTL::to_ZZ_p(NTL::to_ZZ(l_response[i].hi) << BITS_IN(LIMBS_PER_UINTX));
+//	response[i] = to_ZZ_p<uintXp<T>>(l_response[i].lo);
 //if (i==DEBUG_IDX){std::cout << "\n  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX); std::cout << "\n";}
 //    }
 }
@@ -96,38 +108,26 @@ void initMatrix(const char * valfile, const char * rowfile,
     if (!valstream) { cerr << "Error: opening VALS files\n"; exit(-1); }
 
     valstream >> modulus;
-
+    //valstream >> u;
     rowstream >> matrix.nrows;
     rowstream >> matrix.nvals;
-    matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
-    cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
-    matrix.l_vals = (T *)malloc(matrix.nvals);
-    cudaMalloc((void**)&matrix.d_vals, matrix.nvals);
-
     colstream >> matrix.ncols;
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
     cudaMalloc((void**)&matrix.d_cols, (matrix.ncols+1) * sizeof(uint));
+
+    int u_wrap = ((u-1)/2+1);
+  //std::cout << "nvals: " << matrix.nvals << " Size l_vals: "<< u_wrap*matrix.ncols* sizeof(uint) <<" u_wrap really: "<< u_wrap <<"\n";
+    matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
+    cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
+    matrix.l_vals = (uint *)malloc(u_wrap*matrix.ncols* sizeof(uint));
+    cudaMalloc((void**)&matrix.d_vals, u_wrap*matrix.ncols* sizeof(uint));
+
+
 
 //std::cout << "modulus:\t" << modulus << "\n";
 //std::cout << "matrix.nrows:\t" << matrix.nrows << "\n";
 //std::cout << "matrix.ncols:\t" << matrix.ncols << "\n";
 //std::cout << "matrix.nvals:\t" << matrix.nvals << "\n";
-
-    NTL::ZZ_pPush p(modulus);
-    for (int i = 0; i < matrix.nvals; i++)
-    {
-	uint8_t tmp;
-	valstream >> tmp;
-	//to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
-	matrix.l_vals[i] = tmp;
-	rowstream >> matrix.l_rows[i];
-    }
-    valstream.close();
-    rowstream.close();
-    cudaMemcpy(matrix.d_vals, matrix.l_vals, matrix.nvals,
-	cudaMemcpyHostToDevice);
-    cudaMemcpy(matrix.d_rows, matrix.l_rows, matrix.nvals* sizeof(uint),
-	cudaMemcpyHostToDevice);
 
     for (int i = 0; i < matrix.ncols+1; i++)
     {
@@ -135,8 +135,43 @@ void initMatrix(const char * valfile, const char * rowfile,
     }
     colstream.close();
 
+
     cudaMemcpy(matrix.d_cols, matrix.l_cols, (matrix.ncols+1) * sizeof(uint),
 	cudaMemcpyHostToDevice);
+
+
+
+    NTL::ZZ_pPush p(modulus);
+    for (int i = 0; i < matrix.nvals; i++)
+    {
+	rowstream >> matrix.l_rows[i];
+    }
+    rowstream.close();
+    cudaMemcpy(matrix.d_rows, matrix.l_rows, matrix.nvals* sizeof(uint),
+	cudaMemcpyHostToDevice);
+
+	for(int i=0,c=0;i<matrix.ncols;i++)
+	{	int number_of_nnz_in_a_col = matrix.l_cols[i+1] - matrix.l_cols[i];
+		//std::cout<< "col i: " << number_of_nnz_in_a_col;
+		for(int j=0; j < number_of_nnz_in_a_col;j++)
+		{	c++;
+			
+			uint tmp;
+			valstream >> tmp;
+			matrix.l_vals[i+(j/2)*matrix.ncols] +=  tmp<<(16*(j%2));		
+//			std::cout << "\nc: " << c << " at ("<< i+(j/4)*matrix.ncols << ", " << 8*(j%4) << ")";
+		}
+		//std::cout << "\n";
+
+	}
+	//to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
+    valstream.close();
+  //std::cout << "problem9\n\n";
+    cudaMemcpy(matrix.d_vals, matrix.l_vals, u_wrap*matrix.ncols* sizeof(uint),
+	cudaMemcpyHostToDevice);
+//  std::cout << "problem10\n\n";
+
+
 }
 
 template <typename T>
@@ -151,8 +186,11 @@ void freeMatrix(struct SparseMatrix<T> & matrix)
 }
 int main(int argc, char ** argv)
 {
-    int nstreams = 4;
+    int nstreams = 16;
 
+    u = atoi(argv[4]);
+
+    int u_wrap = ((u-1)/2+1);
     if (argc < 3)
     {
 	std::cout << "Usage: " << argv[0] << " VALUES ROWS COLS\n\n";
@@ -161,56 +199,58 @@ int main(int argc, char ** argv)
 
     time_t t0 = time(0);
     NTL::SetSeed(to_ZZ(t0));
-    std::cout << "seed: " << t0 << "\n";
+    std::cout << "Do Seed: " << t0 << "\n";
 
-    struct SparseMatrix<uintX> matrix = { 0 };
+    struct SparseMatrix<uint> matrix = { 0 };
     NTL::ZZ modulus;
 
     initMatrix(argv[1], argv[2], argv[3], modulus, matrix);
     NTL::ZZ_p::init(modulus);
 
-    uint8_t * d_GF28_mult_table;
-    cudaMalloc((void**)&d_GF28_mult_table, sizeof(GF28_mult_table));
-    cudaMemcpy(d_GF28_mult_table, &GF28_mult_table, sizeof(GF28_mult_table),
-	cudaMemcpyHostToDevice);
-  
+    uint16_t * d_GF216_log_table;//65536
+    uint16_t * d_GF216_exp_table;//131070
+
+    cudaMalloc((void**)&d_GF216_log_table, sizeof(GF216_log_table));
+    cudaMemcpy(d_GF216_log_table, &GF216_log_table, sizeof(GF216_log_table),cudaMemcpyHostToDevice);
+
+    cudaMalloc((void**)&d_GF216_exp_table, sizeof(GF216_exp_table));
+    cudaMemcpy(d_GF216_exp_table, &GF216_exp_table, sizeof(GF216_exp_table),	cudaMemcpyHostToDevice);
+
     uintX * l_query, * d_query;
     cudaMallocHost((void**)&l_query, nstreams * matrix.nrows * sizeof(uintX));
     cudaMalloc((void**)&d_query, nstreams * matrix.nrows * sizeof(uintX));
 
-    uint8_t * l_response, * d_response;
-    cudaMallocHost((void**)&l_response, nstreams * matrix.ncols * sizeof(uint8_t));
-    cudaMalloc((void**)&d_response, nstreams * matrix.ncols * sizeof(uint8_t));
+    uint16_t * l_response, * d_response;
+    cudaMallocHost((void**)&l_response, nstreams * matrix.ncols * sizeof(uint16_t));
+    cudaMalloc((void**)&d_response, nstreams * matrix.ncols * sizeof(uint16_t));
 
     cudaStream_t * streams = new cudaStream_t[nstreams];
     for (int i = 0; i < nstreams; ++i) cudaStreamCreate(&streams[i]);
-
     std::atomic<int> cnt = ATOMIC_VAR_INIT(0);
     auto start = std::chrono::high_resolution_clock::now();
     std::chrono::nanoseconds onesec{1000000000};
-
     while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
     {
 	//int i = cnt % nstreams;
 	#pragma omp parallel
 	for (int i = 0; i < nstreams; i++)
 	{
-	    uint8_t * __l_response = l_response + i * matrix.ncols;
-	    uint8_t * __d_response = d_response + i * matrix.ncols;
+	    uint16_t * __l_response = l_response + i * matrix.ncols;
+	    uint16_t * __d_response = d_response + i * matrix.ncols;
 	    uintX * __l_query = l_query + i * matrix.nrows;
 	    uintX * __d_query = d_query + i * matrix.nrows;		
 
-	    SpMV(__l_response, __l_query, __d_response,
-		__d_query, streams[i], matrix, d_GF28_mult_table);
+	    SpMV(u_wrap,__l_response, __l_query, __d_response,
+		__d_query, streams[i], matrix, d_GF216_log_table, d_GF216_exp_table);
 //	    SpMV_ntl(responses[i], __l_query, matrix);
 //	    SpMV_ntl_barret(responses[i], __l_query, matrix, barret);
 
 	    std::atomic_fetch_add(&cnt, 1);
-//	    for (int j = 0; j < matrix.nrows; j++)
-//	    {	__l_query[j] = 99;
+	    //for (int j = 0; j < matrix.nrows; j++)
+	    //{	__l_query[j] = 65535;
 		//to_uint<uintX>(NTL::rep(NTL::random_ZZ_p()), __l_query[j]);
 		//NTL::BytesFromZZ((unsigned char *)&__l_query[j], NTL::RandomPrime_ZZ(8), 1);//conv<uint>();
-//	    }
+	    //}
 	}
     }
 
@@ -219,15 +259,13 @@ int main(int argc, char ** argv)
     // cleanup
     for (int i = 0; i < nstreams; ++i) cudaStreamDestroy(streams[i]);
     delete [] streams;
-
     cudaFreeHost(l_query);
     cudaFree(d_query);
     cudaFreeHost(l_response);
     cudaFree(d_response);
-    cudaFree(d_GF28_mult_table);
-
-    freeMatrix<uintX>(matrix);
-
+    cudaFree(d_GF216_log_table);
+    cudaFree(d_GF216_exp_table);
+    freeMatrix<uint>(matrix);
     return 0;
 }
 
