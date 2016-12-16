@@ -80,6 +80,7 @@ static inline void print_limbs(const T & n, const uint limbs)
     const uint * _n = (uint *)&n;
     std::cout << _n[0];
     for (int i = 1; i < limbs; ++i) std::cout << "." << _n[i];
+	std::cout<<"\n";
 }
 
 template <typename T>
@@ -103,6 +104,7 @@ __device__ static inline void _print_limbs(const T & n, const uint limbs)
     const uint * _n = (uint *)&n;
     printf("%u", _n[0]);
     for (int i = 1; i < limbs; ++i) printf(".%u", _n[i]);
+	printf("\n");
 }
 
 #endif

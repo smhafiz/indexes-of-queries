@@ -22,11 +22,22 @@
 #ifndef __BARRET_H_
 #define __BARRET_H_
 
-#include "uint.h"
-
 #include <NTL/vec_vec_ZZ_p.h>
 
-#define MAX_U 16
+#include "uint.h"
+#include "gf2e.h"
+
+#define DEBUG_IDX 102
+
+// for uintX
+__constant__ void * d_modulus;
+__constant__ void * d_mu;
+__constant__ void * d_subtrahends;
+// for GF28
+__constant__ GF28_Element * d_GF28_mult_table[256];
+// for GF216
+__constant__ GF216_Element * d_GF216_exp_table;
+__constant__ GF216_Element * d_GF216_log_table;
 
 template<typename T>
 struct BarretParams
@@ -53,6 +64,21 @@ struct SparseMatrix
     uint * l_rows;
 };
 
+// template wizardry to support partial specialization for uintX
+template <typename T, int U>
+struct _SpMV_specializer
+{
+    static __device__ void device_SpMV(T * response, const T * query, const uint nvals,
+	const T * vals, const uint ncols, const uint * cols, const uint * rows);
+};
+
+template <typename T>
+__global__ void SpMV_kernel(T * response, const T * query, const uint nvals,
+	const T * vals, const uint ncols, const uint * cols, const uint * rows)
+{
+    _SpMV_specializer<T,0>::device_SpMV(response, query, nvals, vals, ncols, cols, rows);
+}
+
 template <typename T>
 void initMatrix(const char * valfile, const char * rowfile,
 	const char * colfile, NTL::ZZ & modulus,
@@ -69,3 +95,4 @@ template<typename T>
 void freeBarret(struct BarretParams<T> & barret);
 
 #endif
+

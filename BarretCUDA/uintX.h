@@ -19,397 +19,744 @@
 // You should have received a copy of the GNU General Public License
 // along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __UINT_352_H
-#define __UINT_352_H
+#ifndef __UINT_512_H
+#define __UINT_512_H
 #include "uint.h"
 
-struct uint352
+struct uint512
 {
     uint128 w0; 				// limbs 0 to 3
     uint128 w4; 				// limbs 4 to 7
-    uint96  w8; 				// limbs 8 to 10
+    uint128 w8; 				// limbs 8 to 11
+    uint128 w12; 				// limbs 12 to 15
 };
 
 #ifndef __UINTX__
 #define __UINTX__
-    typedef uint352 uintX;
+    typedef uint512 uintX;
 #endif
 
-#define LIMBS_PER_UINTX 11
+#define LIMBS_PER_UINTX 16
 
-static inline NTL::ZZ to_ZZ(const uint352 & n)
+static inline NTL::ZZ to_ZZ(const uint512 & n)
 {
-    return to_ZZ<uint352>(n);
+    return to_ZZ<uint512>(n);
 }
 
-static inline NTL::ZZ_p to_ZZ_p(const uint352 & n)
+static inline NTL::ZZ_p to_ZZ_p(const uint512 & n)
 {
-    return NTL::to_ZZ_p(to_ZZ<uint352>(n));
+    return NTL::to_ZZ_p(to_ZZ<uint512>(n));
 }
 
-static inline void to_uint352(const NTL::ZZ & n, uint352 & ret)
+static inline void to_uint512(const NTL::ZZ & n, uint512 & ret)
 {
-    to_uint<uint352>(n, ret);
+    to_uint<uint512>(n, ret);
 }
 
-__device__ __forceinline__ void normalize(uint352 & a_lo, uint352 & a_hi,
-	const uint352 & s_lo, const uint s_hi)
+__device__ __forceinline__ void normalize(uint512 & a_lo, uint512 & a_hi,
+	const uint512 & s_lo, const uint s_hi)
 {
-    uint * _a_lo = (uint *)&a_lo;
-    uint * _a_hi = (uint *)&a_hi;
-    const uint * _s_lo = (uint *)&s_lo;
-    asm("sub.cc.u32	 %0, %0,%22;\n\t"	// r0-=r22
-	"subc.cc.u32	 %1, %1,%23;\n\t"	// r1-=(r23+c)
-	"subc.cc.u32	 %2, %2,%24;\n\t"	// r2-=(r24+c)
-	"subc.cc.u32	 %3, %3,%25;\n\t"	// r3-=(r25+c)
-	"subc.cc.u32	 %4, %4,%26;\n\t"	// r4-=(r26+c)
-	"subc.cc.u32	 %5, %5,%27;\n\t"	// r5-=(r27+c)
-	"subc.cc.u32	 %6, %6,%28;\n\t"	// r6-=(r28+c)
-	"subc.cc.u32	 %7, %7,%29;\n\t"	// r7-=(r29+c)
-	"subc.cc.u32	 %8, %8,%30;\n\t"	// r8-=(r30+c)
-	"subc.cc.u32	 %9, %9,%31;\n\t"	// r9-=(r31+c)
-	"subc.cc.u32	%10,%10,%32;\n\t"	//r10-=(r32+c)
-	"subc.cc.u32	%11,%11,%33;\n\t"	//r11-=(r33+c)
-	"subc.cc.u32	%12,%12,%33;\n\t"	//r12-=(r34+c)
-	"subc.cc.u32	%13,%13,%33;\n\t"	//r13-=(r35+c)
-	"subc.cc.u32	%14,%14,%33;\n\t"	//r14-=(r36+c)
-	"subc.cc.u32	%15,%15,%33;\n\t"	//r15-=(r37+c)
-	"subc.cc.u32	%16,%16,%33;\n\t"	//r16-=(r38+c)
-	"subc.cc.u32	%17,%17,%33;\n\t"	//r17-=(r39+c)
-	"subc.cc.u32	%18,%18,%33;\n\t"	//r18-=(r40+c)
-	"subc.cc.u32	%19,%19,%33;\n\t"	//r19-=(r41+c)
-	"subc.cc.u32	%20,%20,%33;\n\t"	//r20-=(r42+c)
-	"subc.u32	%21,%21,%33;\n\t"	//r21-=(r43+c)
-	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]),
-	  "+r"(_a_lo[4]), "+r"(_a_lo[5]), "+r"(_a_lo[6]), "+r"(_a_lo[7]),
-	  "+r"(_a_lo[8]), "+r"(_a_lo[9]), "+r"(_a_lo[10]), "+r"(_a_hi[0]),
-	  "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3]), "+r"(_a_hi[4]),
-	  "+r"(_a_hi[5]), "+r"(_a_hi[6]), "+r"(_a_hi[7]), "+r"(_a_hi[8]),
-	  "+r"(_a_hi[9]), "+r"(_a_hi[10])
-	: "r"(_s_lo[0]), "r"(_s_lo[1]), "r"(_s_lo[2]), "r"(_s_lo[3]),
-	  "r"(_s_lo[4]), "r"(_s_lo[5]), "r"(_s_lo[6]), "r"(_s_lo[7]),
-	  "r"(_s_lo[8]), "r"(_s_lo[9]), "r"(_s_lo[10]), "r"(s_hi));
+    asm("sub.cc.u32	 %0, %0,%32;\n\t"	// r0-=r32
+	"subc.cc.u32	 %1, %1,%33;\n\t"	// r1-=(r33+c)
+	"subc.cc.u32	 %2, %2,%34;\n\t"	// r2-=(r34+c)
+	"subc.cc.u32	 %3, %3,%35;\n\t"	// r3-=(r35+c)
+	"subc.cc.u32	 %4, %4,%36;\n\t"	// r4-=(r36+c)
+	"subc.cc.u32	 %5, %5,%37;\n\t"	// r5-=(r37+c)
+	"subc.cc.u32	 %6, %6,%38;\n\t"	// r6-=(r38+c)
+	"subc.cc.u32	 %7, %7,%39;\n\t"	// r7-=(r39+c)
+	"subc.cc.u32	 %8, %8,%40;\n\t"	// r8-=(r40+c)
+	"subc.cc.u32	 %9, %9,%41;\n\t"	// r9-=(r41+c)
+	"subc.cc.u32	%10,%10,%42;\n\t"	//r10-=(r42+c)
+	"subc.cc.u32	%11,%11,%43;\n\t"	//r11-=(r43+c)
+	"subc.cc.u32	%12,%12,%44;\n\t"	//r12-=(r44+c)
+	"subc.cc.u32	%13,%13,%45;\n\t"	//r13-=(r45+c)
+	"subc.cc.u32	%14,%14,%46;\n\t"	//r14-=(r46+c)
+	"subc.cc.u32	%15,%15,%47;\n\t"	//r15-=(r47+c)
+	"subc.cc.u32	%16,%16,%48;\n\t"	//r16-=(r48+c)
+	"subc.cc.u32	%17,%17,%48;\n\t"	//r17-=(r48+c)
+	"subc.cc.u32	%18,%18,%48;\n\t"	//r18-=(r48+c)
+	"subc.cc.u32	%19,%19,%48;\n\t"	//r19-=(r48+c)
+	"subc.cc.u32	%20,%20,%48;\n\t"	//r20-=(r48+c)
+	"subc.cc.u32	%21,%21,%48;\n\t"	//r21-=(r48+c)
+	"subc.cc.u32	%22,%22,%48;\n\t"	//r22-=(r48+c)
+	"subc.cc.u32	%23,%23,%48;\n\t"	//r23-=(r48+c)
+	"subc.cc.u32	%24,%24,%48;\n\t"	//r24-=(r48+c)
+	"subc.cc.u32	%25,%25,%48;\n\t"	//r25-=(r48+c)
+	"subc.cc.u32	%26,%26,%48;\n\t"	//r26-=(r48+c)
+	"subc.cc.u32	%27,%27,%48;\n\t"	//r27-=(r48+c)
+	"subc.cc.u32	%28,%28,%48;\n\t"	//r28-=(r48+c)
+	"subc.cc.u32	%29,%29,%48;\n\t"	//r29-=(r48+c)
+	"subc.cc.u32	%30,%30,%48;\n\t"	//r30-=(r48+c)
+	"subc.u32	%31,%31,%48;\n\t"	//r31-=(r48+c)
+	: "+r"(a_lo.w0.x), "+r"(a_lo.w0.y), "+r"(a_lo.w0.z),
+	  "+r"(a_lo.w0.w), "+r"(a_lo.w4.x), "+r"(a_lo.w4.y), "+r"(a_lo.w4.z),
+	  "+r"(a_lo.w4.w), "+r"(a_lo.w8.x), "+r"(a_lo.w8.y), "+r"(a_lo.w8.z),
+	  "+r"(a_lo.w8.w), "+r"(a_lo.w12.x), "+r"(a_lo.w12.y),
+	  "+r"(a_lo.w12.z), "+r"(a_lo.w12.w), "+r"(a_hi.w0.x), "+r"(a_hi.w0.y),
+	  "+r"(a_hi.w0.z), "+r"(a_hi.w0.w), "+r"(a_hi.w4.x), "+r"(a_hi.w4.y),
+	  "+r"(a_hi.w4.z), "+r"(a_hi.w4.w), "+r"(a_hi.w8.x), "+r"(a_hi.w8.y),
+	  "+r"(a_hi.w8.z), "+r"(a_hi.w8.w), "+r"(a_hi.w12.x), "+r"(a_hi.w12.y),
+	  "+r"(a_hi.w12.z), "+r"(a_hi.w12.w)
+	: "r"(s_lo.w0.x), "r"(s_lo.w0.y), "r"(s_lo.w0.z), "r"(s_lo.w0.w),
+	  "r"(s_lo.w4.x), "r"(s_lo.w4.y), "r"(s_lo.w4.z), "r"(s_lo.w4.w),
+	  "r"(s_lo.w8.x), "r"(s_lo.w8.y), "r"(s_lo.w8.z), "r"(s_lo.w8.w),
+	  "r"(s_lo.w12.x), "r"(s_lo.w12.y), "r"(s_lo.w12.z), "r"(s_lo.w12.w),
+	  "r"(s_hi));
 }
 
-__device__ __forceinline__ uint sub(uint352 & a_lo, uint352 & a_hi,
-	const uintXp<uint352> & r)
+__device__ __forceinline__ uint sub(uint512 & a_lo, uint512 & a_hi,
+	const uintXp<uint512> & r)
 {
-    uint * _a_lo = (uint *)&a_lo;
-    uint * _a_hi = (uint *)&a_hi;
-    const uint * _r = (uint *)&r;
-    asm("sub.cc.u32	 %0, %0,%12;\n\t"	// r0-=r12
-	"subc.cc.u32	 %1, %1,%13;\n\t"	// r1-=(r13+c)
-	"subc.cc.u32	 %2, %2,%14;\n\t"	// r2-=(r14+c)
-	"subc.cc.u32	 %3, %3,%15;\n\t"	// r3-=(r15+c)
-	"subc.cc.u32	 %4, %4,%16;\n\t"	// r4-=(r16+c)
-	"subc.cc.u32	 %5, %5,%17;\n\t"	// r5-=(r17+c)
-	"subc.cc.u32	 %6, %6,%18;\n\t"	// r6-=(r18+c)
-	"subc.cc.u32	 %7, %7,%19;\n\t"	// r7-=(r19+c)
-	"subc.cc.u32	 %8, %8,%20;\n\t"	// r8-=(r20+c)
-	"subc.cc.u32	 %9, %9,%21;\n\t"	// r9-=(r21+c)
-	"subc.cc.u32	%10,%10,%22;\n\t"	//r10-=(r22+c)
-	"subc.u32	%11,%11,%23;\n\t"	//r11-=(r23+c)
-	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]),
-	  "+r"(_a_lo[4]), "+r"(_a_lo[5]), "+r"(_a_lo[6]), "+r"(_a_lo[7]),
-	  "+r"(_a_lo[8]), "+r"(_a_lo[9]), "+r"(_a_lo[10]), "+r"(_a_hi[0])
-	: "r"(_r[0]), "r"(_r[1]), "r"(_r[2]), "r"(_r[3]), "r"(_r[4]),
-	  "r"(_r[5]), "r"(_r[6]), "r"(_r[7]), "r"(_r[8]), "r"(_r[9]),
-	  "r"(_r[10]), "r"(_r[11]));
-    return _a_hi[0];
+    asm("sub.cc.u32	 %0, %0,%17;\n\t"	// r0-=r17
+	"subc.cc.u32	 %1, %1,%18;\n\t"	// r1-=(r18+c)
+	"subc.cc.u32	 %2, %2,%19;\n\t"	// r2-=(r19+c)
+	"subc.cc.u32	 %3, %3,%20;\n\t"	// r3-=(r20+c)
+	"subc.cc.u32	 %4, %4,%21;\n\t"	// r4-=(r21+c)
+	"subc.cc.u32	 %5, %5,%22;\n\t"	// r5-=(r22+c)
+	"subc.cc.u32	 %6, %6,%23;\n\t"	// r6-=(r23+c)
+	"subc.cc.u32	 %7, %7,%24;\n\t"	// r7-=(r24+c)
+	"subc.cc.u32	 %8, %8,%25;\n\t"	// r8-=(r25+c)
+	"subc.cc.u32	 %9, %9,%26;\n\t"	// r9-=(r26+c)
+	"subc.cc.u32	%10,%10,%27;\n\t"	//r10-=(r27+c)
+	"subc.cc.u32	%11,%11,%28;\n\t"	//r11-=(r28+c)
+	"subc.cc.u32	%12,%12,%29;\n\t"	//r12-=(r29+c)
+	"subc.cc.u32	%13,%13,%30;\n\t"	//r13-=(r30+c)
+	"subc.cc.u32	%14,%14,%31;\n\t"	//r14-=(r31+c)
+	"subc.cc.u32	%15,%15,%32;\n\t"	//r15-=(r32+c)
+	"subc.u32	%16,%16,%33;\n\t"	//r16-=(r33+c)
+	: "+r"(a_lo.w0.x), "+r"(a_lo.w0.y), "+r"(a_lo.w0.z),
+	  "+r"(a_lo.w0.w), "+r"(a_lo.w4.x), "+r"(a_lo.w4.y), "+r"(a_lo.w4.z),
+	  "+r"(a_lo.w4.w), "+r"(a_lo.w8.x), "+r"(a_lo.w8.y), "+r"(a_lo.w8.z),
+	  "+r"(a_lo.w8.w), "+r"(a_lo.w12.x), "+r"(a_lo.w12.y),
+	  "+r"(a_lo.w12.z), "+r"(a_lo.w12.w), "+r"(a_hi.w0.x)
+	: "r"(r.lo.w0.x), "r"(r.lo.w0.y), "r"(r.lo.w0.z), "r"(r.lo.w0.w),
+	  "r"(r.lo.w4.x), "r"(r.lo.w4.y), "r"(r.lo.w4.z), "r"(r.lo.w4.w),
+	  "r"(r.lo.w8.x), "r"(r.lo.w8.y), "r"(r.lo.w8.z), "r"(r.lo.w8.w),
+	  "r"(r.lo.w12.x), "r"(r.lo.w12.y), "r"(r.lo.w12.z), "r"(r.lo.w12.w),
+	  "r"(r.hi));
+    return a_hi.w0.x;
 }
 
-__device__ __forceinline__ uintXp<uint352> get_q(const uint352 & a_lo,
-	const uint352 & a_hi, const uintXp<uint352> & mu)
+__device__ __forceinline__ uintXp<uint512> get_q(const uint512 & a_lo,
+	const uint512 & a_hi, const uintXp<uint512> & mu)
 {
     uint __attribute__((unused)) tmp0;
     uint __attribute__((unused)) tmp1;
     uint __attribute__((unused)) tmp2;
     uint __attribute__((unused)) tmp3;
-    uintXp<uint352> q;
-    uint * _q = (uint *)&q;
-    uint * _a_lo = (uint *)&a_lo;
-    uint * _a_hi = (uint *)&a_hi;
-    uint * _mu = (uint *)&mu;
-    asm("mul.hi.u32	 %5,%16,%28    ;\n\t"	// r5 =[r16*r28].hi   (r-10=>r5)
-	"mad.lo.cc.u32	 %5,%17,%28, %5;\n\t"	// r5+=[r17*r28].lo   (r-10=>r5)
-	"madc.lo.u32	 %6,%18,%28,  0;\n\t"	// r6 =[r18*r28].lo+c (r-9=>r6)
-	"mad.lo.cc.u32	 %5,%16,%29, %5;\n\t"	// r5+=[r16*r29].lo   (r-10=>r5)
-	"madc.lo.cc.u32	 %6,%17,%29, %6;\n\t"	// r6+=[r17*r29].lo+c (r-9=>r6)
-	"madc.lo.u32	 %7,%19,%28,  0;\n\t"	// r7 =[r19*r28].lo+c (r-8=>r7)
-	"mad.lo.cc.u32	 %6,%16,%30, %6;\n\t"	// r6+=[r16*r30].lo   (r-9=>r6)
-	"madc.lo.cc.u32	 %7,%18,%29, %7;\n\t"	// r7+=[r18*r29].lo+c (r-8=>r7)
-	"madc.lo.u32	 %8,%20,%28,  0;\n\t"	// r8 =[r20*r28].lo+c (r-7=>r8)
-	"mad.hi.cc.u32	 %6,%17,%28, %6;\n\t"	// r6+=[r17*r28].hi   (r-9=>r6)
-	"madc.lo.cc.u32	 %7,%17,%30, %7;\n\t"	// r7+=[r17*r30].lo+c (r-8=>r7)
-	"madc.lo.cc.u32	 %8,%19,%29, %8;\n\t"	// r8+=[r19*r29].lo+c (r-7=>r8)
-	"madc.lo.u32	 %9,%21,%28,  0;\n\t"	// r9 =[r21*r28].lo+c (r-6=>r9)
-	"mad.hi.cc.u32	 %6,%16,%29, %6;\n\t"	// r6+=[r16*r29].hi   (r-9=>r6)
-	"madc.lo.cc.u32	 %7,%16,%31, %7;\n\t"	// r7+=[r16*r31].lo+c (r-8=>r7)
-	"madc.lo.cc.u32	 %8,%18,%30, %8;\n\t"	// r8+=[r18*r30].lo+c (r-7=>r8)
-	"madc.lo.cc.u32	 %9,%20,%29, %9;\n\t"	// r9+=[r20*r29].lo+c (r-6=>r9)
-	"madc.lo.u32	%10,%22,%28,  0;\n\t"	//r10 =[r22*r28].lo+c (r-5=>r10)
-	"mad.hi.cc.u32	 %7,%18,%28, %7;\n\t"	// r7+=[r18*r28].hi   (r-8=>r7)
-	"madc.lo.cc.u32	 %8,%17,%31, %8;\n\t"	// r8+=[r17*r31].lo+c (r-7=>r8)
-	"madc.lo.cc.u32	 %9,%19,%30, %9;\n\t"	// r9+=[r19*r30].lo+c (r-6=>r9)
-	"madc.lo.cc.u32	%10,%21,%29,%10;\n\t"	//r10+=[r21*r29].lo+c (r-5=>r10)
-	"madc.lo.u32	%11,%23,%28,  0;\n\t"	//r11 =[r23*r28].lo+c (r-4=>r11)
-	"mad.hi.cc.u32	 %7,%17,%29, %7;\n\t"	// r7+=[r17*r29].hi   (r-8=>r7)
-	"madc.lo.cc.u32	 %8,%16,%32, %8;\n\t"	// r8+=[r16*r32].lo+c (r-7=>r8)
-	"madc.lo.cc.u32	 %9,%18,%31, %9;\n\t"	// r9+=[r18*r31].lo+c (r-6=>r9)
-	"madc.lo.cc.u32	%10,%20,%30,%10;\n\t"	//r10+=[r20*r30].lo+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%22,%29,%11;\n\t"	//r11+=[r22*r29].lo+c (r-4=>r11)
-	"madc.lo.u32	%12,%24,%28,  0;\n\t"	//r12 =[r24*r28].lo+c (r-3=>r12)
-	"mad.hi.cc.u32	 %7,%16,%30, %7;\n\t"	// r7+=[r16*r30].hi   (r-8=>r7)
-	"madc.hi.cc.u32	 %8,%19,%28, %8;\n\t"	// r8+=[r19*r28].hi+c (r-7=>r8)
-	"madc.lo.cc.u32	 %9,%17,%32, %9;\n\t"	// r9+=[r17*r32].lo+c (r-6=>r9)
-	"madc.lo.cc.u32	%10,%19,%31,%10;\n\t"	//r10+=[r19*r31].lo+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%21,%30,%11;\n\t"	//r11+=[r21*r30].lo+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%23,%29,%12;\n\t"	//r12+=[r23*r29].lo+c (r-3=>r12)
-	"madc.lo.u32	%13,%25,%28,  0;\n\t"	//r13 =[r25*r28].lo+c (r-2=>r13)
-	"mad.hi.cc.u32	 %8,%18,%29, %8;\n\t"	// r8+=[r18*r29].hi   (r-7=>r8)
-	"madc.lo.cc.u32	 %9,%16,%33, %9;\n\t"	// r9+=[r16*r33].lo+c (r-6=>r9)
-	"madc.lo.cc.u32	%10,%18,%32,%10;\n\t"	//r10+=[r18*r32].lo+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%20,%31,%11;\n\t"	//r11+=[r20*r31].lo+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%22,%30,%12;\n\t"	//r12+=[r22*r30].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%24,%29,%13;\n\t"	//r13+=[r24*r29].lo+c (r-2=>r13)
-	"madc.lo.u32	%14,%26,%28,  0;\n\t"	//r14 =[r26*r28].lo+c (r-1=>r14)
-	"mad.hi.cc.u32	 %8,%17,%30, %8;\n\t"	// r8+=[r17*r30].hi   (r-7=>r8)
-	"madc.hi.cc.u32	 %9,%20,%28, %9;\n\t"	// r9+=[r20*r28].hi+c (r-6=>r9)
-	"madc.lo.cc.u32	%10,%17,%33,%10;\n\t"	//r10+=[r17*r33].lo+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%19,%32,%11;\n\t"	//r11+=[r19*r32].lo+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%21,%31,%12;\n\t"	//r12+=[r21*r31].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%23,%30,%13;\n\t"	//r13+=[r23*r30].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%25,%29,%14;\n\t"	//r14+=[r25*r29].lo+c (r-1=>r14)
-	"madc.lo.u32	%15,%27,%28,  0;\n\t"	//r15 =[r27*r28].lo+c
-	"mad.hi.cc.u32	 %8,%16,%31, %8;\n\t"	// r8+=[r16*r31].hi   (r-7=>r8)
-	"madc.hi.cc.u32	 %9,%19,%29, %9;\n\t"	// r9+=[r19*r29].hi+c (r-6=>r9)
-	"madc.lo.cc.u32	%10,%16,%34,%10;\n\t"	//r10+=[r16*r34].lo+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%18,%33,%11;\n\t"	//r11+=[r18*r33].lo+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%20,%32,%12;\n\t"	//r12+=[r20*r32].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%22,%31,%13;\n\t"	//r13+=[r22*r31].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%24,%30,%14;\n\t"	//r14+=[r24*r30].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%26,%29,%15;\n\t"	//r15+=[r26*r29].lo+c
-	"madc.lo.u32	 %0,%27,%29,  0;\n\t"	// r0 =[r27*r29].lo+c
-	"mad.hi.cc.u32	 %9,%18,%30, %9;\n\t"	// r9+=[r18*r30].hi   (r-6=>r9)
-	"madc.hi.cc.u32	%10,%21,%28,%10;\n\t"	//r10+=[r21*r28].hi+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%17,%34,%11;\n\t"	//r11+=[r17*r34].lo+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%19,%33,%12;\n\t"	//r12+=[r19*r33].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%21,%32,%13;\n\t"	//r13+=[r21*r32].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%23,%31,%14;\n\t"	//r14+=[r23*r31].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%25,%30,%15;\n\t"	//r15+=[r25*r30].lo+c
-	"madc.lo.cc.u32	 %0,%26,%30, %0;\n\t"	// r0+=[r26*r30].lo+c
-	"madc.lo.u32	 %1,%27,%30,  0;\n\t"	// r1 =[r27*r30].lo+c
-	"mad.hi.cc.u32	 %9,%17,%31, %9;\n\t"	// r9+=[r17*r31].hi   (r-6=>r9)
-	"madc.hi.cc.u32	%10,%20,%29,%10;\n\t"	//r10+=[r20*r29].hi+c (r-5=>r10)
-	"madc.lo.cc.u32	%11,%16,%35,%11;\n\t"	//r11+=[r16*r35].lo+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%18,%34,%12;\n\t"	//r12+=[r18*r34].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%20,%33,%13;\n\t"	//r13+=[r20*r33].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%22,%32,%14;\n\t"	//r14+=[r22*r32].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%24,%31,%15;\n\t"	//r15+=[r24*r31].lo+c
-	"madc.lo.cc.u32	 %0,%25,%31, %0;\n\t"	// r0+=[r25*r31].lo+c
-	"madc.lo.cc.u32	 %1,%26,%31, %1;\n\t"	// r1+=[r26*r31].lo+c
-	"madc.lo.u32	 %2,%27,%31,  0;\n\t"	// r2 =[r27*r31].lo+c
-	"mad.hi.cc.u32	 %9,%16,%32, %9;\n\t"	// r9+=[r16*r32].hi   (r-6=>r9)
-	"madc.hi.cc.u32	%10,%19,%30,%10;\n\t"	//r10+=[r19*r30].hi+c (r-5=>r10)
-	"madc.hi.cc.u32	%11,%22,%28,%11;\n\t"	//r11+=[r22*r28].hi+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%17,%35,%12;\n\t"	//r12+=[r17*r35].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%19,%34,%13;\n\t"	//r13+=[r19*r34].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%21,%33,%14;\n\t"	//r14+=[r21*r33].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%23,%32,%15;\n\t"	//r15+=[r23*r32].lo+c
-	"madc.lo.cc.u32	 %0,%24,%32, %0;\n\t"	// r0+=[r24*r32].lo+c
-	"madc.lo.cc.u32	 %1,%25,%32, %1;\n\t"	// r1+=[r25*r32].lo+c
-	"madc.lo.cc.u32	 %2,%26,%32, %2;\n\t"	// r2+=[r26*r32].lo+c
-	"madc.lo.u32	 %3,%27,%32,  0;\n\t"	// r3 =[r27*r32].lo+c
-	"mad.hi.cc.u32	%10,%18,%31,%10;\n\t"	//r10+=[r18*r31].hi   (r-5=>r10)
-	"madc.hi.cc.u32	%11,%21,%29,%11;\n\t"	//r11+=[r21*r29].hi+c (r-4=>r11)
-	"madc.lo.cc.u32	%12,%16,%36,%12;\n\t"	//r12+=[r16*r36].lo+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%18,%35,%13;\n\t"	//r13+=[r18*r35].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%20,%34,%14;\n\t"	//r14+=[r20*r34].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%22,%33,%15;\n\t"	//r15+=[r22*r33].lo+c
-	"madc.lo.cc.u32	 %0,%23,%33, %0;\n\t"	// r0+=[r23*r33].lo+c
-	"madc.lo.cc.u32	 %1,%24,%33, %1;\n\t"	// r1+=[r24*r33].lo+c
-	"madc.lo.cc.u32	 %2,%25,%33, %2;\n\t"	// r2+=[r25*r33].lo+c
-	"madc.lo.cc.u32	 %3,%26,%33, %3;\n\t"	// r3+=[r26*r33].lo+c
-	"madc.lo.u32	 %4,%27,%33,  0;\n\t"	// r4 =[r27*r33].lo+c
-	"mad.hi.cc.u32	%10,%17,%32,%10;\n\t"	//r10+=[r17*r32].hi   (r-5=>r10)
-	"madc.hi.cc.u32	%11,%20,%30,%11;\n\t"	//r11+=[r20*r30].hi+c (r-4=>r11)
-	"madc.hi.cc.u32	%12,%23,%28,%12;\n\t"	//r12+=[r23*r28].hi+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%17,%36,%13;\n\t"	//r13+=[r17*r36].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%19,%35,%14;\n\t"	//r14+=[r19*r35].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%21,%34,%15;\n\t"	//r15+=[r21*r34].lo+c
-	"madc.lo.cc.u32	 %0,%22,%34, %0;\n\t"	// r0+=[r22*r34].lo+c
-	"madc.lo.cc.u32	 %1,%23,%34, %1;\n\t"	// r1+=[r23*r34].lo+c
-	"madc.lo.cc.u32	 %2,%24,%34, %2;\n\t"	// r2+=[r24*r34].lo+c
-	"madc.lo.cc.u32	 %3,%25,%34, %3;\n\t"	// r3+=[r25*r34].lo+c
-	"madc.lo.cc.u32	 %4,%26,%34, %4;\n\t"	// r4+=[r26*r34].lo+c
-	"madc.lo.u32	 %5,%27,%34,  0;\n\t"	// r5 =[r27*r34].lo+c
-	"mad.hi.cc.u32	%10,%16,%33,%10;\n\t"	//r10+=[r16*r33].hi   (r-5=>r10)
-	"madc.hi.cc.u32	%11,%19,%31,%11;\n\t"	//r11+=[r19*r31].hi+c (r-4=>r11)
-	"madc.hi.cc.u32	%12,%22,%29,%12;\n\t"	//r12+=[r22*r29].hi+c (r-3=>r12)
-	"madc.lo.cc.u32	%13,%16,%37,%13;\n\t"	//r13+=[r16*r37].lo+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%18,%36,%14;\n\t"	//r14+=[r18*r36].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%20,%35,%15;\n\t"	//r15+=[r20*r35].lo+c
-	"madc.lo.cc.u32	 %0,%21,%35, %0;\n\t"	// r0+=[r21*r35].lo+c
-	"madc.lo.cc.u32	 %1,%22,%35, %1;\n\t"	// r1+=[r22*r35].lo+c
-	"madc.lo.cc.u32	 %2,%23,%35, %2;\n\t"	// r2+=[r23*r35].lo+c
-	"madc.lo.cc.u32	 %3,%24,%35, %3;\n\t"	// r3+=[r24*r35].lo+c
-	"madc.lo.cc.u32	 %4,%25,%35, %4;\n\t"	// r4+=[r25*r35].lo+c
-	"madc.lo.cc.u32	 %5,%26,%35, %5;\n\t"	// r5+=[r26*r35].lo+c
-	"madc.lo.u32	 %6,%27,%35,  0;\n\t"	// r6 =[r27*r35].lo+c
-	"mad.hi.cc.u32	%11,%18,%32,%11;\n\t"	//r11+=[r18*r32].hi   (r-4=>r11)
-	"madc.hi.cc.u32	%12,%21,%30,%12;\n\t"	//r12+=[r21*r30].hi+c (r-3=>r12)
-	"madc.hi.cc.u32	%13,%24,%28,%13;\n\t"	//r13+=[r24*r28].hi+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%17,%37,%14;\n\t"	//r14+=[r17*r37].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%19,%36,%15;\n\t"	//r15+=[r19*r36].lo+c
-	"madc.lo.cc.u32	 %0,%20,%36, %0;\n\t"	// r0+=[r20*r36].lo+c
-	"madc.lo.cc.u32	 %1,%21,%36, %1;\n\t"	// r1+=[r21*r36].lo+c
-	"madc.lo.cc.u32	 %2,%22,%36, %2;\n\t"	// r2+=[r22*r36].lo+c
-	"madc.lo.cc.u32	 %3,%23,%36, %3;\n\t"	// r3+=[r23*r36].lo+c
-	"madc.lo.cc.u32	 %4,%24,%36, %4;\n\t"	// r4+=[r24*r36].lo+c
-	"madc.lo.cc.u32	 %5,%25,%36, %5;\n\t"	// r5+=[r25*r36].lo+c
-	"madc.lo.cc.u32	 %6,%26,%36, %6;\n\t"	// r6+=[r26*r36].lo+c
-	"madc.lo.u32	 %7,%27,%36,  0;\n\t"	// r7 =[r27*r36].lo+c
-	"mad.hi.cc.u32	%11,%17,%33,%11;\n\t"	//r11+=[r17*r33].hi   (r-4=>r11)
-	"madc.hi.cc.u32	%12,%20,%31,%12;\n\t"	//r12+=[r20*r31].hi+c (r-3=>r12)
-	"madc.hi.cc.u32	%13,%23,%29,%13;\n\t"	//r13+=[r23*r29].hi+c (r-2=>r13)
-	"madc.lo.cc.u32	%14,%16,%38,%14;\n\t"	//r14+=[r16*r38].lo+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%18,%37,%15;\n\t"	//r15+=[r18*r37].lo+c
-	"madc.lo.cc.u32	 %0,%19,%37, %0;\n\t"	// r0+=[r19*r37].lo+c
-	"madc.lo.cc.u32	 %1,%20,%37, %1;\n\t"	// r1+=[r20*r37].lo+c
-	"madc.lo.cc.u32	 %2,%21,%37, %2;\n\t"	// r2+=[r21*r37].lo+c
-	"madc.lo.cc.u32	 %3,%22,%37, %3;\n\t"	// r3+=[r22*r37].lo+c
-	"madc.lo.cc.u32	 %4,%23,%37, %4;\n\t"	// r4+=[r23*r37].lo+c
-	"madc.lo.cc.u32	 %5,%24,%37, %5;\n\t"	// r5+=[r24*r37].lo+c
-	"madc.lo.cc.u32	 %6,%25,%37, %6;\n\t"	// r6+=[r25*r37].lo+c
-	"madc.lo.cc.u32	 %7,%26,%37, %7;\n\t"	// r7+=[r26*r37].lo+c
-	"madc.lo.u32	 %8,%27,%37,  0;\n\t"	// r8 =[r27*r37].lo+c
-	"mad.hi.cc.u32	%11,%16,%34,%11;\n\t"	//r11+=[r16*r34].hi   (r-4=>r11)
-	"madc.hi.cc.u32	%12,%19,%32,%12;\n\t"	//r12+=[r19*r32].hi+c (r-3=>r12)
-	"madc.hi.cc.u32	%13,%22,%30,%13;\n\t"	//r13+=[r22*r30].hi+c (r-2=>r13)
-	"madc.hi.cc.u32	%14,%25,%28,%14;\n\t"	//r14+=[r25*r28].hi+c (r-1=>r14)
-	"madc.lo.cc.u32	%15,%17,%38,%15;\n\t"	//r15+=[r17*r38].lo+c
-	"madc.lo.cc.u32	 %0,%18,%38, %0;\n\t"	// r0+=[r18*r38].lo+c
-	"madc.lo.cc.u32	 %1,%19,%38, %1;\n\t"	// r1+=[r19*r38].lo+c
-	"madc.lo.cc.u32	 %2,%20,%38, %2;\n\t"	// r2+=[r20*r38].lo+c
-	"madc.lo.cc.u32	 %3,%21,%38, %3;\n\t"	// r3+=[r21*r38].lo+c
-	"madc.lo.cc.u32	 %4,%22,%38, %4;\n\t"	// r4+=[r22*r38].lo+c
-	"madc.lo.cc.u32	 %5,%23,%38, %5;\n\t"	// r5+=[r23*r38].lo+c
-	"madc.lo.cc.u32	 %6,%24,%38, %6;\n\t"	// r6+=[r24*r38].lo+c
-	"madc.lo.cc.u32	 %7,%25,%38, %7;\n\t"	// r7+=[r25*r38].lo+c
-	"madc.lo.cc.u32	 %8,%26,%38, %8;\n\t"	// r8+=[r26*r38].lo+c
-	"madc.lo.u32	 %9,%27,%38,  0;\n\t"	// r9 =[r27*r38].lo+c
-	"mad.hi.cc.u32	%12,%18,%33,%12;\n\t"	//r12+=[r18*r33].hi   (r-3=>r12)
-	"madc.hi.cc.u32	%13,%21,%31,%13;\n\t"	//r13+=[r21*r31].hi+c (r-2=>r13)
-	"madc.hi.cc.u32	%14,%24,%29,%14;\n\t"	//r14+=[r24*r29].hi+c (r-1=>r14)
-	"madc.hi.cc.u32	%15,%26,%28,%15;\n\t"	//r15+=[r26*r28].hi+c
-	"madc.hi.cc.u32	 %0,%27,%28, %0;\n\t"	// r0+=[r27*r28].hi+c
-	"madc.hi.cc.u32	 %1,%27,%29, %1;\n\t"	// r1+=[r27*r29].hi+c
-	"madc.hi.cc.u32	 %2,%27,%30, %2;\n\t"	// r2+=[r27*r30].hi+c
-	"madc.hi.cc.u32	 %3,%27,%31, %3;\n\t"	// r3+=[r27*r31].hi+c
-	"madc.hi.cc.u32	 %4,%27,%32, %4;\n\t"	// r4+=[r27*r32].hi+c
-	"madc.hi.cc.u32	 %5,%27,%33, %5;\n\t"	// r5+=[r27*r33].hi+c
-	"madc.hi.cc.u32	 %6,%27,%34, %6;\n\t"	// r6+=[r27*r34].hi+c
-	"madc.hi.cc.u32	 %7,%27,%35, %7;\n\t"	// r7+=[r27*r35].hi+c
-	"madc.hi.cc.u32	 %8,%27,%36, %8;\n\t"	// r8+=[r27*r36].hi+c
-	"madc.hi.cc.u32	 %9,%27,%37, %9;\n\t"	// r9+=[r27*r37].hi+c
-	"madc.hi.u32	%10,%27,%38,  0;\n\t"	//r10 =[r27*r38].hi+c
-	"mad.hi.cc.u32	%12,%17,%34,%12;\n\t"	//r12+=[r17*r34].hi   (r-3=>r12)
-	"madc.hi.cc.u32	%13,%20,%32,%13;\n\t"	//r13+=[r20*r32].hi+c (r-2=>r13)
-	"madc.hi.cc.u32	%14,%23,%30,%14;\n\t"	//r14+=[r23*r30].hi+c (r-1=>r14)
-	"madc.hi.cc.u32	%15,%25,%29,%15;\n\t"	//r15+=[r25*r29].hi+c
-	"madc.hi.cc.u32	 %0,%26,%29, %0;\n\t"	// r0+=[r26*r29].hi+c
-	"madc.hi.cc.u32	 %1,%26,%30, %1;\n\t"	// r1+=[r26*r30].hi+c
-	"madc.hi.cc.u32	 %2,%26,%31, %2;\n\t"	// r2+=[r26*r31].hi+c
-	"madc.hi.cc.u32	 %3,%26,%32, %3;\n\t"	// r3+=[r26*r32].hi+c
-	"madc.hi.cc.u32	 %4,%26,%33, %4;\n\t"	// r4+=[r26*r33].hi+c
-	"madc.hi.cc.u32	 %5,%26,%34, %5;\n\t"	// r5+=[r26*r34].hi+c
-	"madc.hi.cc.u32	 %6,%26,%35, %6;\n\t"	// r6+=[r26*r35].hi+c
-	"madc.hi.cc.u32	 %7,%26,%36, %7;\n\t"	// r7+=[r26*r36].hi+c
-	"madc.hi.cc.u32	 %8,%26,%37, %8;\n\t"	// r8+=[r26*r37].hi+c
-	"madc.hi.cc.u32	 %9,%26,%38, %9;\n\t"	// r9+=[r26*r38].hi+c
+    uint __attribute__((unused)) tmp4;
+    uint __attribute__((unused)) tmp5;
+    uintXp<uint512> q = {0};
+    asm("mul.hi.u32	 %7,%23,%40    ;\n\t"	// r7 =[r23*r40].hi   (r-15=>r7)
+	"mad.lo.cc.u32	 %7,%24,%40, %7;\n\t"	// r7+=[r24*r40].lo   (r-15=>r7)
+	"madc.lo.u32	 %8,%25,%40,  0;\n\t"	// r8 =[r25*r40].lo+c (r-14=>r8)
+	"mad.lo.cc.u32	 %7,%23,%41, %7;\n\t"	// r7+=[r23*r41].lo   (r-15=>r7)
+	"madc.lo.cc.u32	 %8,%24,%41, %8;\n\t"	// r8+=[r24*r41].lo+c (r-14=>r8)
+	"madc.lo.u32	 %9,%26,%40,  0;\n\t"	// r9 =[r26*r40].lo+c (r-13=>r9)
+	"mad.lo.cc.u32	 %8,%23,%42, %8;\n\t"	// r8+=[r23*r42].lo   (r-14=>r8)
+	"madc.lo.cc.u32	 %9,%25,%41, %9;\n\t"	// r9+=[r25*r41].lo+c (r-13=>r9)
+	"madc.lo.u32	%10,%27,%40,  0;\n\t"	//r10 =[r27*r40].lo+c (r-12=>r10)
+	"mad.hi.cc.u32	 %8,%24,%40, %8;\n\t"	// r8+=[r24*r40].hi   (r-14=>r8)
+	"madc.lo.cc.u32	 %9,%24,%42, %9;\n\t"	// r9+=[r24*r42].lo+c (r-13=>r9)
+	"madc.lo.cc.u32	%10,%26,%41,%10;\n\t"	//r10+=[r26*r41].lo+c (r-12=>r10)
+	"madc.lo.u32	%11,%28,%40,  0;\n\t"	//r11 =[r28*r40].lo+c (r-11=>r11)
+	"mad.hi.cc.u32	 %8,%23,%41, %8;\n\t"	// r8+=[r23*r41].hi   (r-14=>r8)
+	"madc.lo.cc.u32	 %9,%23,%43, %9;\n\t"	// r9+=[r23*r43].lo+c (r-13=>r9)
+	"madc.lo.cc.u32	%10,%25,%42,%10;\n\t"	//r10+=[r25*r42].lo+c (r-12=>r10)
+	"madc.lo.cc.u32	%11,%27,%41,%11;\n\t"	//r11+=[r27*r41].lo+c (r-11=>r11)
+	"madc.lo.u32	%12,%29,%40,  0;\n\t"	//r12 =[r29*r40].lo+c (r-10=>r12)
+	"mad.hi.cc.u32	 %9,%25,%40, %9;\n\t"	// r9+=[r25*r40].hi   (r-13=>r9)
+	"madc.lo.cc.u32	%10,%24,%43,%10;\n\t"	//r10+=[r24*r43].lo+c (r-12=>r10)
+	"madc.lo.cc.u32	%11,%26,%42,%11;\n\t"	//r11+=[r26*r42].lo+c (r-11=>r11)
+	"madc.lo.cc.u32	%12,%28,%41,%12;\n\t"	//r12+=[r28*r41].lo+c (r-10=>r12)
+	"madc.lo.u32	%13,%30,%40,  0;\n\t"	//r13 =[r30*r40].lo+c (r-9=>r13)
+	"mad.hi.cc.u32	 %9,%24,%41, %9;\n\t"	// r9+=[r24*r41].hi   (r-13=>r9)
+	"madc.lo.cc.u32	%10,%23,%44,%10;\n\t"	//r10+=[r23*r44].lo+c (r-12=>r10)
+	"madc.lo.cc.u32	%11,%25,%43,%11;\n\t"	//r11+=[r25*r43].lo+c (r-11=>r11)
+	"madc.lo.cc.u32	%12,%27,%42,%12;\n\t"	//r12+=[r27*r42].lo+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%29,%41,%13;\n\t"	//r13+=[r29*r41].lo+c (r-9=>r13)
+	"madc.lo.u32	%14,%31,%40,  0;\n\t"	//r14 =[r31*r40].lo+c (r-8=>r14)
+	"mad.hi.cc.u32	 %9,%23,%42, %9;\n\t"	// r9+=[r23*r42].hi   (r-13=>r9)
+	"madc.hi.cc.u32	%10,%26,%40,%10;\n\t"	//r10+=[r26*r40].hi+c (r-12=>r10)
+	"madc.lo.cc.u32	%11,%24,%44,%11;\n\t"	//r11+=[r24*r44].lo+c (r-11=>r11)
+	"madc.lo.cc.u32	%12,%26,%43,%12;\n\t"	//r12+=[r26*r43].lo+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%28,%42,%13;\n\t"	//r13+=[r28*r42].lo+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%30,%41,%14;\n\t"	//r14+=[r30*r41].lo+c (r-8=>r14)
+	"madc.lo.u32	%15,%32,%40,  0;\n\t"	//r15 =[r32*r40].lo+c (r-7=>r15)
+	"mad.hi.cc.u32	%10,%25,%41,%10;\n\t"	//r10+=[r25*r41].hi   (r-12=>r10)
+	"madc.lo.cc.u32	%11,%23,%45,%11;\n\t"	//r11+=[r23*r45].lo+c (r-11=>r11)
+	"madc.lo.cc.u32	%12,%25,%44,%12;\n\t"	//r12+=[r25*r44].lo+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%27,%43,%13;\n\t"	//r13+=[r27*r43].lo+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%29,%42,%14;\n\t"	//r14+=[r29*r42].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%31,%41,%15;\n\t"	//r15+=[r31*r41].lo+c (r-7=>r15)
+	"madc.lo.u32	%16,%33,%40,  0;\n\t"	//r16 =[r33*r40].lo+c (r-6=>r16)
+	"mad.hi.cc.u32	%10,%24,%42,%10;\n\t"	//r10+=[r24*r42].hi   (r-12=>r10)
+	"madc.hi.cc.u32	%11,%27,%40,%11;\n\t"	//r11+=[r27*r40].hi+c (r-11=>r11)
+	"madc.lo.cc.u32	%12,%24,%45,%12;\n\t"	//r12+=[r24*r45].lo+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%26,%44,%13;\n\t"	//r13+=[r26*r44].lo+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%28,%43,%14;\n\t"	//r14+=[r28*r43].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%30,%42,%15;\n\t"	//r15+=[r30*r42].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%32,%41,%16;\n\t"	//r16+=[r32*r41].lo+c (r-6=>r16)
+	"madc.lo.u32	%17,%34,%40,  0;\n\t"	//r17 =[r34*r40].lo+c (r-5=>r17)
+	"mad.hi.cc.u32	%10,%23,%43,%10;\n\t"	//r10+=[r23*r43].hi   (r-12=>r10)
+	"madc.hi.cc.u32	%11,%26,%41,%11;\n\t"	//r11+=[r26*r41].hi+c (r-11=>r11)
+	"madc.lo.cc.u32	%12,%23,%46,%12;\n\t"	//r12+=[r23*r46].lo+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%25,%45,%13;\n\t"	//r13+=[r25*r45].lo+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%27,%44,%14;\n\t"	//r14+=[r27*r44].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%29,%43,%15;\n\t"	//r15+=[r29*r43].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%31,%42,%16;\n\t"	//r16+=[r31*r42].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%33,%41,%17;\n\t"	//r17+=[r33*r41].lo+c (r-5=>r17)
+	"madc.lo.u32	%18,%35,%40,  0;\n\t"	//r18 =[r35*r40].lo+c (r-4=>r18)
+	"mad.hi.cc.u32	%11,%25,%42,%11;\n\t"	//r11+=[r25*r42].hi   (r-11=>r11)
+	"madc.hi.cc.u32	%12,%28,%40,%12;\n\t"	//r12+=[r28*r40].hi+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%24,%46,%13;\n\t"	//r13+=[r24*r46].lo+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%26,%45,%14;\n\t"	//r14+=[r26*r45].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%28,%44,%15;\n\t"	//r15+=[r28*r44].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%30,%43,%16;\n\t"	//r16+=[r30*r43].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%32,%42,%17;\n\t"	//r17+=[r32*r42].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%34,%41,%18;\n\t"	//r18+=[r34*r41].lo+c (r-4=>r18)
+	"madc.lo.u32	%19,%36,%40,  0;\n\t"	//r19 =[r36*r40].lo+c (r-3=>r19)
+	"mad.hi.cc.u32	%11,%24,%43,%11;\n\t"	//r11+=[r24*r43].hi   (r-11=>r11)
+	"madc.hi.cc.u32	%12,%27,%41,%12;\n\t"	//r12+=[r27*r41].hi+c (r-10=>r12)
+	"madc.lo.cc.u32	%13,%23,%47,%13;\n\t"	//r13+=[r23*r47].lo+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%25,%46,%14;\n\t"	//r14+=[r25*r46].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%27,%45,%15;\n\t"	//r15+=[r27*r45].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%29,%44,%16;\n\t"	//r16+=[r29*r44].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%31,%43,%17;\n\t"	//r17+=[r31*r43].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%33,%42,%18;\n\t"	//r18+=[r33*r42].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%35,%41,%19;\n\t"	//r19+=[r35*r41].lo+c (r-3=>r19)
+	"madc.lo.u32	%20,%37,%40,  0;\n\t"	//r20 =[r37*r40].lo+c (r-2=>r20)
+	"mad.hi.cc.u32	%11,%23,%44,%11;\n\t"	//r11+=[r23*r44].hi   (r-11=>r11)
+	"madc.hi.cc.u32	%12,%26,%42,%12;\n\t"	//r12+=[r26*r42].hi+c (r-10=>r12)
+	"madc.hi.cc.u32	%13,%29,%40,%13;\n\t"	//r13+=[r29*r40].hi+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%24,%47,%14;\n\t"	//r14+=[r24*r47].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%26,%46,%15;\n\t"	//r15+=[r26*r46].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%28,%45,%16;\n\t"	//r16+=[r28*r45].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%30,%44,%17;\n\t"	//r17+=[r30*r44].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%32,%43,%18;\n\t"	//r18+=[r32*r43].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%34,%42,%19;\n\t"	//r19+=[r34*r42].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%36,%41,%20;\n\t"	//r20+=[r36*r41].lo+c (r-2=>r20)
+	"madc.lo.u32	%21,%38,%40,  0;\n\t"	//r21 =[r38*r40].lo+c (r-1=>r21)
+	"mad.hi.cc.u32	%12,%25,%43,%12;\n\t"	//r12+=[r25*r43].hi   (r-10=>r12)
+	"madc.hi.cc.u32	%13,%28,%41,%13;\n\t"	//r13+=[r28*r41].hi+c (r-9=>r13)
+	"madc.lo.cc.u32	%14,%23,%48,%14;\n\t"	//r14+=[r23*r48].lo+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%25,%47,%15;\n\t"	//r15+=[r25*r47].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%27,%46,%16;\n\t"	//r16+=[r27*r46].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%29,%45,%17;\n\t"	//r17+=[r29*r45].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%31,%44,%18;\n\t"	//r18+=[r31*r44].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%33,%43,%19;\n\t"	//r19+=[r33*r43].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%35,%42,%20;\n\t"	//r20+=[r35*r42].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%37,%41,%21;\n\t"	//r21+=[r37*r41].lo+c (r-1=>r21)
+	"madc.lo.u32	%22,%39,%40,  0;\n\t"	//r22 =[r39*r40].lo+c
+	"mad.hi.cc.u32	%12,%24,%44,%12;\n\t"	//r12+=[r24*r44].hi   (r-10=>r12)
+	"madc.hi.cc.u32	%13,%27,%42,%13;\n\t"	//r13+=[r27*r42].hi+c (r-9=>r13)
+	"madc.hi.cc.u32	%14,%30,%40,%14;\n\t"	//r14+=[r30*r40].hi+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%24,%48,%15;\n\t"	//r15+=[r24*r48].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%26,%47,%16;\n\t"	//r16+=[r26*r47].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%28,%46,%17;\n\t"	//r17+=[r28*r46].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%30,%45,%18;\n\t"	//r18+=[r30*r45].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%32,%44,%19;\n\t"	//r19+=[r32*r44].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%34,%43,%20;\n\t"	//r20+=[r34*r43].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%36,%42,%21;\n\t"	//r21+=[r36*r42].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%38,%41,%22;\n\t"	//r22+=[r38*r41].lo+c
+	"madc.lo.u32	 %0,%39,%41,  0;\n\t"	// r0 =[r39*r41].lo+c
+	"mad.hi.cc.u32	%12,%23,%45,%12;\n\t"	//r12+=[r23*r45].hi   (r-10=>r12)
+	"madc.hi.cc.u32	%13,%26,%43,%13;\n\t"	//r13+=[r26*r43].hi+c (r-9=>r13)
+	"madc.hi.cc.u32	%14,%29,%41,%14;\n\t"	//r14+=[r29*r41].hi+c (r-8=>r14)
+	"madc.lo.cc.u32	%15,%23,%49,%15;\n\t"	//r15+=[r23*r49].lo+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%25,%48,%16;\n\t"	//r16+=[r25*r48].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%27,%47,%17;\n\t"	//r17+=[r27*r47].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%29,%46,%18;\n\t"	//r18+=[r29*r46].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%31,%45,%19;\n\t"	//r19+=[r31*r45].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%33,%44,%20;\n\t"	//r20+=[r33*r44].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%35,%43,%21;\n\t"	//r21+=[r35*r43].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%37,%42,%22;\n\t"	//r22+=[r37*r42].lo+c
+	"madc.lo.cc.u32	 %0,%38,%42, %0;\n\t"	// r0+=[r38*r42].lo+c
+	"madc.lo.u32	 %1,%39,%42,  0;\n\t"	// r1 =[r39*r42].lo+c
+	"mad.hi.cc.u32	%13,%25,%44,%13;\n\t"	//r13+=[r25*r44].hi   (r-9=>r13)
+	"madc.hi.cc.u32	%14,%28,%42,%14;\n\t"	//r14+=[r28*r42].hi+c (r-8=>r14)
+	"madc.hi.cc.u32	%15,%31,%40,%15;\n\t"	//r15+=[r31*r40].hi+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%24,%49,%16;\n\t"	//r16+=[r24*r49].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%26,%48,%17;\n\t"	//r17+=[r26*r48].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%28,%47,%18;\n\t"	//r18+=[r28*r47].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%30,%46,%19;\n\t"	//r19+=[r30*r46].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%32,%45,%20;\n\t"	//r20+=[r32*r45].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%34,%44,%21;\n\t"	//r21+=[r34*r44].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%36,%43,%22;\n\t"	//r22+=[r36*r43].lo+c
+	"madc.lo.cc.u32	 %0,%37,%43, %0;\n\t"	// r0+=[r37*r43].lo+c
+	"madc.lo.cc.u32	 %1,%38,%43, %1;\n\t"	// r1+=[r38*r43].lo+c
+	"madc.lo.u32	 %2,%39,%43,  0;\n\t"	// r2 =[r39*r43].lo+c
+	"mad.hi.cc.u32	%13,%24,%45,%13;\n\t"	//r13+=[r24*r45].hi   (r-9=>r13)
+	"madc.hi.cc.u32	%14,%27,%43,%14;\n\t"	//r14+=[r27*r43].hi+c (r-8=>r14)
+	"madc.hi.cc.u32	%15,%30,%41,%15;\n\t"	//r15+=[r30*r41].hi+c (r-7=>r15)
+	"madc.lo.cc.u32	%16,%23,%50,%16;\n\t"	//r16+=[r23*r50].lo+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%25,%49,%17;\n\t"	//r17+=[r25*r49].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%27,%48,%18;\n\t"	//r18+=[r27*r48].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%29,%47,%19;\n\t"	//r19+=[r29*r47].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%31,%46,%20;\n\t"	//r20+=[r31*r46].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%33,%45,%21;\n\t"	//r21+=[r33*r45].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%35,%44,%22;\n\t"	//r22+=[r35*r44].lo+c
+	"madc.lo.cc.u32	 %0,%36,%44, %0;\n\t"	// r0+=[r36*r44].lo+c
+	"madc.lo.cc.u32	 %1,%37,%44, %1;\n\t"	// r1+=[r37*r44].lo+c
+	"madc.lo.cc.u32	 %2,%38,%44, %2;\n\t"	// r2+=[r38*r44].lo+c
+	"madc.lo.u32	 %3,%39,%44,  0;\n\t"	// r3 =[r39*r44].lo+c
+	"mad.hi.cc.u32	%13,%23,%46,%13;\n\t"	//r13+=[r23*r46].hi   (r-9=>r13)
+	"madc.hi.cc.u32	%14,%26,%44,%14;\n\t"	//r14+=[r26*r44].hi+c (r-8=>r14)
+	"madc.hi.cc.u32	%15,%29,%42,%15;\n\t"	//r15+=[r29*r42].hi+c (r-7=>r15)
+	"madc.hi.cc.u32	%16,%32,%40,%16;\n\t"	//r16+=[r32*r40].hi+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%24,%50,%17;\n\t"	//r17+=[r24*r50].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%26,%49,%18;\n\t"	//r18+=[r26*r49].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%28,%48,%19;\n\t"	//r19+=[r28*r48].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%30,%47,%20;\n\t"	//r20+=[r30*r47].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%32,%46,%21;\n\t"	//r21+=[r32*r46].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%34,%45,%22;\n\t"	//r22+=[r34*r45].lo+c
+	"madc.lo.cc.u32	 %0,%35,%45, %0;\n\t"	// r0+=[r35*r45].lo+c
+	"madc.lo.cc.u32	 %1,%36,%45, %1;\n\t"	// r1+=[r36*r45].lo+c
+	"madc.lo.cc.u32	 %2,%37,%45, %2;\n\t"	// r2+=[r37*r45].lo+c
+	"madc.lo.cc.u32	 %3,%38,%45, %3;\n\t"	// r3+=[r38*r45].lo+c
+	"madc.lo.u32	 %4,%39,%45,  0;\n\t"	// r4 =[r39*r45].lo+c
+	"mad.hi.cc.u32	%14,%25,%45,%14;\n\t"	//r14+=[r25*r45].hi   (r-8=>r14)
+	"madc.hi.cc.u32	%15,%28,%43,%15;\n\t"	//r15+=[r28*r43].hi+c (r-7=>r15)
+	"madc.hi.cc.u32	%16,%31,%41,%16;\n\t"	//r16+=[r31*r41].hi+c (r-6=>r16)
+	"madc.lo.cc.u32	%17,%23,%51,%17;\n\t"	//r17+=[r23*r51].lo+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%25,%50,%18;\n\t"	//r18+=[r25*r50].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%27,%49,%19;\n\t"	//r19+=[r27*r49].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%29,%48,%20;\n\t"	//r20+=[r29*r48].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%31,%47,%21;\n\t"	//r21+=[r31*r47].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%33,%46,%22;\n\t"	//r22+=[r33*r46].lo+c
+	"madc.lo.cc.u32	 %0,%34,%46, %0;\n\t"	// r0+=[r34*r46].lo+c
+	"madc.lo.cc.u32	 %1,%35,%46, %1;\n\t"	// r1+=[r35*r46].lo+c
+	"madc.lo.cc.u32	 %2,%36,%46, %2;\n\t"	// r2+=[r36*r46].lo+c
+	"madc.lo.cc.u32	 %3,%37,%46, %3;\n\t"	// r3+=[r37*r46].lo+c
+	"madc.lo.cc.u32	 %4,%38,%46, %4;\n\t"	// r4+=[r38*r46].lo+c
+	"madc.lo.u32	 %5,%39,%46,  0;\n\t"	// r5 =[r39*r46].lo+c
+	"mad.hi.cc.u32	%14,%24,%46,%14;\n\t"	//r14+=[r24*r46].hi   (r-8=>r14)
+	"madc.hi.cc.u32	%15,%27,%44,%15;\n\t"	//r15+=[r27*r44].hi+c (r-7=>r15)
+	"madc.hi.cc.u32	%16,%30,%42,%16;\n\t"	//r16+=[r30*r42].hi+c (r-6=>r16)
+	"madc.hi.cc.u32	%17,%33,%40,%17;\n\t"	//r17+=[r33*r40].hi+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%24,%51,%18;\n\t"	//r18+=[r24*r51].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%26,%50,%19;\n\t"	//r19+=[r26*r50].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%28,%49,%20;\n\t"	//r20+=[r28*r49].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%30,%48,%21;\n\t"	//r21+=[r30*r48].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%32,%47,%22;\n\t"	//r22+=[r32*r47].lo+c
+	"madc.lo.cc.u32	 %0,%33,%47, %0;\n\t"	// r0+=[r33*r47].lo+c
+	"madc.lo.cc.u32	 %1,%34,%47, %1;\n\t"	// r1+=[r34*r47].lo+c
+	"madc.lo.cc.u32	 %2,%35,%47, %2;\n\t"	// r2+=[r35*r47].lo+c
+	"madc.lo.cc.u32	 %3,%36,%47, %3;\n\t"	// r3+=[r36*r47].lo+c
+	"madc.lo.cc.u32	 %4,%37,%47, %4;\n\t"	// r4+=[r37*r47].lo+c
+	"madc.lo.cc.u32	 %5,%38,%47, %5;\n\t"	// r5+=[r38*r47].lo+c
+	"madc.lo.u32	 %6,%39,%47,  0;\n\t"	// r6 =[r39*r47].lo+c
+	"mad.hi.cc.u32	%14,%23,%47,%14;\n\t"	//r14+=[r23*r47].hi   (r-8=>r14)
+	"madc.hi.cc.u32	%15,%26,%45,%15;\n\t"	//r15+=[r26*r45].hi+c (r-7=>r15)
+	"madc.hi.cc.u32	%16,%29,%43,%16;\n\t"	//r16+=[r29*r43].hi+c (r-6=>r16)
+	"madc.hi.cc.u32	%17,%32,%41,%17;\n\t"	//r17+=[r32*r41].hi+c (r-5=>r17)
+	"madc.lo.cc.u32	%18,%23,%52,%18;\n\t"	//r18+=[r23*r52].lo+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%25,%51,%19;\n\t"	//r19+=[r25*r51].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%27,%50,%20;\n\t"	//r20+=[r27*r50].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%29,%49,%21;\n\t"	//r21+=[r29*r49].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%31,%48,%22;\n\t"	//r22+=[r31*r48].lo+c
+	"madc.lo.cc.u32	 %0,%32,%48, %0;\n\t"	// r0+=[r32*r48].lo+c
+	"madc.lo.cc.u32	 %1,%33,%48, %1;\n\t"	// r1+=[r33*r48].lo+c
+	"madc.lo.cc.u32	 %2,%34,%48, %2;\n\t"	// r2+=[r34*r48].lo+c
+	"madc.lo.cc.u32	 %3,%35,%48, %3;\n\t"	// r3+=[r35*r48].lo+c
+	"madc.lo.cc.u32	 %4,%36,%48, %4;\n\t"	// r4+=[r36*r48].lo+c
+	"madc.lo.cc.u32	 %5,%37,%48, %5;\n\t"	// r5+=[r37*r48].lo+c
+	"madc.lo.cc.u32	 %6,%38,%48, %6;\n\t"	// r6+=[r38*r48].lo+c
+	"madc.lo.u32	 %7,%39,%48,  0;\n\t"	// r7 =[r39*r48].lo+c
+	"mad.hi.cc.u32	%15,%25,%46,%15;\n\t"	//r15+=[r25*r46].hi   (r-7=>r15)
+	"madc.hi.cc.u32	%16,%28,%44,%16;\n\t"	//r16+=[r28*r44].hi+c (r-6=>r16)
+	"madc.hi.cc.u32	%17,%31,%42,%17;\n\t"	//r17+=[r31*r42].hi+c (r-5=>r17)
+	"madc.hi.cc.u32	%18,%34,%40,%18;\n\t"	//r18+=[r34*r40].hi+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%24,%52,%19;\n\t"	//r19+=[r24*r52].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%26,%51,%20;\n\t"	//r20+=[r26*r51].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%28,%50,%21;\n\t"	//r21+=[r28*r50].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%30,%49,%22;\n\t"	//r22+=[r30*r49].lo+c
+	"madc.lo.cc.u32	 %0,%31,%49, %0;\n\t"	// r0+=[r31*r49].lo+c
+	"madc.lo.cc.u32	 %1,%32,%49, %1;\n\t"	// r1+=[r32*r49].lo+c
+	"madc.lo.cc.u32	 %2,%33,%49, %2;\n\t"	// r2+=[r33*r49].lo+c
+	"madc.lo.cc.u32	 %3,%34,%49, %3;\n\t"	// r3+=[r34*r49].lo+c
+	"madc.lo.cc.u32	 %4,%35,%49, %4;\n\t"	// r4+=[r35*r49].lo+c
+	"madc.lo.cc.u32	 %5,%36,%49, %5;\n\t"	// r5+=[r36*r49].lo+c
+	"madc.lo.cc.u32	 %6,%37,%49, %6;\n\t"	// r6+=[r37*r49].lo+c
+	"madc.lo.cc.u32	 %7,%38,%49, %7;\n\t"	// r7+=[r38*r49].lo+c
+	"madc.lo.u32	 %8,%39,%49,  0;\n\t"	// r8 =[r39*r49].lo+c
+	"mad.hi.cc.u32	%15,%24,%47,%15;\n\t"	//r15+=[r24*r47].hi   (r-7=>r15)
+	"madc.hi.cc.u32	%16,%27,%45,%16;\n\t"	//r16+=[r27*r45].hi+c (r-6=>r16)
+	"madc.hi.cc.u32	%17,%30,%43,%17;\n\t"	//r17+=[r30*r43].hi+c (r-5=>r17)
+	"madc.hi.cc.u32	%18,%33,%41,%18;\n\t"	//r18+=[r33*r41].hi+c (r-4=>r18)
+	"madc.lo.cc.u32	%19,%23,%53,%19;\n\t"	//r19+=[r23*r53].lo+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%25,%52,%20;\n\t"	//r20+=[r25*r52].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%27,%51,%21;\n\t"	//r21+=[r27*r51].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%29,%50,%22;\n\t"	//r22+=[r29*r50].lo+c
+	"madc.lo.cc.u32	 %0,%30,%50, %0;\n\t"	// r0+=[r30*r50].lo+c
+	"madc.lo.cc.u32	 %1,%31,%50, %1;\n\t"	// r1+=[r31*r50].lo+c
+	"madc.lo.cc.u32	 %2,%32,%50, %2;\n\t"	// r2+=[r32*r50].lo+c
+	"madc.lo.cc.u32	 %3,%33,%50, %3;\n\t"	// r3+=[r33*r50].lo+c
+	"madc.lo.cc.u32	 %4,%34,%50, %4;\n\t"	// r4+=[r34*r50].lo+c
+	"madc.lo.cc.u32	 %5,%35,%50, %5;\n\t"	// r5+=[r35*r50].lo+c
+	"madc.lo.cc.u32	 %6,%36,%50, %6;\n\t"	// r6+=[r36*r50].lo+c
+	"madc.lo.cc.u32	 %7,%37,%50, %7;\n\t"	// r7+=[r37*r50].lo+c
+	"madc.lo.cc.u32	 %8,%38,%50, %8;\n\t"	// r8+=[r38*r50].lo+c
+	"madc.lo.u32	 %9,%39,%50,  0;\n\t"	// r9 =[r39*r50].lo+c
+	"mad.hi.cc.u32	%15,%23,%48,%15;\n\t"	//r15+=[r23*r48].hi   (r-7=>r15)
+	"madc.hi.cc.u32	%16,%26,%46,%16;\n\t"	//r16+=[r26*r46].hi+c (r-6=>r16)
+	"madc.hi.cc.u32	%17,%29,%44,%17;\n\t"	//r17+=[r29*r44].hi+c (r-5=>r17)
+	"madc.hi.cc.u32	%18,%32,%42,%18;\n\t"	//r18+=[r32*r42].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%35,%40,%19;\n\t"	//r19+=[r35*r40].hi+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%24,%53,%20;\n\t"	//r20+=[r24*r53].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%26,%52,%21;\n\t"	//r21+=[r26*r52].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%28,%51,%22;\n\t"	//r22+=[r28*r51].lo+c
+	"madc.lo.cc.u32	 %0,%29,%51, %0;\n\t"	// r0+=[r29*r51].lo+c
+	"madc.lo.cc.u32	 %1,%30,%51, %1;\n\t"	// r1+=[r30*r51].lo+c
+	"madc.lo.cc.u32	 %2,%31,%51, %2;\n\t"	// r2+=[r31*r51].lo+c
+	"madc.lo.cc.u32	 %3,%32,%51, %3;\n\t"	// r3+=[r32*r51].lo+c
+	"madc.lo.cc.u32	 %4,%33,%51, %4;\n\t"	// r4+=[r33*r51].lo+c
+	"madc.lo.cc.u32	 %5,%34,%51, %5;\n\t"	// r5+=[r34*r51].lo+c
+	"madc.lo.cc.u32	 %6,%35,%51, %6;\n\t"	// r6+=[r35*r51].lo+c
+	"madc.lo.cc.u32	 %7,%36,%51, %7;\n\t"	// r7+=[r36*r51].lo+c
+	"madc.lo.cc.u32	 %8,%37,%51, %8;\n\t"	// r8+=[r37*r51].lo+c
+	"madc.lo.cc.u32	 %9,%38,%51, %9;\n\t"	// r9+=[r38*r51].lo+c
+	"madc.lo.u32	%10,%39,%51,  0;\n\t"	//r10 =[r39*r51].lo+c
+	"mad.hi.cc.u32	%16,%25,%47,%16;\n\t"	//r16+=[r25*r47].hi   (r-6=>r16)
+	"madc.hi.cc.u32	%17,%28,%45,%17;\n\t"	//r17+=[r28*r45].hi+c (r-5=>r17)
+	"madc.hi.cc.u32	%18,%31,%43,%18;\n\t"	//r18+=[r31*r43].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%34,%41,%19;\n\t"	//r19+=[r34*r41].hi+c (r-3=>r19)
+	"madc.lo.cc.u32	%20,%23,%54,%20;\n\t"	//r20+=[r23*r54].lo+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%25,%53,%21;\n\t"	//r21+=[r25*r53].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%27,%52,%22;\n\t"	//r22+=[r27*r52].lo+c
+	"madc.lo.cc.u32	 %0,%28,%52, %0;\n\t"	// r0+=[r28*r52].lo+c
+	"madc.lo.cc.u32	 %1,%29,%52, %1;\n\t"	// r1+=[r29*r52].lo+c
+	"madc.lo.cc.u32	 %2,%30,%52, %2;\n\t"	// r2+=[r30*r52].lo+c
+	"madc.lo.cc.u32	 %3,%31,%52, %3;\n\t"	// r3+=[r31*r52].lo+c
+	"madc.lo.cc.u32	 %4,%32,%52, %4;\n\t"	// r4+=[r32*r52].lo+c
+	"madc.lo.cc.u32	 %5,%33,%52, %5;\n\t"	// r5+=[r33*r52].lo+c
+	"madc.lo.cc.u32	 %6,%34,%52, %6;\n\t"	// r6+=[r34*r52].lo+c
+	"madc.lo.cc.u32	 %7,%35,%52, %7;\n\t"	// r7+=[r35*r52].lo+c
+	"madc.lo.cc.u32	 %8,%36,%52, %8;\n\t"	// r8+=[r36*r52].lo+c
+	"madc.lo.cc.u32	 %9,%37,%52, %9;\n\t"	// r9+=[r37*r52].lo+c
+	"madc.lo.cc.u32	%10,%38,%52,%10;\n\t"	//r10+=[r38*r52].lo+c
+	"madc.lo.u32	%11,%39,%52,  0;\n\t"	//r11 =[r39*r52].lo+c
+	"mad.hi.cc.u32	%16,%24,%48,%16;\n\t"	//r16+=[r24*r48].hi   (r-6=>r16)
+	"madc.hi.cc.u32	%17,%27,%46,%17;\n\t"	//r17+=[r27*r46].hi+c (r-5=>r17)
+	"madc.hi.cc.u32	%18,%30,%44,%18;\n\t"	//r18+=[r30*r44].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%33,%42,%19;\n\t"	//r19+=[r33*r42].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%36,%40,%20;\n\t"	//r20+=[r36*r40].hi+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%24,%54,%21;\n\t"	//r21+=[r24*r54].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%26,%53,%22;\n\t"	//r22+=[r26*r53].lo+c
+	"madc.lo.cc.u32	 %0,%27,%53, %0;\n\t"	// r0+=[r27*r53].lo+c
+	"madc.lo.cc.u32	 %1,%28,%53, %1;\n\t"	// r1+=[r28*r53].lo+c
+	"madc.lo.cc.u32	 %2,%29,%53, %2;\n\t"	// r2+=[r29*r53].lo+c
+	"madc.lo.cc.u32	 %3,%30,%53, %3;\n\t"	// r3+=[r30*r53].lo+c
+	"madc.lo.cc.u32	 %4,%31,%53, %4;\n\t"	// r4+=[r31*r53].lo+c
+	"madc.lo.cc.u32	 %5,%32,%53, %5;\n\t"	// r5+=[r32*r53].lo+c
+	"madc.lo.cc.u32	 %6,%33,%53, %6;\n\t"	// r6+=[r33*r53].lo+c
+	"madc.lo.cc.u32	 %7,%34,%53, %7;\n\t"	// r7+=[r34*r53].lo+c
+	"madc.lo.cc.u32	 %8,%35,%53, %8;\n\t"	// r8+=[r35*r53].lo+c
+	"madc.lo.cc.u32	 %9,%36,%53, %9;\n\t"	// r9+=[r36*r53].lo+c
+	"madc.lo.cc.u32	%10,%37,%53,%10;\n\t"	//r10+=[r37*r53].lo+c
+	"madc.lo.cc.u32	%11,%38,%53,%11;\n\t"	//r11+=[r38*r53].lo+c
+	"madc.lo.u32	%12,%39,%53,  0;\n\t"	//r12 =[r39*r53].lo+c
+	"mad.hi.cc.u32	%16,%23,%49,%16;\n\t"	//r16+=[r23*r49].hi   (r-6=>r16)
+	"madc.hi.cc.u32	%17,%26,%47,%17;\n\t"	//r17+=[r26*r47].hi+c (r-5=>r17)
+	"madc.hi.cc.u32	%18,%29,%45,%18;\n\t"	//r18+=[r29*r45].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%32,%43,%19;\n\t"	//r19+=[r32*r43].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%35,%41,%20;\n\t"	//r20+=[r35*r41].hi+c (r-2=>r20)
+	"madc.lo.cc.u32	%21,%23,%55,%21;\n\t"	//r21+=[r23*r55].lo+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%25,%54,%22;\n\t"	//r22+=[r25*r54].lo+c
+	"madc.lo.cc.u32	 %0,%26,%54, %0;\n\t"	// r0+=[r26*r54].lo+c
+	"madc.lo.cc.u32	 %1,%27,%54, %1;\n\t"	// r1+=[r27*r54].lo+c
+	"madc.lo.cc.u32	 %2,%28,%54, %2;\n\t"	// r2+=[r28*r54].lo+c
+	"madc.lo.cc.u32	 %3,%29,%54, %3;\n\t"	// r3+=[r29*r54].lo+c
+	"madc.lo.cc.u32	 %4,%30,%54, %4;\n\t"	// r4+=[r30*r54].lo+c
+	"madc.lo.cc.u32	 %5,%31,%54, %5;\n\t"	// r5+=[r31*r54].lo+c
+	"madc.lo.cc.u32	 %6,%32,%54, %6;\n\t"	// r6+=[r32*r54].lo+c
+	"madc.lo.cc.u32	 %7,%33,%54, %7;\n\t"	// r7+=[r33*r54].lo+c
+	"madc.lo.cc.u32	 %8,%34,%54, %8;\n\t"	// r8+=[r34*r54].lo+c
+	"madc.lo.cc.u32	 %9,%35,%54, %9;\n\t"	// r9+=[r35*r54].lo+c
+	"madc.lo.cc.u32	%10,%36,%54,%10;\n\t"	//r10+=[r36*r54].lo+c
+	"madc.lo.cc.u32	%11,%37,%54,%11;\n\t"	//r11+=[r37*r54].lo+c
+	"madc.lo.cc.u32	%12,%38,%54,%12;\n\t"	//r12+=[r38*r54].lo+c
+	"madc.lo.u32	%13,%39,%54,  0;\n\t"	//r13 =[r39*r54].lo+c
+	"mad.hi.cc.u32	%17,%25,%48,%17;\n\t"	//r17+=[r25*r48].hi   (r-5=>r17)
+	"madc.hi.cc.u32	%18,%28,%46,%18;\n\t"	//r18+=[r28*r46].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%31,%44,%19;\n\t"	//r19+=[r31*r44].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%34,%42,%20;\n\t"	//r20+=[r34*r42].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%37,%40,%21;\n\t"	//r21+=[r37*r40].hi+c (r-1=>r21)
+	"madc.lo.cc.u32	%22,%24,%55,%22;\n\t"	//r22+=[r24*r55].lo+c
+	"madc.lo.cc.u32	 %0,%25,%55, %0;\n\t"	// r0+=[r25*r55].lo+c
+	"madc.lo.cc.u32	 %1,%26,%55, %1;\n\t"	// r1+=[r26*r55].lo+c
+	"madc.lo.cc.u32	 %2,%27,%55, %2;\n\t"	// r2+=[r27*r55].lo+c
+	"madc.lo.cc.u32	 %3,%28,%55, %3;\n\t"	// r3+=[r28*r55].lo+c
+	"madc.lo.cc.u32	 %4,%29,%55, %4;\n\t"	// r4+=[r29*r55].lo+c
+	"madc.lo.cc.u32	 %5,%30,%55, %5;\n\t"	// r5+=[r30*r55].lo+c
+	"madc.lo.cc.u32	 %6,%31,%55, %6;\n\t"	// r6+=[r31*r55].lo+c
+	"madc.lo.cc.u32	 %7,%32,%55, %7;\n\t"	// r7+=[r32*r55].lo+c
+	"madc.lo.cc.u32	 %8,%33,%55, %8;\n\t"	// r8+=[r33*r55].lo+c
+	"madc.lo.cc.u32	 %9,%34,%55, %9;\n\t"	// r9+=[r34*r55].lo+c
+	"madc.lo.cc.u32	%10,%35,%55,%10;\n\t"	//r10+=[r35*r55].lo+c
+	"madc.lo.cc.u32	%11,%36,%55,%11;\n\t"	//r11+=[r36*r55].lo+c
+	"madc.lo.cc.u32	%12,%37,%55,%12;\n\t"	//r12+=[r37*r55].lo+c
+	"madc.lo.cc.u32	%13,%38,%55,%13;\n\t"	//r13+=[r38*r55].lo+c
+	"madc.lo.u32	%14,%39,%55,  0;\n\t"	//r14 =[r39*r55].lo+c
+	"mad.hi.cc.u32	%17,%24,%49,%17;\n\t"	//r17+=[r24*r49].hi   (r-5=>r17)
+	"madc.hi.cc.u32	%18,%27,%47,%18;\n\t"	//r18+=[r27*r47].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%30,%45,%19;\n\t"	//r19+=[r30*r45].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%33,%43,%20;\n\t"	//r20+=[r33*r43].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%36,%41,%21;\n\t"	//r21+=[r36*r41].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%38,%40,%22;\n\t"	//r22+=[r38*r40].hi+c
+	"madc.hi.cc.u32	 %0,%39,%40, %0;\n\t"	// r0+=[r39*r40].hi+c
+	"madc.hi.cc.u32	 %1,%39,%41, %1;\n\t"	// r1+=[r39*r41].hi+c
+	"madc.hi.cc.u32	 %2,%39,%42, %2;\n\t"	// r2+=[r39*r42].hi+c
+	"madc.hi.cc.u32	 %3,%39,%43, %3;\n\t"	// r3+=[r39*r43].hi+c
+	"madc.hi.cc.u32	 %4,%39,%44, %4;\n\t"	// r4+=[r39*r44].hi+c
+	"madc.hi.cc.u32	 %5,%39,%45, %5;\n\t"	// r5+=[r39*r45].hi+c
+	"madc.hi.cc.u32	 %6,%39,%46, %6;\n\t"	// r6+=[r39*r46].hi+c
+	"madc.hi.cc.u32	 %7,%39,%47, %7;\n\t"	// r7+=[r39*r47].hi+c
+	"madc.hi.cc.u32	 %8,%39,%48, %8;\n\t"	// r8+=[r39*r48].hi+c
+	"madc.hi.cc.u32	 %9,%39,%49, %9;\n\t"	// r9+=[r39*r49].hi+c
+	"madc.hi.cc.u32	%10,%39,%50,%10;\n\t"	//r10+=[r39*r50].hi+c
+	"madc.hi.cc.u32	%11,%39,%51,%11;\n\t"	//r11+=[r39*r51].hi+c
+	"madc.hi.cc.u32	%12,%39,%52,%12;\n\t"	//r12+=[r39*r52].hi+c
+	"madc.hi.cc.u32	%13,%39,%53,%13;\n\t"	//r13+=[r39*r53].hi+c
+	"madc.hi.cc.u32	%14,%39,%54,%14;\n\t"	//r14+=[r39*r54].hi+c
+	"madc.hi.u32	%15,%39,%55,  0;\n\t"	//r15 =[r39*r55].hi+c
+	"mad.hi.cc.u32	%17,%23,%50,%17;\n\t"	//r17+=[r23*r50].hi   (r-5=>r17)
+	"madc.hi.cc.u32	%18,%26,%48,%18;\n\t"	//r18+=[r26*r48].hi+c (r-4=>r18)
+	"madc.hi.cc.u32	%19,%29,%46,%19;\n\t"	//r19+=[r29*r46].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%32,%44,%20;\n\t"	//r20+=[r32*r44].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%35,%42,%21;\n\t"	//r21+=[r35*r42].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%37,%41,%22;\n\t"	//r22+=[r37*r41].hi+c
+	"madc.hi.cc.u32	 %0,%38,%41, %0;\n\t"	// r0+=[r38*r41].hi+c
+	"madc.hi.cc.u32	 %1,%38,%42, %1;\n\t"	// r1+=[r38*r42].hi+c
+	"madc.hi.cc.u32	 %2,%38,%43, %2;\n\t"	// r2+=[r38*r43].hi+c
+	"madc.hi.cc.u32	 %3,%38,%44, %3;\n\t"	// r3+=[r38*r44].hi+c
+	"madc.hi.cc.u32	 %4,%38,%45, %4;\n\t"	// r4+=[r38*r45].hi+c
+	"madc.hi.cc.u32	 %5,%38,%46, %5;\n\t"	// r5+=[r38*r46].hi+c
+	"madc.hi.cc.u32	 %6,%38,%47, %6;\n\t"	// r6+=[r38*r47].hi+c
+	"madc.hi.cc.u32	 %7,%38,%48, %7;\n\t"	// r7+=[r38*r48].hi+c
+	"madc.hi.cc.u32	 %8,%38,%49, %8;\n\t"	// r8+=[r38*r49].hi+c
+	"madc.hi.cc.u32	 %9,%38,%50, %9;\n\t"	// r9+=[r38*r50].hi+c
+	"madc.hi.cc.u32	%10,%38,%51,%10;\n\t"	//r10+=[r38*r51].hi+c
+	"madc.hi.cc.u32	%11,%38,%52,%11;\n\t"	//r11+=[r38*r52].hi+c
+	"madc.hi.cc.u32	%12,%38,%53,%12;\n\t"	//r12+=[r38*r53].hi+c
+	"madc.hi.cc.u32	%13,%38,%54,%13;\n\t"	//r13+=[r38*r54].hi+c
+	"madc.hi.cc.u32	%14,%38,%55,%14;\n\t"	//r14+=[r38*r55].hi+c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,  0,  0    ;\n\t"	//r16 = c
+	"mad.hi.cc.u32	%18,%25,%49,%18;\n\t"	//r18+=[r25*r49].hi   (r-4=>r18)
+	"madc.hi.cc.u32	%19,%28,%47,%19;\n\t"	//r19+=[r28*r47].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%31,%45,%20;\n\t"	//r20+=[r31*r45].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%34,%43,%21;\n\t"	//r21+=[r34*r43].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%36,%42,%22;\n\t"	//r22+=[r36*r42].hi+c
+	"madc.hi.cc.u32	 %0,%37,%42, %0;\n\t"	// r0+=[r37*r42].hi+c
+	"madc.hi.cc.u32	 %1,%37,%43, %1;\n\t"	// r1+=[r37*r43].hi+c
+	"madc.hi.cc.u32	 %2,%37,%44, %2;\n\t"	// r2+=[r37*r44].hi+c
+	"madc.hi.cc.u32	 %3,%37,%45, %3;\n\t"	// r3+=[r37*r45].hi+c
+	"madc.hi.cc.u32	 %4,%37,%46, %4;\n\t"	// r4+=[r37*r46].hi+c
+	"madc.hi.cc.u32	 %5,%37,%47, %5;\n\t"	// r5+=[r37*r47].hi+c
+	"madc.hi.cc.u32	 %6,%37,%48, %6;\n\t"	// r6+=[r37*r48].hi+c
+	"madc.hi.cc.u32	 %7,%37,%49, %7;\n\t"	// r7+=[r37*r49].hi+c
+	"madc.hi.cc.u32	 %8,%37,%50, %8;\n\t"	// r8+=[r37*r50].hi+c
+	"madc.hi.cc.u32	 %9,%37,%51, %9;\n\t"	// r9+=[r37*r51].hi+c
+	"madc.hi.cc.u32	%10,%37,%52,%10;\n\t"	//r10+=[r37*r52].hi+c
+	"madc.hi.cc.u32	%11,%37,%53,%11;\n\t"	//r11+=[r37*r53].hi+c
+	"madc.hi.cc.u32	%12,%37,%54,%12;\n\t"	//r12+=[r37*r54].hi+c
+	"madc.hi.cc.u32	%13,%37,%55,%13;\n\t"	//r13+=[r37*r55].hi+c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%18,%24,%50,%18;\n\t"	//r18+=[r24*r50].hi   (r-4=>r18)
+	"madc.hi.cc.u32	%19,%27,%48,%19;\n\t"	//r19+=[r27*r48].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%30,%46,%20;\n\t"	//r20+=[r30*r46].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%33,%44,%21;\n\t"	//r21+=[r33*r44].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%35,%43,%22;\n\t"	//r22+=[r35*r43].hi+c
+	"madc.hi.cc.u32	 %0,%36,%43, %0;\n\t"	// r0+=[r36*r43].hi+c
+	"madc.hi.cc.u32	 %1,%36,%44, %1;\n\t"	// r1+=[r36*r44].hi+c
+	"madc.hi.cc.u32	 %2,%36,%45, %2;\n\t"	// r2+=[r36*r45].hi+c
+	"madc.hi.cc.u32	 %3,%36,%46, %3;\n\t"	// r3+=[r36*r46].hi+c
+	"madc.hi.cc.u32	 %4,%36,%47, %4;\n\t"	// r4+=[r36*r47].hi+c
+	"madc.hi.cc.u32	 %5,%36,%48, %5;\n\t"	// r5+=[r36*r48].hi+c
+	"madc.hi.cc.u32	 %6,%36,%49, %6;\n\t"	// r6+=[r36*r49].hi+c
+	"madc.hi.cc.u32	 %7,%36,%50, %7;\n\t"	// r7+=[r36*r50].hi+c
+	"madc.hi.cc.u32	 %8,%36,%51, %8;\n\t"	// r8+=[r36*r51].hi+c
+	"madc.hi.cc.u32	 %9,%36,%52, %9;\n\t"	// r9+=[r36*r52].hi+c
+	"madc.hi.cc.u32	%10,%36,%53,%10;\n\t"	//r10+=[r36*r53].hi+c
+	"madc.hi.cc.u32	%11,%36,%54,%11;\n\t"	//r11+=[r36*r54].hi+c
+	"madc.hi.cc.u32	%12,%36,%55,%12;\n\t"	//r12+=[r36*r55].hi+c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%18,%23,%51,%18;\n\t"	//r18+=[r23*r51].hi   (r-4=>r18)
+	"madc.hi.cc.u32	%19,%26,%49,%19;\n\t"	//r19+=[r26*r49].hi+c (r-3=>r19)
+	"madc.hi.cc.u32	%20,%29,%47,%20;\n\t"	//r20+=[r29*r47].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%32,%45,%21;\n\t"	//r21+=[r32*r45].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%34,%44,%22;\n\t"	//r22+=[r34*r44].hi+c
+	"madc.hi.cc.u32	 %0,%35,%44, %0;\n\t"	// r0+=[r35*r44].hi+c
+	"madc.hi.cc.u32	 %1,%35,%45, %1;\n\t"	// r1+=[r35*r45].hi+c
+	"madc.hi.cc.u32	 %2,%35,%46, %2;\n\t"	// r2+=[r35*r46].hi+c
+	"madc.hi.cc.u32	 %3,%35,%47, %3;\n\t"	// r3+=[r35*r47].hi+c
+	"madc.hi.cc.u32	 %4,%35,%48, %4;\n\t"	// r4+=[r35*r48].hi+c
+	"madc.hi.cc.u32	 %5,%35,%49, %5;\n\t"	// r5+=[r35*r49].hi+c
+	"madc.hi.cc.u32	 %6,%35,%50, %6;\n\t"	// r6+=[r35*r50].hi+c
+	"madc.hi.cc.u32	 %7,%35,%51, %7;\n\t"	// r7+=[r35*r51].hi+c
+	"madc.hi.cc.u32	 %8,%35,%52, %8;\n\t"	// r8+=[r35*r52].hi+c
+	"madc.hi.cc.u32	 %9,%35,%53, %9;\n\t"	// r9+=[r35*r53].hi+c
+	"madc.hi.cc.u32	%10,%35,%54,%10;\n\t"	//r10+=[r35*r54].hi+c
+	"madc.hi.cc.u32	%11,%35,%55,%11;\n\t"	//r11+=[r35*r55].hi+c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%19,%25,%50,%19;\n\t"	//r19+=[r25*r50].hi   (r-3=>r19)
+	"madc.hi.cc.u32	%20,%28,%48,%20;\n\t"	//r20+=[r28*r48].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%31,%46,%21;\n\t"	//r21+=[r31*r46].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%33,%45,%22;\n\t"	//r22+=[r33*r45].hi+c
+	"madc.hi.cc.u32	 %0,%34,%45, %0;\n\t"	// r0+=[r34*r45].hi+c
+	"madc.hi.cc.u32	 %1,%34,%46, %1;\n\t"	// r1+=[r34*r46].hi+c
+	"madc.hi.cc.u32	 %2,%34,%47, %2;\n\t"	// r2+=[r34*r47].hi+c
+	"madc.hi.cc.u32	 %3,%34,%48, %3;\n\t"	// r3+=[r34*r48].hi+c
+	"madc.hi.cc.u32	 %4,%34,%49, %4;\n\t"	// r4+=[r34*r49].hi+c
+	"madc.hi.cc.u32	 %5,%34,%50, %5;\n\t"	// r5+=[r34*r50].hi+c
+	"madc.hi.cc.u32	 %6,%34,%51, %6;\n\t"	// r6+=[r34*r51].hi+c
+	"madc.hi.cc.u32	 %7,%34,%52, %7;\n\t"	// r7+=[r34*r52].hi+c
+	"madc.hi.cc.u32	 %8,%34,%53, %8;\n\t"	// r8+=[r34*r53].hi+c
+	"madc.hi.cc.u32	 %9,%34,%54, %9;\n\t"	// r9+=[r34*r54].hi+c
+	"madc.hi.cc.u32	%10,%34,%55,%10;\n\t"	//r10+=[r34*r55].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%19,%24,%51,%19;\n\t"	//r19+=[r24*r51].hi   (r-3=>r19)
+	"madc.hi.cc.u32	%20,%27,%49,%20;\n\t"	//r20+=[r27*r49].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%30,%47,%21;\n\t"	//r21+=[r30*r47].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%32,%46,%22;\n\t"	//r22+=[r32*r46].hi+c
+	"madc.hi.cc.u32	 %0,%33,%46, %0;\n\t"	// r0+=[r33*r46].hi+c
+	"madc.hi.cc.u32	 %1,%33,%47, %1;\n\t"	// r1+=[r33*r47].hi+c
+	"madc.hi.cc.u32	 %2,%33,%48, %2;\n\t"	// r2+=[r33*r48].hi+c
+	"madc.hi.cc.u32	 %3,%33,%49, %3;\n\t"	// r3+=[r33*r49].hi+c
+	"madc.hi.cc.u32	 %4,%33,%50, %4;\n\t"	// r4+=[r33*r50].hi+c
+	"madc.hi.cc.u32	 %5,%33,%51, %5;\n\t"	// r5+=[r33*r51].hi+c
+	"madc.hi.cc.u32	 %6,%33,%52, %6;\n\t"	// r6+=[r33*r52].hi+c
+	"madc.hi.cc.u32	 %7,%33,%53, %7;\n\t"	// r7+=[r33*r53].hi+c
+	"madc.hi.cc.u32	 %8,%33,%54, %8;\n\t"	// r8+=[r33*r54].hi+c
+	"madc.hi.cc.u32	 %9,%33,%55, %9;\n\t"	// r9+=[r33*r55].hi+c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,  0,  0    ;\n\t"	//r11 = c
-	"mad.hi.cc.u32	%12,%16,%35,%12;\n\t"	//r12+=[r16*r35].hi   (r-3=>r12)
-	"madc.hi.cc.u32	%13,%19,%33,%13;\n\t"	//r13+=[r19*r33].hi+c (r-2=>r13)
-	"madc.hi.cc.u32	%14,%22,%31,%14;\n\t"	//r14+=[r22*r31].hi+c (r-1=>r14)
-	"madc.hi.cc.u32	%15,%24,%30,%15;\n\t"	//r15+=[r24*r30].hi+c
-	"madc.hi.cc.u32	 %0,%25,%30, %0;\n\t"	// r0+=[r25*r30].hi+c
-	"madc.hi.cc.u32	 %1,%25,%31, %1;\n\t"	// r1+=[r25*r31].hi+c
-	"madc.hi.cc.u32	 %2,%25,%32, %2;\n\t"	// r2+=[r25*r32].hi+c
-	"madc.hi.cc.u32	 %3,%25,%33, %3;\n\t"	// r3+=[r25*r33].hi+c
-	"madc.hi.cc.u32	 %4,%25,%34, %4;\n\t"	// r4+=[r25*r34].hi+c
-	"madc.hi.cc.u32	 %5,%25,%35, %5;\n\t"	// r5+=[r25*r35].hi+c
-	"madc.hi.cc.u32	 %6,%25,%36, %6;\n\t"	// r6+=[r25*r36].hi+c
-	"madc.hi.cc.u32	 %7,%25,%37, %7;\n\t"	// r7+=[r25*r37].hi+c
-	"madc.hi.cc.u32	 %8,%25,%38, %8;\n\t"	// r8+=[r25*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%19,%23,%52,%19;\n\t"	//r19+=[r23*r52].hi   (r-3=>r19)
+	"madc.hi.cc.u32	%20,%26,%50,%20;\n\t"	//r20+=[r26*r50].hi+c (r-2=>r20)
+	"madc.hi.cc.u32	%21,%29,%48,%21;\n\t"	//r21+=[r29*r48].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%31,%47,%22;\n\t"	//r22+=[r31*r47].hi+c
+	"madc.hi.cc.u32	 %0,%32,%47, %0;\n\t"	// r0+=[r32*r47].hi+c
+	"madc.hi.cc.u32	 %1,%32,%48, %1;\n\t"	// r1+=[r32*r48].hi+c
+	"madc.hi.cc.u32	 %2,%32,%49, %2;\n\t"	// r2+=[r32*r49].hi+c
+	"madc.hi.cc.u32	 %3,%32,%50, %3;\n\t"	// r3+=[r32*r50].hi+c
+	"madc.hi.cc.u32	 %4,%32,%51, %4;\n\t"	// r4+=[r32*r51].hi+c
+	"madc.hi.cc.u32	 %5,%32,%52, %5;\n\t"	// r5+=[r32*r52].hi+c
+	"madc.hi.cc.u32	 %6,%32,%53, %6;\n\t"	// r6+=[r32*r53].hi+c
+	"madc.hi.cc.u32	 %7,%32,%54, %7;\n\t"	// r7+=[r32*r54].hi+c
+	"madc.hi.cc.u32	 %8,%32,%55, %8;\n\t"	// r8+=[r32*r55].hi+c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%13,%18,%34,%13;\n\t"	//r13+=[r18*r34].hi   (r-2=>r13)
-	"madc.hi.cc.u32	%14,%21,%32,%14;\n\t"	//r14+=[r21*r32].hi+c (r-1=>r14)
-	"madc.hi.cc.u32	%15,%23,%31,%15;\n\t"	//r15+=[r23*r31].hi+c
-	"madc.hi.cc.u32	 %0,%24,%31, %0;\n\t"	// r0+=[r24*r31].hi+c
-	"madc.hi.cc.u32	 %1,%24,%32, %1;\n\t"	// r1+=[r24*r32].hi+c
-	"madc.hi.cc.u32	 %2,%24,%33, %2;\n\t"	// r2+=[r24*r33].hi+c
-	"madc.hi.cc.u32	 %3,%24,%34, %3;\n\t"	// r3+=[r24*r34].hi+c
-	"madc.hi.cc.u32	 %4,%24,%35, %4;\n\t"	// r4+=[r24*r35].hi+c
-	"madc.hi.cc.u32	 %5,%24,%36, %5;\n\t"	// r5+=[r24*r36].hi+c
-	"madc.hi.cc.u32	 %6,%24,%37, %6;\n\t"	// r6+=[r24*r37].hi+c
-	"madc.hi.cc.u32	 %7,%24,%38, %7;\n\t"	// r7+=[r24*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%20,%25,%51,%20;\n\t"	//r20+=[r25*r51].hi   (r-2=>r20)
+	"madc.hi.cc.u32	%21,%28,%49,%21;\n\t"	//r21+=[r28*r49].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%30,%48,%22;\n\t"	//r22+=[r30*r48].hi+c
+	"madc.hi.cc.u32	 %0,%31,%48, %0;\n\t"	// r0+=[r31*r48].hi+c
+	"madc.hi.cc.u32	 %1,%31,%49, %1;\n\t"	// r1+=[r31*r49].hi+c
+	"madc.hi.cc.u32	 %2,%31,%50, %2;\n\t"	// r2+=[r31*r50].hi+c
+	"madc.hi.cc.u32	 %3,%31,%51, %3;\n\t"	// r3+=[r31*r51].hi+c
+	"madc.hi.cc.u32	 %4,%31,%52, %4;\n\t"	// r4+=[r31*r52].hi+c
+	"madc.hi.cc.u32	 %5,%31,%53, %5;\n\t"	// r5+=[r31*r53].hi+c
+	"madc.hi.cc.u32	 %6,%31,%54, %6;\n\t"	// r6+=[r31*r54].hi+c
+	"madc.hi.cc.u32	 %7,%31,%55, %7;\n\t"	// r7+=[r31*r55].hi+c
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%13,%17,%35,%13;\n\t"	//r13+=[r17*r35].hi   (r-2=>r13)
-	"madc.hi.cc.u32	%14,%20,%33,%14;\n\t"	//r14+=[r20*r33].hi+c (r-1=>r14)
-	"madc.hi.cc.u32	%15,%22,%32,%15;\n\t"	//r15+=[r22*r32].hi+c
-	"madc.hi.cc.u32	 %0,%23,%32, %0;\n\t"	// r0+=[r23*r32].hi+c
-	"madc.hi.cc.u32	 %1,%23,%33, %1;\n\t"	// r1+=[r23*r33].hi+c
-	"madc.hi.cc.u32	 %2,%23,%34, %2;\n\t"	// r2+=[r23*r34].hi+c
-	"madc.hi.cc.u32	 %3,%23,%35, %3;\n\t"	// r3+=[r23*r35].hi+c
-	"madc.hi.cc.u32	 %4,%23,%36, %4;\n\t"	// r4+=[r23*r36].hi+c
-	"madc.hi.cc.u32	 %5,%23,%37, %5;\n\t"	// r5+=[r23*r37].hi+c
-	"madc.hi.cc.u32	 %6,%23,%38, %6;\n\t"	// r6+=[r23*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%20,%24,%52,%20;\n\t"	//r20+=[r24*r52].hi   (r-2=>r20)
+	"madc.hi.cc.u32	%21,%27,%50,%21;\n\t"	//r21+=[r27*r50].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%29,%49,%22;\n\t"	//r22+=[r29*r49].hi+c
+	"madc.hi.cc.u32	 %0,%30,%49, %0;\n\t"	// r0+=[r30*r49].hi+c
+	"madc.hi.cc.u32	 %1,%30,%50, %1;\n\t"	// r1+=[r30*r50].hi+c
+	"madc.hi.cc.u32	 %2,%30,%51, %2;\n\t"	// r2+=[r30*r51].hi+c
+	"madc.hi.cc.u32	 %3,%30,%52, %3;\n\t"	// r3+=[r30*r52].hi+c
+	"madc.hi.cc.u32	 %4,%30,%53, %4;\n\t"	// r4+=[r30*r53].hi+c
+	"madc.hi.cc.u32	 %5,%30,%54, %5;\n\t"	// r5+=[r30*r54].hi+c
+	"madc.hi.cc.u32	 %6,%30,%55, %6;\n\t"	// r6+=[r30*r55].hi+c
 	"addc.cc.u32	 %7, %7,  0    ;\n\t"	// r7+= c
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%13,%16,%36,%13;\n\t"	//r13+=[r16*r36].hi   (r-2=>r13)
-	"madc.hi.cc.u32	%14,%19,%34,%14;\n\t"	//r14+=[r19*r34].hi+c (r-1=>r14)
-	"madc.hi.cc.u32	%15,%21,%33,%15;\n\t"	//r15+=[r21*r33].hi+c
-	"madc.hi.cc.u32	 %0,%22,%33, %0;\n\t"	// r0+=[r22*r33].hi+c
-	"madc.hi.cc.u32	 %1,%22,%34, %1;\n\t"	// r1+=[r22*r34].hi+c
-	"madc.hi.cc.u32	 %2,%22,%35, %2;\n\t"	// r2+=[r22*r35].hi+c
-	"madc.hi.cc.u32	 %3,%22,%36, %3;\n\t"	// r3+=[r22*r36].hi+c
-	"madc.hi.cc.u32	 %4,%22,%37, %4;\n\t"	// r4+=[r22*r37].hi+c
-	"madc.hi.cc.u32	 %5,%22,%38, %5;\n\t"	// r5+=[r22*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%20,%23,%53,%20;\n\t"	//r20+=[r23*r53].hi   (r-2=>r20)
+	"madc.hi.cc.u32	%21,%26,%51,%21;\n\t"	//r21+=[r26*r51].hi+c (r-1=>r21)
+	"madc.hi.cc.u32	%22,%28,%50,%22;\n\t"	//r22+=[r28*r50].hi+c
+	"madc.hi.cc.u32	 %0,%29,%50, %0;\n\t"	// r0+=[r29*r50].hi+c
+	"madc.hi.cc.u32	 %1,%29,%51, %1;\n\t"	// r1+=[r29*r51].hi+c
+	"madc.hi.cc.u32	 %2,%29,%52, %2;\n\t"	// r2+=[r29*r52].hi+c
+	"madc.hi.cc.u32	 %3,%29,%53, %3;\n\t"	// r3+=[r29*r53].hi+c
+	"madc.hi.cc.u32	 %4,%29,%54, %4;\n\t"	// r4+=[r29*r54].hi+c
+	"madc.hi.cc.u32	 %5,%29,%55, %5;\n\t"	// r5+=[r29*r55].hi+c
 	"addc.cc.u32	 %6, %6,  0    ;\n\t"	// r6+= c
 	"addc.cc.u32	 %7, %7,  0    ;\n\t"	// r7+= c
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%14,%18,%35,%14;\n\t"	//r14+=[r18*r35].hi   (r-1=>r14)
-	"madc.hi.cc.u32	%15,%20,%34,%15;\n\t"	//r15+=[r20*r34].hi+c
-	"madc.hi.cc.u32	 %0,%21,%34, %0;\n\t"	// r0+=[r21*r34].hi+c
-	"madc.hi.cc.u32	 %1,%21,%35, %1;\n\t"	// r1+=[r21*r35].hi+c
-	"madc.hi.cc.u32	 %2,%21,%36, %2;\n\t"	// r2+=[r21*r36].hi+c
-	"madc.hi.cc.u32	 %3,%21,%37, %3;\n\t"	// r3+=[r21*r37].hi+c
-	"madc.hi.cc.u32	 %4,%21,%38, %4;\n\t"	// r4+=[r21*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%21,%25,%52,%21;\n\t"	//r21+=[r25*r52].hi   (r-1=>r21)
+	"madc.hi.cc.u32	%22,%27,%51,%22;\n\t"	//r22+=[r27*r51].hi+c
+	"madc.hi.cc.u32	 %0,%28,%51, %0;\n\t"	// r0+=[r28*r51].hi+c
+	"madc.hi.cc.u32	 %1,%28,%52, %1;\n\t"	// r1+=[r28*r52].hi+c
+	"madc.hi.cc.u32	 %2,%28,%53, %2;\n\t"	// r2+=[r28*r53].hi+c
+	"madc.hi.cc.u32	 %3,%28,%54, %3;\n\t"	// r3+=[r28*r54].hi+c
+	"madc.hi.cc.u32	 %4,%28,%55, %4;\n\t"	// r4+=[r28*r55].hi+c
 	"addc.cc.u32	 %5, %5,  0    ;\n\t"	// r5+= c
 	"addc.cc.u32	 %6, %6,  0    ;\n\t"	// r6+= c
 	"addc.cc.u32	 %7, %7,  0    ;\n\t"	// r7+= c
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%14,%17,%36,%14;\n\t"	//r14+=[r17*r36].hi   (r-1=>r14)
-	"madc.hi.cc.u32	%15,%19,%35,%15;\n\t"	//r15+=[r19*r35].hi+c
-	"madc.hi.cc.u32	 %0,%20,%35, %0;\n\t"	// r0+=[r20*r35].hi+c
-	"madc.hi.cc.u32	 %1,%20,%36, %1;\n\t"	// r1+=[r20*r36].hi+c
-	"madc.hi.cc.u32	 %2,%20,%37, %2;\n\t"	// r2+=[r20*r37].hi+c
-	"madc.hi.cc.u32	 %3,%20,%38, %3;\n\t"	// r3+=[r20*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%21,%24,%53,%21;\n\t"	//r21+=[r24*r53].hi   (r-1=>r21)
+	"madc.hi.cc.u32	%22,%26,%52,%22;\n\t"	//r22+=[r26*r52].hi+c
+	"madc.hi.cc.u32	 %0,%27,%52, %0;\n\t"	// r0+=[r27*r52].hi+c
+	"madc.hi.cc.u32	 %1,%27,%53, %1;\n\t"	// r1+=[r27*r53].hi+c
+	"madc.hi.cc.u32	 %2,%27,%54, %2;\n\t"	// r2+=[r27*r54].hi+c
+	"madc.hi.cc.u32	 %3,%27,%55, %3;\n\t"	// r3+=[r27*r55].hi+c
 	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
 	"addc.cc.u32	 %5, %5,  0    ;\n\t"	// r5+= c
 	"addc.cc.u32	 %6, %6,  0    ;\n\t"	// r6+= c
@@ -417,12 +764,17 @@ __device__ __forceinline__ uintXp<uint352> get_q(const uint352 & a_lo,
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%14,%16,%37,%14;\n\t"	//r14+=[r16*r37].hi   (r-1=>r14)
-	"madc.hi.cc.u32	%15,%18,%36,%15;\n\t"	//r15+=[r18*r36].hi+c
-	"madc.hi.cc.u32	 %0,%19,%36, %0;\n\t"	// r0+=[r19*r36].hi+c
-	"madc.hi.cc.u32	 %1,%19,%37, %1;\n\t"	// r1+=[r19*r37].hi+c
-	"madc.hi.cc.u32	 %2,%19,%38, %2;\n\t"	// r2+=[r19*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%21,%23,%54,%21;\n\t"	//r21+=[r23*r54].hi   (r-1=>r21)
+	"madc.hi.cc.u32	%22,%25,%53,%22;\n\t"	//r22+=[r25*r53].hi+c
+	"madc.hi.cc.u32	 %0,%26,%53, %0;\n\t"	// r0+=[r26*r53].hi+c
+	"madc.hi.cc.u32	 %1,%26,%54, %1;\n\t"	// r1+=[r26*r54].hi+c
+	"madc.hi.cc.u32	 %2,%26,%55, %2;\n\t"	// r2+=[r26*r55].hi+c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
 	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
 	"addc.cc.u32	 %5, %5,  0    ;\n\t"	// r5+= c
@@ -431,10 +783,15 @@ __device__ __forceinline__ uintXp<uint352> get_q(const uint352 & a_lo,
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%15,%17,%37,%15;\n\t"	//r15+=[r17*r37].hi  
-	"madc.hi.cc.u32	 %0,%18,%37, %0;\n\t"	// r0+=[r18*r37].hi+c
-	"madc.hi.cc.u32	 %1,%18,%38, %1;\n\t"	// r1+=[r18*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%22,%24,%54,%22;\n\t"	//r22+=[r24*r54].hi  
+	"madc.hi.cc.u32	 %0,%25,%54, %0;\n\t"	// r0+=[r25*r54].hi+c
+	"madc.hi.cc.u32	 %1,%25,%55, %1;\n\t"	// r1+=[r25*r55].hi+c
 	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
 	"addc.cc.u32	 %4, %4,  0    ;\n\t"	// r4+= c
@@ -444,9 +801,14 @@ __device__ __forceinline__ uintXp<uint352> get_q(const uint352 & a_lo,
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.hi.cc.u32	%15,%16,%38,%15;\n\t"	//r15+=[r16*r38].hi  
-	"madc.hi.cc.u32	 %0,%17,%38, %0;\n\t"	// r0+=[r17*r38].hi+c
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.hi.cc.u32	%22,%23,%55,%22;\n\t"	//r22+=[r23*r55].hi  
+	"madc.hi.cc.u32	 %0,%24,%55, %0;\n\t"	// r0+=[r24*r55].hi+c
 	"addc.cc.u32	 %1, %1,  0    ;\n\t"	// r1+= c
 	"addc.cc.u32	 %2, %2,  0    ;\n\t"	// r2+= c
 	"addc.cc.u32	 %3, %3,  0    ;\n\t"	// r3+= c
@@ -457,589 +819,1192 @@ __device__ __forceinline__ uintXp<uint352> get_q(const uint352 & a_lo,
 	"addc.cc.u32	 %8, %8,  0    ;\n\t"	// r8+= c
 	"addc.cc.u32	 %9, %9,  0    ;\n\t"	// r9+= c
 	"addc.cc.u32	%10,%10,  0    ;\n\t"	//r10+= c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+= c
-	"mad.lo.cc.u32	%15,%16,%39,%15;\n\t"	//r15+=r16*r39
-	"madc.lo.cc.u32	 %0,%17,%39, %0;\n\t"	// r0+=r17*r39+c
-	"madc.lo.cc.u32	 %1,%18,%39, %1;\n\t"	// r1+=r18*r39+c
-	"madc.lo.cc.u32	 %2,%19,%39, %2;\n\t"	// r2+=r19*r39+c
-	"madc.lo.cc.u32	 %3,%20,%39, %3;\n\t"	// r3+=r20*r39+c
-	"madc.lo.cc.u32	 %4,%21,%39, %4;\n\t"	// r4+=r21*r39+c
-	"madc.lo.cc.u32	 %5,%22,%39, %5;\n\t"	// r5+=r22*r39+c
-	"madc.lo.cc.u32	 %6,%23,%39, %6;\n\t"	// r6+=r23*r39+c
-	"madc.lo.cc.u32	 %7,%24,%39, %7;\n\t"	// r7+=r24*r39+c
-	"madc.lo.cc.u32	 %8,%25,%39, %8;\n\t"	// r8+=r25*r39+c
-	"madc.lo.cc.u32	 %9,%26,%39, %9;\n\t"	// r9+=r26*r39+c
-	"madc.lo.cc.u32	%10,%27,%39,%10;\n\t"	//r10+=r27*r39+c
-	"addc.u32	%11,%11,  0    ;\n\t"	//r11+=c
-	: "+r"(_q[0]), "=r"(_q[1]), "=r"(_q[2]), "=r"(_q[3]), "=r"(_q[4]),
-	  "=r"(_q[5]), "=r"(_q[6]), "=r"(_q[7]), "=r"(_q[8]), "=r"(_q[9]),
-	  "=r"(_q[10]), "=r"(_q[11]), "=r"(tmp0), "=r"(tmp1), "=r"(tmp2),
-	  "=r"(tmp3)
-	: "r"(_a_lo[10]), "r"(_a_hi[0]), "r"(_a_hi[1]), "r"(_a_hi[2]),
-	  "r"(_a_hi[3]), "r"(_a_hi[4]), "r"(_a_hi[5]), "r"(_a_hi[6]),
-	  "r"(_a_hi[7]), "r"(_a_hi[8]), "r"(_a_hi[9]), "r"(_a_hi[10]),
-	  "r"(_mu[0]), "r"(_mu[1]), "r"(_mu[2]), "r"(_mu[3]), "r"(_mu[4]),
-	  "r"(_mu[5]), "r"(_mu[6]), "r"(_mu[7]), "r"(_mu[8]), "r"(_mu[9]),
-	  "r"(_mu[10]), "r"(_mu[11]));
+	"addc.cc.u32	%11,%11,  0    ;\n\t"	//r11+= c
+	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+= c
+	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+= c
+	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+= c
+	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+= c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+= c
+	"mad.lo.cc.u32	%22,%23,%56,%22;\n\t"	//r22+=r23*r56
+	"madc.lo.cc.u32	 %0,%24,%56, %0;\n\t"	// r0+=r24*r56+c
+	"madc.lo.cc.u32	 %1,%25,%56, %1;\n\t"	// r1+=r25*r56+c
+	"madc.lo.cc.u32	 %2,%26,%56, %2;\n\t"	// r2+=r26*r56+c
+	"madc.lo.cc.u32	 %3,%27,%56, %3;\n\t"	// r3+=r27*r56+c
+	"madc.lo.cc.u32	 %4,%28,%56, %4;\n\t"	// r4+=r28*r56+c
+	"madc.lo.cc.u32	 %5,%29,%56, %5;\n\t"	// r5+=r29*r56+c
+	"madc.lo.cc.u32	 %6,%30,%56, %6;\n\t"	// r6+=r30*r56+c
+	"madc.lo.cc.u32	 %7,%31,%56, %7;\n\t"	// r7+=r31*r56+c
+	"madc.lo.cc.u32	 %8,%32,%56, %8;\n\t"	// r8+=r32*r56+c
+	"madc.lo.cc.u32	 %9,%33,%56, %9;\n\t"	// r9+=r33*r56+c
+	"madc.lo.cc.u32	%10,%34,%56,%10;\n\t"	//r10+=r34*r56+c
+	"madc.lo.cc.u32	%11,%35,%56,%11;\n\t"	//r11+=r35*r56+c
+	"madc.lo.cc.u32	%12,%36,%56,%12;\n\t"	//r12+=r36*r56+c
+	"madc.lo.cc.u32	%13,%37,%56,%13;\n\t"	//r13+=r37*r56+c
+	"madc.lo.cc.u32	%14,%38,%56,%14;\n\t"	//r14+=r38*r56+c
+	"madc.lo.cc.u32	%15,%39,%56,%15;\n\t"	//r15+=r39*r56+c
+	"addc.u32	%16,%16,  0    ;\n\t"	//r16+=c
+	: "+r"(q.lo.w0.x), "=r"(q.lo.w0.y), "=r"(q.lo.w0.z),
+	  "=r"(q.lo.w0.w), "=r"(q.lo.w4.x), "=r"(q.lo.w4.y), "=r"(q.lo.w4.z),
+	  "=r"(q.lo.w4.w), "=r"(q.lo.w8.x), "=r"(q.lo.w8.y), "=r"(q.lo.w8.z),
+	  "=r"(q.lo.w8.w), "=r"(q.lo.w12.x), "=r"(q.lo.w12.y),
+	  "=r"(q.lo.w12.z), "=r"(q.lo.w12.w), "=r"(q.hi), "=r"(tmp0),
+	  "=r"(tmp1), "=r"(tmp2), "=r"(tmp3), "=r"(tmp4), "=r"(tmp5)
+	: "r"(a_lo.w12.w ), "r"(a_hi.w0.x), "r"(a_hi.w0.y), "r"(a_hi.w0.z),
+	  "r"(a_hi.w0.w), "r"(a_hi.w4.x), "r"(a_hi.w4.y), "r"(a_hi.w4.z),
+	  "r"(a_hi.w4.w), "r"(a_hi.w8.x), "r"(a_hi.w8.y), "r"(a_hi.w8.z),
+	  "r"(a_hi.w8.w), "r"(a_hi.w12.x), "r"(a_hi.w12.y), "r"(a_hi.w12.z),
+	  "r"(a_hi.w12.w), "r"(mu.lo.w0.x), "r"(mu.lo.w0.y), "r"(mu.lo.w0.z),
+	  "r"(mu.lo.w0.w), "r"(mu.lo.w4.x), "r"(mu.lo.w4.y), "r"(mu.lo.w4.z),
+	  "r"(mu.lo.w4.w), "r"(mu.lo.w8.x), "r"(mu.lo.w8.y), "r"(mu.lo.w8.z),
+	  "r"(mu.lo.w8.w), "r"(mu.lo.w12.x), "r"(mu.lo.w12.y),
+	  "r"(mu.lo.w12.z), "r"(mu.lo.w12.w), "r"(mu.hi));
 
     return q;
 }
 
-__device__ __forceinline__ uintXp<uint352> get_r2(const uintXp<uint352> & q,
-	const uint352 & modulus)
+__device__ __forceinline__ uintXp<uint512> get_r2(const uintXp<uint512> & q,
+	const uint512 & modulus)
 {
-    uintXp<uint352> r;
-    uint * _r = (uint *)&r;
-    uint * _q = (uint *)&q;
-    uint * _m = (uint *)&modulus;
-
-    asm("mad.lo.u32	 %0,%12,%24,  0;\n\t"	// r0 =[r12*r24].lo  
-	"mad.lo.u32	 %1,%12,%25,  0;\n\t"	// r1 =[r12*r25].lo  
-	"mad.lo.cc.u32	 %1,%13,%24, %1;\n\t"	// r1+=[r13*r24].lo  
-	"madc.lo.u32	 %2,%12,%26,  0;\n\t"	// r2 =[r12*r26].lo+c
-	"mad.hi.cc.u32	 %1,%12,%24, %1;\n\t"	// r1+=[r12*r24].hi  
-	"madc.lo.cc.u32	 %2,%13,%25, %2;\n\t"	// r2+=[r13*r25].lo+c
-	"madc.lo.u32	 %3,%12,%27,  0;\n\t"	// r3 =[r12*r27].lo+c
-	"mad.hi.cc.u32	 %2,%12,%25, %2;\n\t"	// r2+=[r12*r25].hi  
-	"madc.lo.cc.u32	 %3,%13,%26, %3;\n\t"	// r3+=[r13*r26].lo+c
-	"madc.lo.u32	 %4,%12,%28,  0;\n\t"	// r4 =[r12*r28].lo+c
-	"mad.lo.cc.u32	 %2,%14,%24, %2;\n\t"	// r2+=[r14*r24].lo  
-	"madc.hi.cc.u32	 %3,%12,%26, %3;\n\t"	// r3+=[r12*r26].hi+c
-	"madc.lo.cc.u32	 %4,%13,%27, %4;\n\t"	// r4+=[r13*r27].lo+c
-	"madc.lo.u32	 %5,%12,%29,  0;\n\t"	// r5 =[r12*r29].lo+c
-	"mad.hi.cc.u32	 %2,%13,%24, %2;\n\t"	// r2+=[r13*r24].hi  
-	"madc.lo.cc.u32	 %3,%14,%25, %3;\n\t"	// r3+=[r14*r25].lo+c
-	"madc.hi.cc.u32	 %4,%12,%27, %4;\n\t"	// r4+=[r12*r27].hi+c
-	"madc.lo.cc.u32	 %5,%13,%28, %5;\n\t"	// r5+=[r13*r28].lo+c
-	"madc.lo.u32	 %6,%12,%30,  0;\n\t"	// r6 =[r12*r30].lo+c
-	"mad.hi.cc.u32	 %3,%13,%25, %3;\n\t"	// r3+=[r13*r25].hi  
-	"madc.lo.cc.u32	 %4,%14,%26, %4;\n\t"	// r4+=[r14*r26].lo+c
-	"madc.hi.cc.u32	 %5,%12,%28, %5;\n\t"	// r5+=[r12*r28].hi+c
-	"madc.lo.cc.u32	 %6,%13,%29, %6;\n\t"	// r6+=[r13*r29].lo+c
-	"madc.lo.u32	 %7,%12,%31,  0;\n\t"	// r7 =[r12*r31].lo+c
-	"mad.lo.cc.u32	 %3,%15,%24, %3;\n\t"	// r3+=[r15*r24].lo  
-	"madc.hi.cc.u32	 %4,%13,%26, %4;\n\t"	// r4+=[r13*r26].hi+c
-	"madc.lo.cc.u32	 %5,%14,%27, %5;\n\t"	// r5+=[r14*r27].lo+c
-	"madc.hi.cc.u32	 %6,%12,%29, %6;\n\t"	// r6+=[r12*r29].hi+c
-	"madc.lo.cc.u32	 %7,%13,%30, %7;\n\t"	// r7+=[r13*r30].lo+c
-	"madc.lo.u32	 %8,%12,%32,  0;\n\t"	// r8 =[r12*r32].lo+c
-	"mad.hi.cc.u32	 %3,%14,%24, %3;\n\t"	// r3+=[r14*r24].hi  
-	"madc.lo.cc.u32	 %4,%15,%25, %4;\n\t"	// r4+=[r15*r25].lo+c
-	"madc.hi.cc.u32	 %5,%13,%27, %5;\n\t"	// r5+=[r13*r27].hi+c
-	"madc.lo.cc.u32	 %6,%14,%28, %6;\n\t"	// r6+=[r14*r28].lo+c
-	"madc.hi.cc.u32	 %7,%12,%30, %7;\n\t"	// r7+=[r12*r30].hi+c
-	"madc.lo.cc.u32	 %8,%13,%31, %8;\n\t"	// r8+=[r13*r31].lo+c
-	"madc.lo.u32	 %9,%12,%33,  0;\n\t"	// r9 =[r12*r33].lo+c
-	"mad.hi.cc.u32	 %4,%14,%25, %4;\n\t"	// r4+=[r14*r25].hi  
-	"madc.lo.cc.u32	 %5,%15,%26, %5;\n\t"	// r5+=[r15*r26].lo+c
-	"madc.hi.cc.u32	 %6,%13,%28, %6;\n\t"	// r6+=[r13*r28].hi+c
-	"madc.lo.cc.u32	 %7,%14,%29, %7;\n\t"	// r7+=[r14*r29].lo+c
-	"madc.hi.cc.u32	 %8,%12,%31, %8;\n\t"	// r8+=[r12*r31].hi+c
-	"madc.lo.cc.u32	 %9,%13,%32, %9;\n\t"	// r9+=[r13*r32].lo+c
-	"madc.lo.u32	%10,%12,%34,  0;\n\t"	//r10 =[r12*r34].lo+c
-	"mad.lo.cc.u32	 %4,%16,%24, %4;\n\t"	// r4+=[r16*r24].lo  
-	"madc.hi.cc.u32	 %5,%14,%26, %5;\n\t"	// r5+=[r14*r26].hi+c
-	"madc.lo.cc.u32	 %6,%15,%27, %6;\n\t"	// r6+=[r15*r27].lo+c
-	"madc.hi.cc.u32	 %7,%13,%29, %7;\n\t"	// r7+=[r13*r29].hi+c
-	"madc.lo.cc.u32	 %8,%14,%30, %8;\n\t"	// r8+=[r14*r30].lo+c
-	"madc.hi.cc.u32	 %9,%12,%32, %9;\n\t"	// r9+=[r12*r32].hi+c
-	"madc.lo.cc.u32	%10,%13,%33,%10;\n\t"	//r10+=[r13*r33].lo+c
-	"madc.lo.u32	%11,%13,%34,  0;\n\t"	//r11 =[r13*r34].lo+c
-	"mad.hi.cc.u32	 %4,%15,%24, %4;\n\t"	// r4+=[r15*r24].hi  
-	"madc.lo.cc.u32	 %5,%16,%25, %5;\n\t"	// r5+=[r16*r25].lo+c
-	"madc.hi.cc.u32	 %6,%14,%27, %6;\n\t"	// r6+=[r14*r27].hi+c
-	"madc.lo.cc.u32	 %7,%15,%28, %7;\n\t"	// r7+=[r15*r28].lo+c
-	"madc.hi.cc.u32	 %8,%13,%30, %8;\n\t"	// r8+=[r13*r30].hi+c
-	"madc.lo.cc.u32	 %9,%14,%31, %9;\n\t"	// r9+=[r14*r31].lo+c
-	"madc.hi.cc.u32	%10,%12,%33,%10;\n\t"	//r10+=[r12*r33].hi+c
-	"madc.hi.cc.u32	%11,%12,%34,%11;\n\t"	//r11+=[r12*r34].hi+c
-	"mad.hi.cc.u32	 %5,%15,%25, %5;\n\t"	// r5+=[r15*r25].hi  
-	"madc.lo.cc.u32	 %6,%16,%26, %6;\n\t"	// r6+=[r16*r26].lo+c
-	"madc.hi.cc.u32	 %7,%14,%28, %7;\n\t"	// r7+=[r14*r28].hi+c
-	"madc.lo.cc.u32	 %8,%15,%29, %8;\n\t"	// r8+=[r15*r29].lo+c
-	"madc.hi.cc.u32	 %9,%13,%31, %9;\n\t"	// r9+=[r13*r31].hi+c
-	"madc.lo.cc.u32	%10,%14,%32,%10;\n\t"	//r10+=[r14*r32].lo+c
-	"madc.lo.cc.u32	%11,%14,%33,%11;\n\t"	//r11+=[r14*r33].lo+c
-	"mad.lo.cc.u32	 %5,%17,%24, %5;\n\t"	// r5+=[r17*r24].lo  
-	"madc.hi.cc.u32	 %6,%15,%26, %6;\n\t"	// r6+=[r15*r26].hi+c
-	"madc.lo.cc.u32	 %7,%16,%27, %7;\n\t"	// r7+=[r16*r27].lo+c
-	"madc.hi.cc.u32	 %8,%14,%29, %8;\n\t"	// r8+=[r14*r29].hi+c
-	"madc.lo.cc.u32	 %9,%15,%30, %9;\n\t"	// r9+=[r15*r30].lo+c
-	"madc.hi.cc.u32	%10,%13,%32,%10;\n\t"	//r10+=[r13*r32].hi+c
-	"madc.hi.cc.u32	%11,%13,%33,%11;\n\t"	//r11+=[r13*r33].hi+c
-	"mad.hi.cc.u32	 %5,%16,%24, %5;\n\t"	// r5+=[r16*r24].hi  
-	"madc.lo.cc.u32	 %6,%17,%25, %6;\n\t"	// r6+=[r17*r25].lo+c
-	"madc.hi.cc.u32	 %7,%15,%27, %7;\n\t"	// r7+=[r15*r27].hi+c
-	"madc.lo.cc.u32	 %8,%16,%28, %8;\n\t"	// r8+=[r16*r28].lo+c
-	"madc.hi.cc.u32	 %9,%14,%30, %9;\n\t"	// r9+=[r14*r30].hi+c
-	"madc.lo.cc.u32	%10,%15,%31,%10;\n\t"	//r10+=[r15*r31].lo+c
-	"madc.lo.cc.u32	%11,%15,%32,%11;\n\t"	//r11+=[r15*r32].lo+c
-	"mad.hi.cc.u32	 %6,%16,%25, %6;\n\t"	// r6+=[r16*r25].hi  
-	"madc.lo.cc.u32	 %7,%17,%26, %7;\n\t"	// r7+=[r17*r26].lo+c
-	"madc.hi.cc.u32	 %8,%15,%28, %8;\n\t"	// r8+=[r15*r28].hi+c
-	"madc.lo.cc.u32	 %9,%16,%29, %9;\n\t"	// r9+=[r16*r29].lo+c
-	"madc.hi.cc.u32	%10,%14,%31,%10;\n\t"	//r10+=[r14*r31].hi+c
-	"madc.hi.cc.u32	%11,%14,%32,%11;\n\t"	//r11+=[r14*r32].hi+c
-	"mad.lo.cc.u32	 %6,%18,%24, %6;\n\t"	// r6+=[r18*r24].lo  
-	"madc.hi.cc.u32	 %7,%16,%26, %7;\n\t"	// r7+=[r16*r26].hi+c
-	"madc.lo.cc.u32	 %8,%17,%27, %8;\n\t"	// r8+=[r17*r27].lo+c
-	"madc.hi.cc.u32	 %9,%15,%29, %9;\n\t"	// r9+=[r15*r29].hi+c
-	"madc.lo.cc.u32	%10,%16,%30,%10;\n\t"	//r10+=[r16*r30].lo+c
-	"madc.lo.cc.u32	%11,%16,%31,%11;\n\t"	//r11+=[r16*r31].lo+c
-	"mad.hi.cc.u32	 %6,%17,%24, %6;\n\t"	// r6+=[r17*r24].hi  
-	"madc.lo.cc.u32	 %7,%18,%25, %7;\n\t"	// r7+=[r18*r25].lo+c
-	"madc.hi.cc.u32	 %8,%16,%27, %8;\n\t"	// r8+=[r16*r27].hi+c
-	"madc.lo.cc.u32	 %9,%17,%28, %9;\n\t"	// r9+=[r17*r28].lo+c
-	"madc.hi.cc.u32	%10,%15,%30,%10;\n\t"	//r10+=[r15*r30].hi+c
-	"madc.hi.cc.u32	%11,%15,%31,%11;\n\t"	//r11+=[r15*r31].hi+c
-	"mad.hi.cc.u32	 %7,%17,%25, %7;\n\t"	// r7+=[r17*r25].hi  
-	"madc.lo.cc.u32	 %8,%18,%26, %8;\n\t"	// r8+=[r18*r26].lo+c
-	"madc.hi.cc.u32	 %9,%16,%28, %9;\n\t"	// r9+=[r16*r28].hi+c
-	"madc.lo.cc.u32	%10,%17,%29,%10;\n\t"	//r10+=[r17*r29].lo+c
-	"madc.lo.cc.u32	%11,%17,%30,%11;\n\t"	//r11+=[r17*r30].lo+c
-	"mad.lo.cc.u32	 %7,%19,%24, %7;\n\t"	// r7+=[r19*r24].lo  
-	"madc.hi.cc.u32	 %8,%17,%26, %8;\n\t"	// r8+=[r17*r26].hi+c
-	"madc.lo.cc.u32	 %9,%18,%27, %9;\n\t"	// r9+=[r18*r27].lo+c
-	"madc.hi.cc.u32	%10,%16,%29,%10;\n\t"	//r10+=[r16*r29].hi+c
-	"madc.hi.cc.u32	%11,%16,%30,%11;\n\t"	//r11+=[r16*r30].hi+c
-	"mad.hi.cc.u32	 %7,%18,%24, %7;\n\t"	// r7+=[r18*r24].hi  
-	"madc.lo.cc.u32	 %8,%19,%25, %8;\n\t"	// r8+=[r19*r25].lo+c
-	"madc.hi.cc.u32	 %9,%17,%27, %9;\n\t"	// r9+=[r17*r27].hi+c
-	"madc.lo.cc.u32	%10,%18,%28,%10;\n\t"	//r10+=[r18*r28].lo+c
-	"madc.lo.cc.u32	%11,%18,%29,%11;\n\t"	//r11+=[r18*r29].lo+c
-	"mad.hi.cc.u32	 %8,%18,%25, %8;\n\t"	// r8+=[r18*r25].hi  
-	"madc.lo.cc.u32	 %9,%19,%26, %9;\n\t"	// r9+=[r19*r26].lo+c
-	"madc.hi.cc.u32	%10,%17,%28,%10;\n\t"	//r10+=[r17*r28].hi+c
-	"madc.hi.cc.u32	%11,%17,%29,%11;\n\t"	//r11+=[r17*r29].hi+c
-	"mad.lo.cc.u32	 %8,%20,%24, %8;\n\t"	// r8+=[r20*r24].lo  
-	"madc.hi.cc.u32	 %9,%18,%26, %9;\n\t"	// r9+=[r18*r26].hi+c
-	"madc.lo.cc.u32	%10,%19,%27,%10;\n\t"	//r10+=[r19*r27].lo+c
-	"madc.lo.cc.u32	%11,%19,%28,%11;\n\t"	//r11+=[r19*r28].lo+c
-	"mad.hi.cc.u32	 %8,%19,%24, %8;\n\t"	// r8+=[r19*r24].hi  
-	"madc.lo.cc.u32	 %9,%20,%25, %9;\n\t"	// r9+=[r20*r25].lo+c
-	"madc.hi.cc.u32	%10,%18,%27,%10;\n\t"	//r10+=[r18*r27].hi+c
-	"madc.hi.cc.u32	%11,%18,%28,%11;\n\t"	//r11+=[r18*r28].hi+c
-	"mad.hi.cc.u32	 %9,%19,%25, %9;\n\t"	// r9+=[r19*r25].hi  
-	"madc.lo.cc.u32	%10,%20,%26,%10;\n\t"	//r10+=[r20*r26].lo+c
-	"madc.lo.cc.u32	%11,%20,%27,%11;\n\t"	//r11+=[r20*r27].lo+c
-	"mad.lo.cc.u32	 %9,%21,%24, %9;\n\t"	// r9+=[r21*r24].lo  
-	"madc.hi.cc.u32	%10,%19,%26,%10;\n\t"	//r10+=[r19*r26].hi+c
-	"madc.hi.cc.u32	%11,%19,%27,%11;\n\t"	//r11+=[r19*r27].hi+c
-	"mad.hi.cc.u32	 %9,%20,%24, %9;\n\t"	// r9+=[r20*r24].hi  
-	"madc.lo.cc.u32	%10,%21,%25,%10;\n\t"	//r10+=[r21*r25].lo+c
-	"madc.lo.cc.u32	%11,%21,%26,%11;\n\t"	//r11+=[r21*r26].lo+c
-	"mad.hi.cc.u32	%10,%20,%25,%10;\n\t"	//r10+=[r20*r25].hi  
-	"madc.hi.cc.u32	%11,%20,%26,%11;\n\t"	//r11+=[r20*r26].hi+c
-	"mad.lo.cc.u32	%10,%22,%24,%10;\n\t"	//r10+=[r22*r24].lo  
-	"madc.lo.cc.u32	%11,%22,%25,%11;\n\t"	//r11+=[r22*r25].lo+c
-	"mad.hi.cc.u32	%10,%21,%24,%10;\n\t"	//r10+=[r21*r24].hi  
-	"madc.hi.cc.u32	%11,%21,%25,%11;\n\t"	//r11+=[r21*r25].hi+c
-	"mad.lo.cc.u32	%11,%23,%24,%11;\n\t"	//r11+=[r23*r24].lo  
-	"mad.hi.cc.u32	%11,%22,%24,%11;\n\t"	//r11+=[r22*r24].hi  
-	: "+r"(_r[0]), "=r"(_r[1]), "=r"(_r[2]), "=r"(_r[3]), "=r"(_r[4]),
-	  "=r"(_r[5]), "=r"(_r[6]), "=r"(_r[7]), "=r"(_r[8]), "=r"(_r[9]),
-	  "=r"(_r[10]), "=r"(_r[11])
-	: "r"(_q[0]), "r"(_q[1]), "r"(_q[2]), "r"(_q[3]), "r"(_q[4]),
-	  "r"(_q[5]), "r"(_q[6]), "r"(_q[7]), "r"(_q[8]), "r"(_q[9]),
-	  "r"(_q[10]), "r"(_q[11]), "r"(_m[0]), "r"(_m[1]), "r"(_m[2]),
-	  "r"(_m[3]), "r"(_m[4]), "r"(_m[5]), "r"(_m[6]), "r"(_m[7]),
-	  "r"(_m[8]), "r"(_m[9]), "r"(_m[10]));
+    uintXp<uint512> r = {0};
+    asm("mad.lo.u32	 %0,%17,%34,  0;\n\t"	// r0 =[r17*r34].lo  
+	"mad.lo.u32	 %1,%17,%35,  0;\n\t"	// r1 =[r17*r35].lo  
+	"mad.lo.cc.u32	 %1,%18,%34, %1;\n\t"	// r1+=[r18*r34].lo  
+	"madc.lo.u32	 %2,%17,%36,  0;\n\t"	// r2 =[r17*r36].lo+c
+	"mad.hi.cc.u32	 %1,%17,%34, %1;\n\t"	// r1+=[r17*r34].hi  
+	"madc.lo.cc.u32	 %2,%18,%35, %2;\n\t"	// r2+=[r18*r35].lo+c
+	"madc.lo.u32	 %3,%17,%37,  0;\n\t"	// r3 =[r17*r37].lo+c
+	"mad.hi.cc.u32	 %2,%17,%35, %2;\n\t"	// r2+=[r17*r35].hi  
+	"madc.lo.cc.u32	 %3,%18,%36, %3;\n\t"	// r3+=[r18*r36].lo+c
+	"madc.lo.u32	 %4,%17,%38,  0;\n\t"	// r4 =[r17*r38].lo+c
+	"mad.lo.cc.u32	 %2,%19,%34, %2;\n\t"	// r2+=[r19*r34].lo  
+	"madc.hi.cc.u32	 %3,%17,%36, %3;\n\t"	// r3+=[r17*r36].hi+c
+	"madc.lo.cc.u32	 %4,%18,%37, %4;\n\t"	// r4+=[r18*r37].lo+c
+	"madc.lo.u32	 %5,%17,%39,  0;\n\t"	// r5 =[r17*r39].lo+c
+	"mad.hi.cc.u32	 %2,%18,%34, %2;\n\t"	// r2+=[r18*r34].hi  
+	"madc.lo.cc.u32	 %3,%19,%35, %3;\n\t"	// r3+=[r19*r35].lo+c
+	"madc.hi.cc.u32	 %4,%17,%37, %4;\n\t"	// r4+=[r17*r37].hi+c
+	"madc.lo.cc.u32	 %5,%18,%38, %5;\n\t"	// r5+=[r18*r38].lo+c
+	"madc.lo.u32	 %6,%17,%40,  0;\n\t"	// r6 =[r17*r40].lo+c
+	"mad.hi.cc.u32	 %3,%18,%35, %3;\n\t"	// r3+=[r18*r35].hi  
+	"madc.lo.cc.u32	 %4,%19,%36, %4;\n\t"	// r4+=[r19*r36].lo+c
+	"madc.hi.cc.u32	 %5,%17,%38, %5;\n\t"	// r5+=[r17*r38].hi+c
+	"madc.lo.cc.u32	 %6,%18,%39, %6;\n\t"	// r6+=[r18*r39].lo+c
+	"madc.lo.u32	 %7,%17,%41,  0;\n\t"	// r7 =[r17*r41].lo+c
+	"mad.lo.cc.u32	 %3,%20,%34, %3;\n\t"	// r3+=[r20*r34].lo  
+	"madc.hi.cc.u32	 %4,%18,%36, %4;\n\t"	// r4+=[r18*r36].hi+c
+	"madc.lo.cc.u32	 %5,%19,%37, %5;\n\t"	// r5+=[r19*r37].lo+c
+	"madc.hi.cc.u32	 %6,%17,%39, %6;\n\t"	// r6+=[r17*r39].hi+c
+	"madc.lo.cc.u32	 %7,%18,%40, %7;\n\t"	// r7+=[r18*r40].lo+c
+	"madc.lo.u32	 %8,%17,%42,  0;\n\t"	// r8 =[r17*r42].lo+c
+	"mad.hi.cc.u32	 %3,%19,%34, %3;\n\t"	// r3+=[r19*r34].hi  
+	"madc.lo.cc.u32	 %4,%20,%35, %4;\n\t"	// r4+=[r20*r35].lo+c
+	"madc.hi.cc.u32	 %5,%18,%37, %5;\n\t"	// r5+=[r18*r37].hi+c
+	"madc.lo.cc.u32	 %6,%19,%38, %6;\n\t"	// r6+=[r19*r38].lo+c
+	"madc.hi.cc.u32	 %7,%17,%40, %7;\n\t"	// r7+=[r17*r40].hi+c
+	"madc.lo.cc.u32	 %8,%18,%41, %8;\n\t"	// r8+=[r18*r41].lo+c
+	"madc.lo.u32	 %9,%17,%43,  0;\n\t"	// r9 =[r17*r43].lo+c
+	"mad.hi.cc.u32	 %4,%19,%35, %4;\n\t"	// r4+=[r19*r35].hi  
+	"madc.lo.cc.u32	 %5,%20,%36, %5;\n\t"	// r5+=[r20*r36].lo+c
+	"madc.hi.cc.u32	 %6,%18,%38, %6;\n\t"	// r6+=[r18*r38].hi+c
+	"madc.lo.cc.u32	 %7,%19,%39, %7;\n\t"	// r7+=[r19*r39].lo+c
+	"madc.hi.cc.u32	 %8,%17,%41, %8;\n\t"	// r8+=[r17*r41].hi+c
+	"madc.lo.cc.u32	 %9,%18,%42, %9;\n\t"	// r9+=[r18*r42].lo+c
+	"madc.lo.u32	%10,%17,%44,  0;\n\t"	//r10 =[r17*r44].lo+c
+	"mad.lo.cc.u32	 %4,%21,%34, %4;\n\t"	// r4+=[r21*r34].lo  
+	"madc.hi.cc.u32	 %5,%19,%36, %5;\n\t"	// r5+=[r19*r36].hi+c
+	"madc.lo.cc.u32	 %6,%20,%37, %6;\n\t"	// r6+=[r20*r37].lo+c
+	"madc.hi.cc.u32	 %7,%18,%39, %7;\n\t"	// r7+=[r18*r39].hi+c
+	"madc.lo.cc.u32	 %8,%19,%40, %8;\n\t"	// r8+=[r19*r40].lo+c
+	"madc.hi.cc.u32	 %9,%17,%42, %9;\n\t"	// r9+=[r17*r42].hi+c
+	"madc.lo.cc.u32	%10,%18,%43,%10;\n\t"	//r10+=[r18*r43].lo+c
+	"madc.lo.u32	%11,%17,%45,  0;\n\t"	//r11 =[r17*r45].lo+c
+	"mad.hi.cc.u32	 %4,%20,%34, %4;\n\t"	// r4+=[r20*r34].hi  
+	"madc.lo.cc.u32	 %5,%21,%35, %5;\n\t"	// r5+=[r21*r35].lo+c
+	"madc.hi.cc.u32	 %6,%19,%37, %6;\n\t"	// r6+=[r19*r37].hi+c
+	"madc.lo.cc.u32	 %7,%20,%38, %7;\n\t"	// r7+=[r20*r38].lo+c
+	"madc.hi.cc.u32	 %8,%18,%40, %8;\n\t"	// r8+=[r18*r40].hi+c
+	"madc.lo.cc.u32	 %9,%19,%41, %9;\n\t"	// r9+=[r19*r41].lo+c
+	"madc.hi.cc.u32	%10,%17,%43,%10;\n\t"	//r10+=[r17*r43].hi+c
+	"madc.lo.cc.u32	%11,%18,%44,%11;\n\t"	//r11+=[r18*r44].lo+c
+	"madc.lo.u32	%12,%17,%46,  0;\n\t"	//r12 =[r17*r46].lo+c
+	"mad.hi.cc.u32	 %5,%20,%35, %5;\n\t"	// r5+=[r20*r35].hi  
+	"madc.lo.cc.u32	 %6,%21,%36, %6;\n\t"	// r6+=[r21*r36].lo+c
+	"madc.hi.cc.u32	 %7,%19,%38, %7;\n\t"	// r7+=[r19*r38].hi+c
+	"madc.lo.cc.u32	 %8,%20,%39, %8;\n\t"	// r8+=[r20*r39].lo+c
+	"madc.hi.cc.u32	 %9,%18,%41, %9;\n\t"	// r9+=[r18*r41].hi+c
+	"madc.lo.cc.u32	%10,%19,%42,%10;\n\t"	//r10+=[r19*r42].lo+c
+	"madc.hi.cc.u32	%11,%17,%44,%11;\n\t"	//r11+=[r17*r44].hi+c
+	"madc.lo.cc.u32	%12,%18,%45,%12;\n\t"	//r12+=[r18*r45].lo+c
+	"madc.lo.u32	%13,%17,%47,  0;\n\t"	//r13 =[r17*r47].lo+c
+	"mad.lo.cc.u32	 %5,%22,%34, %5;\n\t"	// r5+=[r22*r34].lo  
+	"madc.hi.cc.u32	 %6,%20,%36, %6;\n\t"	// r6+=[r20*r36].hi+c
+	"madc.lo.cc.u32	 %7,%21,%37, %7;\n\t"	// r7+=[r21*r37].lo+c
+	"madc.hi.cc.u32	 %8,%19,%39, %8;\n\t"	// r8+=[r19*r39].hi+c
+	"madc.lo.cc.u32	 %9,%20,%40, %9;\n\t"	// r9+=[r20*r40].lo+c
+	"madc.hi.cc.u32	%10,%18,%42,%10;\n\t"	//r10+=[r18*r42].hi+c
+	"madc.lo.cc.u32	%11,%19,%43,%11;\n\t"	//r11+=[r19*r43].lo+c
+	"madc.hi.cc.u32	%12,%17,%45,%12;\n\t"	//r12+=[r17*r45].hi+c
+	"madc.lo.cc.u32	%13,%18,%46,%13;\n\t"	//r13+=[r18*r46].lo+c
+	"madc.lo.u32	%14,%17,%48,  0;\n\t"	//r14 =[r17*r48].lo+c
+	"mad.hi.cc.u32	 %5,%21,%34, %5;\n\t"	// r5+=[r21*r34].hi  
+	"madc.lo.cc.u32	 %6,%22,%35, %6;\n\t"	// r6+=[r22*r35].lo+c
+	"madc.hi.cc.u32	 %7,%20,%37, %7;\n\t"	// r7+=[r20*r37].hi+c
+	"madc.lo.cc.u32	 %8,%21,%38, %8;\n\t"	// r8+=[r21*r38].lo+c
+	"madc.hi.cc.u32	 %9,%19,%40, %9;\n\t"	// r9+=[r19*r40].hi+c
+	"madc.lo.cc.u32	%10,%20,%41,%10;\n\t"	//r10+=[r20*r41].lo+c
+	"madc.hi.cc.u32	%11,%18,%43,%11;\n\t"	//r11+=[r18*r43].hi+c
+	"madc.lo.cc.u32	%12,%19,%44,%12;\n\t"	//r12+=[r19*r44].lo+c
+	"madc.hi.cc.u32	%13,%17,%46,%13;\n\t"	//r13+=[r17*r46].hi+c
+	"madc.lo.cc.u32	%14,%18,%47,%14;\n\t"	//r14+=[r18*r47].lo+c
+	"madc.lo.u32	%15,%17,%49,  0;\n\t"	//r15 =[r17*r49].lo+c
+	"mad.hi.cc.u32	 %6,%21,%35, %6;\n\t"	// r6+=[r21*r35].hi  
+	"madc.lo.cc.u32	 %7,%22,%36, %7;\n\t"	// r7+=[r22*r36].lo+c
+	"madc.hi.cc.u32	 %8,%20,%38, %8;\n\t"	// r8+=[r20*r38].hi+c
+	"madc.lo.cc.u32	 %9,%21,%39, %9;\n\t"	// r9+=[r21*r39].lo+c
+	"madc.hi.cc.u32	%10,%19,%41,%10;\n\t"	//r10+=[r19*r41].hi+c
+	"madc.lo.cc.u32	%11,%20,%42,%11;\n\t"	//r11+=[r20*r42].lo+c
+	"madc.hi.cc.u32	%12,%18,%44,%12;\n\t"	//r12+=[r18*r44].hi+c
+	"madc.lo.cc.u32	%13,%19,%45,%13;\n\t"	//r13+=[r19*r45].lo+c
+	"madc.hi.cc.u32	%14,%17,%47,%14;\n\t"	//r14+=[r17*r47].hi+c
+	"madc.lo.cc.u32	%15,%18,%48,%15;\n\t"	//r15+=[r18*r48].lo+c
+	"madc.lo.u32	%16,%18,%49,  0;\n\t"	//r16 =[r18*r49].lo+c
+	"mad.lo.cc.u32	 %6,%23,%34, %6;\n\t"	// r6+=[r23*r34].lo  
+	"madc.hi.cc.u32	 %7,%21,%36, %7;\n\t"	// r7+=[r21*r36].hi+c
+	"madc.lo.cc.u32	 %8,%22,%37, %8;\n\t"	// r8+=[r22*r37].lo+c
+	"madc.hi.cc.u32	 %9,%20,%39, %9;\n\t"	// r9+=[r20*r39].hi+c
+	"madc.lo.cc.u32	%10,%21,%40,%10;\n\t"	//r10+=[r21*r40].lo+c
+	"madc.hi.cc.u32	%11,%19,%42,%11;\n\t"	//r11+=[r19*r42].hi+c
+	"madc.lo.cc.u32	%12,%20,%43,%12;\n\t"	//r12+=[r20*r43].lo+c
+	"madc.hi.cc.u32	%13,%18,%45,%13;\n\t"	//r13+=[r18*r45].hi+c
+	"madc.lo.cc.u32	%14,%19,%46,%14;\n\t"	//r14+=[r19*r46].lo+c
+	"madc.hi.cc.u32	%15,%17,%48,%15;\n\t"	//r15+=[r17*r48].hi+c
+	"madc.hi.cc.u32	%16,%17,%49,%16;\n\t"	//r16+=[r17*r49].hi+c
+	"mad.hi.cc.u32	 %6,%22,%34, %6;\n\t"	// r6+=[r22*r34].hi  
+	"madc.lo.cc.u32	 %7,%23,%35, %7;\n\t"	// r7+=[r23*r35].lo+c
+	"madc.hi.cc.u32	 %8,%21,%37, %8;\n\t"	// r8+=[r21*r37].hi+c
+	"madc.lo.cc.u32	 %9,%22,%38, %9;\n\t"	// r9+=[r22*r38].lo+c
+	"madc.hi.cc.u32	%10,%20,%40,%10;\n\t"	//r10+=[r20*r40].hi+c
+	"madc.lo.cc.u32	%11,%21,%41,%11;\n\t"	//r11+=[r21*r41].lo+c
+	"madc.hi.cc.u32	%12,%19,%43,%12;\n\t"	//r12+=[r19*r43].hi+c
+	"madc.lo.cc.u32	%13,%20,%44,%13;\n\t"	//r13+=[r20*r44].lo+c
+	"madc.hi.cc.u32	%14,%18,%46,%14;\n\t"	//r14+=[r18*r46].hi+c
+	"madc.lo.cc.u32	%15,%19,%47,%15;\n\t"	//r15+=[r19*r47].lo+c
+	"madc.lo.cc.u32	%16,%19,%48,%16;\n\t"	//r16+=[r19*r48].lo+c
+	"mad.hi.cc.u32	 %7,%22,%35, %7;\n\t"	// r7+=[r22*r35].hi  
+	"madc.lo.cc.u32	 %8,%23,%36, %8;\n\t"	// r8+=[r23*r36].lo+c
+	"madc.hi.cc.u32	 %9,%21,%38, %9;\n\t"	// r9+=[r21*r38].hi+c
+	"madc.lo.cc.u32	%10,%22,%39,%10;\n\t"	//r10+=[r22*r39].lo+c
+	"madc.hi.cc.u32	%11,%20,%41,%11;\n\t"	//r11+=[r20*r41].hi+c
+	"madc.lo.cc.u32	%12,%21,%42,%12;\n\t"	//r12+=[r21*r42].lo+c
+	"madc.hi.cc.u32	%13,%19,%44,%13;\n\t"	//r13+=[r19*r44].hi+c
+	"madc.lo.cc.u32	%14,%20,%45,%14;\n\t"	//r14+=[r20*r45].lo+c
+	"madc.hi.cc.u32	%15,%18,%47,%15;\n\t"	//r15+=[r18*r47].hi+c
+	"madc.hi.cc.u32	%16,%18,%48,%16;\n\t"	//r16+=[r18*r48].hi+c
+	"mad.lo.cc.u32	 %7,%24,%34, %7;\n\t"	// r7+=[r24*r34].lo  
+	"madc.hi.cc.u32	 %8,%22,%36, %8;\n\t"	// r8+=[r22*r36].hi+c
+	"madc.lo.cc.u32	 %9,%23,%37, %9;\n\t"	// r9+=[r23*r37].lo+c
+	"madc.hi.cc.u32	%10,%21,%39,%10;\n\t"	//r10+=[r21*r39].hi+c
+	"madc.lo.cc.u32	%11,%22,%40,%11;\n\t"	//r11+=[r22*r40].lo+c
+	"madc.hi.cc.u32	%12,%20,%42,%12;\n\t"	//r12+=[r20*r42].hi+c
+	"madc.lo.cc.u32	%13,%21,%43,%13;\n\t"	//r13+=[r21*r43].lo+c
+	"madc.hi.cc.u32	%14,%19,%45,%14;\n\t"	//r14+=[r19*r45].hi+c
+	"madc.lo.cc.u32	%15,%20,%46,%15;\n\t"	//r15+=[r20*r46].lo+c
+	"madc.lo.cc.u32	%16,%20,%47,%16;\n\t"	//r16+=[r20*r47].lo+c
+	"mad.hi.cc.u32	 %7,%23,%34, %7;\n\t"	// r7+=[r23*r34].hi  
+	"madc.lo.cc.u32	 %8,%24,%35, %8;\n\t"	// r8+=[r24*r35].lo+c
+	"madc.hi.cc.u32	 %9,%22,%37, %9;\n\t"	// r9+=[r22*r37].hi+c
+	"madc.lo.cc.u32	%10,%23,%38,%10;\n\t"	//r10+=[r23*r38].lo+c
+	"madc.hi.cc.u32	%11,%21,%40,%11;\n\t"	//r11+=[r21*r40].hi+c
+	"madc.lo.cc.u32	%12,%22,%41,%12;\n\t"	//r12+=[r22*r41].lo+c
+	"madc.hi.cc.u32	%13,%20,%43,%13;\n\t"	//r13+=[r20*r43].hi+c
+	"madc.lo.cc.u32	%14,%21,%44,%14;\n\t"	//r14+=[r21*r44].lo+c
+	"madc.hi.cc.u32	%15,%19,%46,%15;\n\t"	//r15+=[r19*r46].hi+c
+	"madc.hi.cc.u32	%16,%19,%47,%16;\n\t"	//r16+=[r19*r47].hi+c
+	"mad.hi.cc.u32	 %8,%23,%35, %8;\n\t"	// r8+=[r23*r35].hi  
+	"madc.lo.cc.u32	 %9,%24,%36, %9;\n\t"	// r9+=[r24*r36].lo+c
+	"madc.hi.cc.u32	%10,%22,%38,%10;\n\t"	//r10+=[r22*r38].hi+c
+	"madc.lo.cc.u32	%11,%23,%39,%11;\n\t"	//r11+=[r23*r39].lo+c
+	"madc.hi.cc.u32	%12,%21,%41,%12;\n\t"	//r12+=[r21*r41].hi+c
+	"madc.lo.cc.u32	%13,%22,%42,%13;\n\t"	//r13+=[r22*r42].lo+c
+	"madc.hi.cc.u32	%14,%20,%44,%14;\n\t"	//r14+=[r20*r44].hi+c
+	"madc.lo.cc.u32	%15,%21,%45,%15;\n\t"	//r15+=[r21*r45].lo+c
+	"madc.lo.cc.u32	%16,%21,%46,%16;\n\t"	//r16+=[r21*r46].lo+c
+	"mad.lo.cc.u32	 %8,%25,%34, %8;\n\t"	// r8+=[r25*r34].lo  
+	"madc.hi.cc.u32	 %9,%23,%36, %9;\n\t"	// r9+=[r23*r36].hi+c
+	"madc.lo.cc.u32	%10,%24,%37,%10;\n\t"	//r10+=[r24*r37].lo+c
+	"madc.hi.cc.u32	%11,%22,%39,%11;\n\t"	//r11+=[r22*r39].hi+c
+	"madc.lo.cc.u32	%12,%23,%40,%12;\n\t"	//r12+=[r23*r40].lo+c
+	"madc.hi.cc.u32	%13,%21,%42,%13;\n\t"	//r13+=[r21*r42].hi+c
+	"madc.lo.cc.u32	%14,%22,%43,%14;\n\t"	//r14+=[r22*r43].lo+c
+	"madc.hi.cc.u32	%15,%20,%45,%15;\n\t"	//r15+=[r20*r45].hi+c
+	"madc.hi.cc.u32	%16,%20,%46,%16;\n\t"	//r16+=[r20*r46].hi+c
+	"mad.hi.cc.u32	 %8,%24,%34, %8;\n\t"	// r8+=[r24*r34].hi  
+	"madc.lo.cc.u32	 %9,%25,%35, %9;\n\t"	// r9+=[r25*r35].lo+c
+	"madc.hi.cc.u32	%10,%23,%37,%10;\n\t"	//r10+=[r23*r37].hi+c
+	"madc.lo.cc.u32	%11,%24,%38,%11;\n\t"	//r11+=[r24*r38].lo+c
+	"madc.hi.cc.u32	%12,%22,%40,%12;\n\t"	//r12+=[r22*r40].hi+c
+	"madc.lo.cc.u32	%13,%23,%41,%13;\n\t"	//r13+=[r23*r41].lo+c
+	"madc.hi.cc.u32	%14,%21,%43,%14;\n\t"	//r14+=[r21*r43].hi+c
+	"madc.lo.cc.u32	%15,%22,%44,%15;\n\t"	//r15+=[r22*r44].lo+c
+	"madc.lo.cc.u32	%16,%22,%45,%16;\n\t"	//r16+=[r22*r45].lo+c
+	"mad.hi.cc.u32	 %9,%24,%35, %9;\n\t"	// r9+=[r24*r35].hi  
+	"madc.lo.cc.u32	%10,%25,%36,%10;\n\t"	//r10+=[r25*r36].lo+c
+	"madc.hi.cc.u32	%11,%23,%38,%11;\n\t"	//r11+=[r23*r38].hi+c
+	"madc.lo.cc.u32	%12,%24,%39,%12;\n\t"	//r12+=[r24*r39].lo+c
+	"madc.hi.cc.u32	%13,%22,%41,%13;\n\t"	//r13+=[r22*r41].hi+c
+	"madc.lo.cc.u32	%14,%23,%42,%14;\n\t"	//r14+=[r23*r42].lo+c
+	"madc.hi.cc.u32	%15,%21,%44,%15;\n\t"	//r15+=[r21*r44].hi+c
+	"madc.hi.cc.u32	%16,%21,%45,%16;\n\t"	//r16+=[r21*r45].hi+c
+	"mad.lo.cc.u32	 %9,%26,%34, %9;\n\t"	// r9+=[r26*r34].lo  
+	"madc.hi.cc.u32	%10,%24,%36,%10;\n\t"	//r10+=[r24*r36].hi+c
+	"madc.lo.cc.u32	%11,%25,%37,%11;\n\t"	//r11+=[r25*r37].lo+c
+	"madc.hi.cc.u32	%12,%23,%39,%12;\n\t"	//r12+=[r23*r39].hi+c
+	"madc.lo.cc.u32	%13,%24,%40,%13;\n\t"	//r13+=[r24*r40].lo+c
+	"madc.hi.cc.u32	%14,%22,%42,%14;\n\t"	//r14+=[r22*r42].hi+c
+	"madc.lo.cc.u32	%15,%23,%43,%15;\n\t"	//r15+=[r23*r43].lo+c
+	"madc.lo.cc.u32	%16,%23,%44,%16;\n\t"	//r16+=[r23*r44].lo+c
+	"mad.hi.cc.u32	 %9,%25,%34, %9;\n\t"	// r9+=[r25*r34].hi  
+	"madc.lo.cc.u32	%10,%26,%35,%10;\n\t"	//r10+=[r26*r35].lo+c
+	"madc.hi.cc.u32	%11,%24,%37,%11;\n\t"	//r11+=[r24*r37].hi+c
+	"madc.lo.cc.u32	%12,%25,%38,%12;\n\t"	//r12+=[r25*r38].lo+c
+	"madc.hi.cc.u32	%13,%23,%40,%13;\n\t"	//r13+=[r23*r40].hi+c
+	"madc.lo.cc.u32	%14,%24,%41,%14;\n\t"	//r14+=[r24*r41].lo+c
+	"madc.hi.cc.u32	%15,%22,%43,%15;\n\t"	//r15+=[r22*r43].hi+c
+	"madc.hi.cc.u32	%16,%22,%44,%16;\n\t"	//r16+=[r22*r44].hi+c
+	"mad.hi.cc.u32	%10,%25,%35,%10;\n\t"	//r10+=[r25*r35].hi  
+	"madc.lo.cc.u32	%11,%26,%36,%11;\n\t"	//r11+=[r26*r36].lo+c
+	"madc.hi.cc.u32	%12,%24,%38,%12;\n\t"	//r12+=[r24*r38].hi+c
+	"madc.lo.cc.u32	%13,%25,%39,%13;\n\t"	//r13+=[r25*r39].lo+c
+	"madc.hi.cc.u32	%14,%23,%41,%14;\n\t"	//r14+=[r23*r41].hi+c
+	"madc.lo.cc.u32	%15,%24,%42,%15;\n\t"	//r15+=[r24*r42].lo+c
+	"madc.lo.cc.u32	%16,%24,%43,%16;\n\t"	//r16+=[r24*r43].lo+c
+	"mad.lo.cc.u32	%10,%27,%34,%10;\n\t"	//r10+=[r27*r34].lo  
+	"madc.hi.cc.u32	%11,%25,%36,%11;\n\t"	//r11+=[r25*r36].hi+c
+	"madc.lo.cc.u32	%12,%26,%37,%12;\n\t"	//r12+=[r26*r37].lo+c
+	"madc.hi.cc.u32	%13,%24,%39,%13;\n\t"	//r13+=[r24*r39].hi+c
+	"madc.lo.cc.u32	%14,%25,%40,%14;\n\t"	//r14+=[r25*r40].lo+c
+	"madc.hi.cc.u32	%15,%23,%42,%15;\n\t"	//r15+=[r23*r42].hi+c
+	"madc.hi.cc.u32	%16,%23,%43,%16;\n\t"	//r16+=[r23*r43].hi+c
+	"mad.hi.cc.u32	%10,%26,%34,%10;\n\t"	//r10+=[r26*r34].hi  
+	"madc.lo.cc.u32	%11,%27,%35,%11;\n\t"	//r11+=[r27*r35].lo+c
+	"madc.hi.cc.u32	%12,%25,%37,%12;\n\t"	//r12+=[r25*r37].hi+c
+	"madc.lo.cc.u32	%13,%26,%38,%13;\n\t"	//r13+=[r26*r38].lo+c
+	"madc.hi.cc.u32	%14,%24,%40,%14;\n\t"	//r14+=[r24*r40].hi+c
+	"madc.lo.cc.u32	%15,%25,%41,%15;\n\t"	//r15+=[r25*r41].lo+c
+	"madc.lo.cc.u32	%16,%25,%42,%16;\n\t"	//r16+=[r25*r42].lo+c
+	"mad.hi.cc.u32	%11,%26,%35,%11;\n\t"	//r11+=[r26*r35].hi  
+	"madc.lo.cc.u32	%12,%27,%36,%12;\n\t"	//r12+=[r27*r36].lo+c
+	"madc.hi.cc.u32	%13,%25,%38,%13;\n\t"	//r13+=[r25*r38].hi+c
+	"madc.lo.cc.u32	%14,%26,%39,%14;\n\t"	//r14+=[r26*r39].lo+c
+	"madc.hi.cc.u32	%15,%24,%41,%15;\n\t"	//r15+=[r24*r41].hi+c
+	"madc.hi.cc.u32	%16,%24,%42,%16;\n\t"	//r16+=[r24*r42].hi+c
+	"mad.lo.cc.u32	%11,%28,%34,%11;\n\t"	//r11+=[r28*r34].lo  
+	"madc.hi.cc.u32	%12,%26,%36,%12;\n\t"	//r12+=[r26*r36].hi+c
+	"madc.lo.cc.u32	%13,%27,%37,%13;\n\t"	//r13+=[r27*r37].lo+c
+	"madc.hi.cc.u32	%14,%25,%39,%14;\n\t"	//r14+=[r25*r39].hi+c
+	"madc.lo.cc.u32	%15,%26,%40,%15;\n\t"	//r15+=[r26*r40].lo+c
+	"madc.lo.cc.u32	%16,%26,%41,%16;\n\t"	//r16+=[r26*r41].lo+c
+	"mad.hi.cc.u32	%11,%27,%34,%11;\n\t"	//r11+=[r27*r34].hi  
+	"madc.lo.cc.u32	%12,%28,%35,%12;\n\t"	//r12+=[r28*r35].lo+c
+	"madc.hi.cc.u32	%13,%26,%37,%13;\n\t"	//r13+=[r26*r37].hi+c
+	"madc.lo.cc.u32	%14,%27,%38,%14;\n\t"	//r14+=[r27*r38].lo+c
+	"madc.hi.cc.u32	%15,%25,%40,%15;\n\t"	//r15+=[r25*r40].hi+c
+	"madc.hi.cc.u32	%16,%25,%41,%16;\n\t"	//r16+=[r25*r41].hi+c
+	"mad.hi.cc.u32	%12,%27,%35,%12;\n\t"	//r12+=[r27*r35].hi  
+	"madc.lo.cc.u32	%13,%28,%36,%13;\n\t"	//r13+=[r28*r36].lo+c
+	"madc.hi.cc.u32	%14,%26,%38,%14;\n\t"	//r14+=[r26*r38].hi+c
+	"madc.lo.cc.u32	%15,%27,%39,%15;\n\t"	//r15+=[r27*r39].lo+c
+	"madc.lo.cc.u32	%16,%27,%40,%16;\n\t"	//r16+=[r27*r40].lo+c
+	"mad.lo.cc.u32	%12,%29,%34,%12;\n\t"	//r12+=[r29*r34].lo  
+	"madc.hi.cc.u32	%13,%27,%36,%13;\n\t"	//r13+=[r27*r36].hi+c
+	"madc.lo.cc.u32	%14,%28,%37,%14;\n\t"	//r14+=[r28*r37].lo+c
+	"madc.hi.cc.u32	%15,%26,%39,%15;\n\t"	//r15+=[r26*r39].hi+c
+	"madc.hi.cc.u32	%16,%26,%40,%16;\n\t"	//r16+=[r26*r40].hi+c
+	"mad.hi.cc.u32	%12,%28,%34,%12;\n\t"	//r12+=[r28*r34].hi  
+	"madc.lo.cc.u32	%13,%29,%35,%13;\n\t"	//r13+=[r29*r35].lo+c
+	"madc.hi.cc.u32	%14,%27,%37,%14;\n\t"	//r14+=[r27*r37].hi+c
+	"madc.lo.cc.u32	%15,%28,%38,%15;\n\t"	//r15+=[r28*r38].lo+c
+	"madc.lo.cc.u32	%16,%28,%39,%16;\n\t"	//r16+=[r28*r39].lo+c
+	"mad.hi.cc.u32	%13,%28,%35,%13;\n\t"	//r13+=[r28*r35].hi  
+	"madc.lo.cc.u32	%14,%29,%36,%14;\n\t"	//r14+=[r29*r36].lo+c
+	"madc.hi.cc.u32	%15,%27,%38,%15;\n\t"	//r15+=[r27*r38].hi+c
+	"madc.hi.cc.u32	%16,%27,%39,%16;\n\t"	//r16+=[r27*r39].hi+c
+	"mad.lo.cc.u32	%13,%30,%34,%13;\n\t"	//r13+=[r30*r34].lo  
+	"madc.hi.cc.u32	%14,%28,%36,%14;\n\t"	//r14+=[r28*r36].hi+c
+	"madc.lo.cc.u32	%15,%29,%37,%15;\n\t"	//r15+=[r29*r37].lo+c
+	"madc.lo.cc.u32	%16,%29,%38,%16;\n\t"	//r16+=[r29*r38].lo+c
+	"mad.hi.cc.u32	%13,%29,%34,%13;\n\t"	//r13+=[r29*r34].hi  
+	"madc.lo.cc.u32	%14,%30,%35,%14;\n\t"	//r14+=[r30*r35].lo+c
+	"madc.hi.cc.u32	%15,%28,%37,%15;\n\t"	//r15+=[r28*r37].hi+c
+	"madc.hi.cc.u32	%16,%28,%38,%16;\n\t"	//r16+=[r28*r38].hi+c
+	"mad.hi.cc.u32	%14,%29,%35,%14;\n\t"	//r14+=[r29*r35].hi  
+	"madc.lo.cc.u32	%15,%30,%36,%15;\n\t"	//r15+=[r30*r36].lo+c
+	"madc.lo.cc.u32	%16,%30,%37,%16;\n\t"	//r16+=[r30*r37].lo+c
+	"mad.lo.cc.u32	%14,%31,%34,%14;\n\t"	//r14+=[r31*r34].lo  
+	"madc.hi.cc.u32	%15,%29,%36,%15;\n\t"	//r15+=[r29*r36].hi+c
+	"madc.hi.cc.u32	%16,%29,%37,%16;\n\t"	//r16+=[r29*r37].hi+c
+	"mad.hi.cc.u32	%14,%30,%34,%14;\n\t"	//r14+=[r30*r34].hi  
+	"madc.lo.cc.u32	%15,%31,%35,%15;\n\t"	//r15+=[r31*r35].lo+c
+	"madc.lo.cc.u32	%16,%31,%36,%16;\n\t"	//r16+=[r31*r36].lo+c
+	"mad.hi.cc.u32	%15,%30,%35,%15;\n\t"	//r15+=[r30*r35].hi  
+	"madc.hi.cc.u32	%16,%30,%36,%16;\n\t"	//r16+=[r30*r36].hi+c
+	"mad.lo.cc.u32	%15,%32,%34,%15;\n\t"	//r15+=[r32*r34].lo  
+	"madc.lo.cc.u32	%16,%32,%35,%16;\n\t"	//r16+=[r32*r35].lo+c
+	"mad.hi.cc.u32	%15,%31,%34,%15;\n\t"	//r15+=[r31*r34].hi  
+	"madc.hi.cc.u32	%16,%31,%35,%16;\n\t"	//r16+=[r31*r35].hi+c
+	"mad.lo.cc.u32	%16,%33,%34,%16;\n\t"	//r16+=[r33*r34].lo  
+	"mad.hi.cc.u32	%16,%32,%34,%16;\n\t"	//r16+=[r32*r34].hi  
+	: "+r"(r.lo.w0.x), "=r"(r.lo.w0.y), "=r"(r.lo.w0.z), "=r"(r.lo.w0.w),
+	  "=r"(r.lo.w4.x), "=r"(r.lo.w4.y), "=r"(r.lo.w4.z), "=r"(r.lo.w4.w),
+	  "=r"(r.lo.w8.x), "=r"(r.lo.w8.y), "=r"(r.lo.w8.z), "=r"(r.lo.w8.w),
+	  "=r"(r.lo.w12.x), "=r"(r.lo.w12.y), "=r"(r.lo.w12.z),
+	  "=r"(r.lo.w12.w), "=r"(r.hi)
+	: "r"(q.lo.w0.x), "r"(q.lo.w0.y), "r"(q.lo.w0.z), "r"(q.lo.w0.w),
+	  "r"(q.lo.w4.x), "r"(q.lo.w4.y), "r"(q.lo.w4.z), "r"(q.lo.w4.w),
+	  "r"(q.lo.w8.x), "r"(q.lo.w8.y), "r"(q.lo.w8.z), "r"(q.lo.w8.w),
+	  "r"(q.lo.w12.x), "r"(q.lo.w12.y), "r"(q.lo.w12.z), "r"(q.lo.w12.w),
+	  "r"(q.hi), "r"(modulus.w0.x), "r"(modulus.w0.y), "r"(modulus.w0.z),
+	  "r"(modulus.w0.w), "r"(modulus.w4.x), "r"(modulus.w4.y),
+	  "r"(modulus.w4.z), "r"(modulus.w4.w), "r"(modulus.w8.x),
+	  "r"(modulus.w8.y), "r"(modulus.w8.z), "r"(modulus.w8.w),
+	  "r"(modulus.w12.x), "r"(modulus.w12.y), "r"(modulus.w12.z),
+	  "r"(modulus.w12.w));
 
     return r;
 }
 
-__device__ __forceinline__ void mad(uint352 & a_lo, uint352 & a_hi,
-	uint & overflow, const uint352 & b, const uint352 & c)
+__device__ __forceinline__ void sub_modulus(uintXp<uint512> & r, const uint512 & m)
 {
-    uint * _a_lo = (uint *)&a_lo;
-    uint * _a_hi = (uint *)&a_hi;
-    const uint * _b = (uint *)&b;
-    const uint * _c = (uint *)&c;
+    asm("sub.cc.u32	 %0, %0,%17;\n\t"	// r0-=r17
+	"subc.cc.u32	 %1, %1,%18;\n\t"	// r1-=(r18+c)
+	"subc.cc.u32	 %2, %2,%19;\n\t"	// r2-=(r19+c)
+	"subc.cc.u32	 %3, %3,%20;\n\t"	// r3-=(r20+c)
+	"subc.cc.u32	 %4, %4,%21;\n\t"	// r4-=(r21+c)
+	"subc.cc.u32	 %5, %5,%22;\n\t"	// r5-=(r22+c)
+	"subc.cc.u32	 %6, %6,%23;\n\t"	// r6-=(r23+c)
+	"subc.cc.u32	 %7, %7,%24;\n\t"	// r7-=(r24+c)
+	"subc.cc.u32	 %8, %8,%25;\n\t"	// r8-=(r25+c)
+	"subc.cc.u32	 %9, %9,%26;\n\t"	// r9-=(r26+c)
+	"subc.cc.u32	%10,%10,%27;\n\t"	//r10-=(r27+c)
+	"subc.cc.u32	%11,%11,%28;\n\t"	//r11-=(r28+c)
+	"subc.cc.u32	%12,%12,%29;\n\t"	//r12-=(r29+c)
+	"subc.cc.u32	%13,%13,%30;\n\t"	//r13-=(r30+c)
+	"subc.cc.u32	%14,%14,%31;\n\t"	//r14-=(r31+c)
+	"subc.cc.u32	%15,%15,%32;\n\t"	//r15-=(r32+c)
+	"subc.u32	%16,%16,  0;\n\t"	//r16-=(    c)
+	: "+r"(r.lo.w0.x), "+r"(r.lo.w0.y), "+r"(r.lo.w0.z),
+	  "+r"(r.lo.w0.w), "+r"(r.lo.w4.x), "+r"(r.lo.w4.y), "+r"(r.lo.w4.z),
+	  "+r"(r.lo.w4.w), "+r"(r.lo.w8.x), "+r"(r.lo.w8.y), "+r"(r.lo.w8.z),
+	  "+r"(r.lo.w8.w), "+r"(r.lo.w12.x), "+r"(r.lo.w12.y),
+	  "+r"(r.lo.w12.z), "+r"(r.lo.w12.w), "+r"(r.hi)
+	: "r"(m.w0.x), "r"(m.w0.y), "r"(m.w0.z), "r"(m.w0.w), "r"(m.w4.x),
+	  "r"(m.w4.y), "r"(m.w4.z), "r"(m.w4.w), "r"(m.w8.x), "r"(m.w8.y),
+	  "r"(m.w8.z), "r"(m.w8.w), "r"(m.w12.x), "r"(m.w12.y), "r"(m.w12.z),
+	  "r"(m.w12.w));
+}
 
-    asm("mad.lo.cc.u32	 %0,%23,%34, %0;\n\t"	// r0+=[r23*r34].lo  
-	"madc.hi.cc.u32	 %1,%23,%34, %1;\n\t"	// r1+=[r23*r34].hi  
-	"madc.lo.cc.u32	 %2,%25,%34, %2;\n\t"	// r2+=[r25*r34].lo+c
-	"madc.hi.cc.u32	 %3,%25,%34, %3;\n\t"	// r3+=[r25*r34].hi+c
-	"madc.lo.cc.u32	 %4,%27,%34, %4;\n\t"	// r4+=[r27*r34].lo+c
-	"madc.hi.cc.u32	 %5,%27,%34, %5;\n\t"	// r5+=[r27*r34].hi+c
-	"madc.lo.cc.u32	 %6,%29,%34, %6;\n\t"	// r6+=[r29*r34].lo+c
-	"madc.hi.cc.u32	 %7,%29,%34, %7;\n\t"	// r7+=[r29*r34].hi+c
-	"madc.lo.cc.u32	 %8,%31,%34, %8;\n\t"	// r8+=[r31*r34].lo+c
-	"madc.hi.cc.u32	 %9,%31,%34, %9;\n\t"	// r9+=[r31*r34].hi+c
-	"madc.lo.cc.u32	%10,%33,%34,%10;\n\t"	//r10+=[r33*r34].lo+c
-	"madc.hi.cc.u32	%11,%33,%34,%11;\n\t"	//r11+=[r33*r34].hi+c
-	"madc.lo.cc.u32	%12,%33,%36,%12;\n\t"	//r12+=[r33*r36].lo+c
-	"madc.hi.cc.u32	%13,%33,%36,%13;\n\t"	//r13+=[r33*r36].hi+c
-	"madc.lo.cc.u32	%14,%33,%38,%14;\n\t"	//r14+=[r33*r38].lo+c
-	"madc.hi.cc.u32	%15,%33,%38,%15;\n\t"	//r15+=[r33*r38].hi+c
-	"madc.lo.cc.u32	%16,%33,%40,%16;\n\t"	//r16+=[r33*r40].lo+c
-	"madc.hi.cc.u32	%17,%33,%40,%17;\n\t"	//r17+=[r33*r40].hi+c
-	"madc.lo.cc.u32	%18,%33,%42,%18;\n\t"	//r18+=[r33*r42].lo+c
-	"madc.hi.cc.u32	%19,%33,%42,%19;\n\t"	//r19+=[r33*r42].hi+c
-	"madc.lo.cc.u32	%20,%33,%44,%20;\n\t"	//r20+=[r33*r44].lo+c
-	"madc.hi.cc.u32	%21,%33,%44,%21;\n\t"	//r21+=[r33*r44].hi+c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %1,%24,%34, %1;\n\t"	// r1+=[r24*r34].lo  
-	"madc.hi.cc.u32	 %2,%24,%34, %2;\n\t"	// r2+=[r24*r34].hi  
-	"madc.lo.cc.u32	 %3,%26,%34, %3;\n\t"	// r3+=[r26*r34].lo+c
-	"madc.hi.cc.u32	 %4,%26,%34, %4;\n\t"	// r4+=[r26*r34].hi+c
-	"madc.lo.cc.u32	 %5,%28,%34, %5;\n\t"	// r5+=[r28*r34].lo+c
-	"madc.hi.cc.u32	 %6,%28,%34, %6;\n\t"	// r6+=[r28*r34].hi+c
-	"madc.lo.cc.u32	 %7,%30,%34, %7;\n\t"	// r7+=[r30*r34].lo+c
-	"madc.hi.cc.u32	 %8,%30,%34, %8;\n\t"	// r8+=[r30*r34].hi+c
-	"madc.lo.cc.u32	 %9,%32,%34, %9;\n\t"	// r9+=[r32*r34].lo+c
-	"madc.hi.cc.u32	%10,%32,%34,%10;\n\t"	//r10+=[r32*r34].hi+c
-	"madc.lo.cc.u32	%11,%33,%35,%11;\n\t"	//r11+=[r33*r35].lo+c
-	"madc.hi.cc.u32	%12,%33,%35,%12;\n\t"	//r12+=[r33*r35].hi+c
-	"madc.lo.cc.u32	%13,%33,%37,%13;\n\t"	//r13+=[r33*r37].lo+c
-	"madc.hi.cc.u32	%14,%33,%37,%14;\n\t"	//r14+=[r33*r37].hi+c
-	"madc.lo.cc.u32	%15,%33,%39,%15;\n\t"	//r15+=[r33*r39].lo+c
-	"madc.hi.cc.u32	%16,%33,%39,%16;\n\t"	//r16+=[r33*r39].hi+c
-	"madc.lo.cc.u32	%17,%33,%41,%17;\n\t"	//r17+=[r33*r41].lo+c
-	"madc.hi.cc.u32	%18,%33,%41,%18;\n\t"	//r18+=[r33*r41].hi+c
-	"madc.lo.cc.u32	%19,%33,%43,%19;\n\t"	//r19+=[r33*r43].lo+c
-	"madc.hi.cc.u32	%20,%33,%43,%20;\n\t"	//r20+=[r33*r43].hi+c
+__device__ __forceinline__ void mad(uint512 & a_lo, uint512 & a_hi,
+	uint & overflow, const uint512 & b, const uint512 & c)
+{
+    asm("mad.lo.cc.u32	 %0,%33,%49, %0;\n\t"	// r0+=[r33*r49].lo  
+	"madc.hi.cc.u32	 %1,%33,%49, %1;\n\t"	// r1+=[r33*r49].hi  
+	"madc.lo.cc.u32	 %2,%35,%49, %2;\n\t"	// r2+=[r35*r49].lo+c
+	"madc.hi.cc.u32	 %3,%35,%49, %3;\n\t"	// r3+=[r35*r49].hi+c
+	"madc.lo.cc.u32	 %4,%37,%49, %4;\n\t"	// r4+=[r37*r49].lo+c
+	"madc.hi.cc.u32	 %5,%37,%49, %5;\n\t"	// r5+=[r37*r49].hi+c
+	"madc.lo.cc.u32	 %6,%39,%49, %6;\n\t"	// r6+=[r39*r49].lo+c
+	"madc.hi.cc.u32	 %7,%39,%49, %7;\n\t"	// r7+=[r39*r49].hi+c
+	"madc.lo.cc.u32	 %8,%41,%49, %8;\n\t"	// r8+=[r41*r49].lo+c
+	"madc.hi.cc.u32	 %9,%41,%49, %9;\n\t"	// r9+=[r41*r49].hi+c
+	"madc.lo.cc.u32	%10,%43,%49,%10;\n\t"	//r10+=[r43*r49].lo+c
+	"madc.hi.cc.u32	%11,%43,%49,%11;\n\t"	//r11+=[r43*r49].hi+c
+	"madc.lo.cc.u32	%12,%45,%49,%12;\n\t"	//r12+=[r45*r49].lo+c
+	"madc.hi.cc.u32	%13,%45,%49,%13;\n\t"	//r13+=[r45*r49].hi+c
+	"madc.lo.cc.u32	%14,%47,%49,%14;\n\t"	//r14+=[r47*r49].lo+c
+	"madc.hi.cc.u32	%15,%47,%49,%15;\n\t"	//r15+=[r47*r49].hi+c
+	"madc.lo.cc.u32	%16,%48,%50,%16;\n\t"	//r16+=[r48*r50].lo+c
+	"madc.hi.cc.u32	%17,%48,%50,%17;\n\t"	//r17+=[r48*r50].hi+c
+	"madc.lo.cc.u32	%18,%48,%52,%18;\n\t"	//r18+=[r48*r52].lo+c
+	"madc.hi.cc.u32	%19,%48,%52,%19;\n\t"	//r19+=[r48*r52].hi+c
+	"madc.lo.cc.u32	%20,%48,%54,%20;\n\t"	//r20+=[r48*r54].lo+c
+	"madc.hi.cc.u32	%21,%48,%54,%21;\n\t"	//r21+=[r48*r54].hi+c
+	"madc.lo.cc.u32	%22,%48,%56,%22;\n\t"	//r22+=[r48*r56].lo+c
+	"madc.hi.cc.u32	%23,%48,%56,%23;\n\t"	//r23+=[r48*r56].hi+c
+	"madc.lo.cc.u32	%24,%48,%58,%24;\n\t"	//r24+=[r48*r58].lo+c
+	"madc.hi.cc.u32	%25,%48,%58,%25;\n\t"	//r25+=[r48*r58].hi+c
+	"madc.lo.cc.u32	%26,%48,%60,%26;\n\t"	//r26+=[r48*r60].lo+c
+	"madc.hi.cc.u32	%27,%48,%60,%27;\n\t"	//r27+=[r48*r60].hi+c
+	"madc.lo.cc.u32	%28,%48,%62,%28;\n\t"	//r28+=[r48*r62].lo+c
+	"madc.hi.cc.u32	%29,%48,%62,%29;\n\t"	//r29+=[r48*r62].hi+c
+	"madc.lo.cc.u32	%30,%48,%64,%30;\n\t"	//r30+=[r48*r64].lo+c
+	"madc.hi.cc.u32	%31,%48,%64,%31;\n\t"	//r31+=[r48*r64].hi+c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %1,%34,%49, %1;\n\t"	// r1+=[r34*r49].lo  
+	"madc.hi.cc.u32	 %2,%34,%49, %2;\n\t"	// r2+=[r34*r49].hi  
+	"madc.lo.cc.u32	 %3,%36,%49, %3;\n\t"	// r3+=[r36*r49].lo+c
+	"madc.hi.cc.u32	 %4,%36,%49, %4;\n\t"	// r4+=[r36*r49].hi+c
+	"madc.lo.cc.u32	 %5,%38,%49, %5;\n\t"	// r5+=[r38*r49].lo+c
+	"madc.hi.cc.u32	 %6,%38,%49, %6;\n\t"	// r6+=[r38*r49].hi+c
+	"madc.lo.cc.u32	 %7,%40,%49, %7;\n\t"	// r7+=[r40*r49].lo+c
+	"madc.hi.cc.u32	 %8,%40,%49, %8;\n\t"	// r8+=[r40*r49].hi+c
+	"madc.lo.cc.u32	 %9,%42,%49, %9;\n\t"	// r9+=[r42*r49].lo+c
+	"madc.hi.cc.u32	%10,%42,%49,%10;\n\t"	//r10+=[r42*r49].hi+c
+	"madc.lo.cc.u32	%11,%44,%49,%11;\n\t"	//r11+=[r44*r49].lo+c
+	"madc.hi.cc.u32	%12,%44,%49,%12;\n\t"	//r12+=[r44*r49].hi+c
+	"madc.lo.cc.u32	%13,%46,%49,%13;\n\t"	//r13+=[r46*r49].lo+c
+	"madc.hi.cc.u32	%14,%46,%49,%14;\n\t"	//r14+=[r46*r49].hi+c
+	"madc.lo.cc.u32	%15,%48,%49,%15;\n\t"	//r15+=[r48*r49].lo+c
+	"madc.hi.cc.u32	%16,%48,%49,%16;\n\t"	//r16+=[r48*r49].hi+c
+	"madc.lo.cc.u32	%17,%48,%51,%17;\n\t"	//r17+=[r48*r51].lo+c
+	"madc.hi.cc.u32	%18,%48,%51,%18;\n\t"	//r18+=[r48*r51].hi+c
+	"madc.lo.cc.u32	%19,%48,%53,%19;\n\t"	//r19+=[r48*r53].lo+c
+	"madc.hi.cc.u32	%20,%48,%53,%20;\n\t"	//r20+=[r48*r53].hi+c
+	"madc.lo.cc.u32	%21,%48,%55,%21;\n\t"	//r21+=[r48*r55].lo+c
+	"madc.hi.cc.u32	%22,%48,%55,%22;\n\t"	//r22+=[r48*r55].hi+c
+	"madc.lo.cc.u32	%23,%48,%57,%23;\n\t"	//r23+=[r48*r57].lo+c
+	"madc.hi.cc.u32	%24,%48,%57,%24;\n\t"	//r24+=[r48*r57].hi+c
+	"madc.lo.cc.u32	%25,%48,%59,%25;\n\t"	//r25+=[r48*r59].lo+c
+	"madc.hi.cc.u32	%26,%48,%59,%26;\n\t"	//r26+=[r48*r59].hi+c
+	"madc.lo.cc.u32	%27,%48,%61,%27;\n\t"	//r27+=[r48*r61].lo+c
+	"madc.hi.cc.u32	%28,%48,%61,%28;\n\t"	//r28+=[r48*r61].hi+c
+	"madc.lo.cc.u32	%29,%48,%63,%29;\n\t"	//r29+=[r48*r63].lo+c
+	"madc.hi.cc.u32	%30,%48,%63,%30;\n\t"	//r30+=[r48*r63].hi+c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %1,%33,%50, %1;\n\t"	// r1+=[r33*r50].lo  
+	"madc.hi.cc.u32	 %2,%33,%50, %2;\n\t"	// r2+=[r33*r50].hi  
+	"madc.lo.cc.u32	 %3,%35,%50, %3;\n\t"	// r3+=[r35*r50].lo+c
+	"madc.hi.cc.u32	 %4,%35,%50, %4;\n\t"	// r4+=[r35*r50].hi+c
+	"madc.lo.cc.u32	 %5,%37,%50, %5;\n\t"	// r5+=[r37*r50].lo+c
+	"madc.hi.cc.u32	 %6,%37,%50, %6;\n\t"	// r6+=[r37*r50].hi+c
+	"madc.lo.cc.u32	 %7,%39,%50, %7;\n\t"	// r7+=[r39*r50].lo+c
+	"madc.hi.cc.u32	 %8,%39,%50, %8;\n\t"	// r8+=[r39*r50].hi+c
+	"madc.lo.cc.u32	 %9,%41,%50, %9;\n\t"	// r9+=[r41*r50].lo+c
+	"madc.hi.cc.u32	%10,%41,%50,%10;\n\t"	//r10+=[r41*r50].hi+c
+	"madc.lo.cc.u32	%11,%43,%50,%11;\n\t"	//r11+=[r43*r50].lo+c
+	"madc.hi.cc.u32	%12,%43,%50,%12;\n\t"	//r12+=[r43*r50].hi+c
+	"madc.lo.cc.u32	%13,%45,%50,%13;\n\t"	//r13+=[r45*r50].lo+c
+	"madc.hi.cc.u32	%14,%45,%50,%14;\n\t"	//r14+=[r45*r50].hi+c
+	"madc.lo.cc.u32	%15,%47,%50,%15;\n\t"	//r15+=[r47*r50].lo+c
+	"madc.hi.cc.u32	%16,%47,%50,%16;\n\t"	//r16+=[r47*r50].hi+c
+	"madc.lo.cc.u32	%17,%47,%52,%17;\n\t"	//r17+=[r47*r52].lo+c
+	"madc.hi.cc.u32	%18,%47,%52,%18;\n\t"	//r18+=[r47*r52].hi+c
+	"madc.lo.cc.u32	%19,%47,%54,%19;\n\t"	//r19+=[r47*r54].lo+c
+	"madc.hi.cc.u32	%20,%47,%54,%20;\n\t"	//r20+=[r47*r54].hi+c
+	"madc.lo.cc.u32	%21,%47,%56,%21;\n\t"	//r21+=[r47*r56].lo+c
+	"madc.hi.cc.u32	%22,%47,%56,%22;\n\t"	//r22+=[r47*r56].hi+c
+	"madc.lo.cc.u32	%23,%47,%58,%23;\n\t"	//r23+=[r47*r58].lo+c
+	"madc.hi.cc.u32	%24,%47,%58,%24;\n\t"	//r24+=[r47*r58].hi+c
+	"madc.lo.cc.u32	%25,%47,%60,%25;\n\t"	//r25+=[r47*r60].lo+c
+	"madc.hi.cc.u32	%26,%47,%60,%26;\n\t"	//r26+=[r47*r60].hi+c
+	"madc.lo.cc.u32	%27,%47,%62,%27;\n\t"	//r27+=[r47*r62].lo+c
+	"madc.hi.cc.u32	%28,%47,%62,%28;\n\t"	//r28+=[r47*r62].hi+c
+	"madc.lo.cc.u32	%29,%47,%64,%29;\n\t"	//r29+=[r47*r64].lo+c
+	"madc.hi.cc.u32	%30,%47,%64,%30;\n\t"	//r30+=[r47*r64].hi+c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %2,%34,%50, %2;\n\t"	// r2+=[r34*r50].lo  
+	"madc.hi.cc.u32	 %3,%34,%50, %3;\n\t"	// r3+=[r34*r50].hi  
+	"madc.lo.cc.u32	 %4,%36,%50, %4;\n\t"	// r4+=[r36*r50].lo+c
+	"madc.hi.cc.u32	 %5,%36,%50, %5;\n\t"	// r5+=[r36*r50].hi+c
+	"madc.lo.cc.u32	 %6,%38,%50, %6;\n\t"	// r6+=[r38*r50].lo+c
+	"madc.hi.cc.u32	 %7,%38,%50, %7;\n\t"	// r7+=[r38*r50].hi+c
+	"madc.lo.cc.u32	 %8,%40,%50, %8;\n\t"	// r8+=[r40*r50].lo+c
+	"madc.hi.cc.u32	 %9,%40,%50, %9;\n\t"	// r9+=[r40*r50].hi+c
+	"madc.lo.cc.u32	%10,%42,%50,%10;\n\t"	//r10+=[r42*r50].lo+c
+	"madc.hi.cc.u32	%11,%42,%50,%11;\n\t"	//r11+=[r42*r50].hi+c
+	"madc.lo.cc.u32	%12,%44,%50,%12;\n\t"	//r12+=[r44*r50].lo+c
+	"madc.hi.cc.u32	%13,%44,%50,%13;\n\t"	//r13+=[r44*r50].hi+c
+	"madc.lo.cc.u32	%14,%46,%50,%14;\n\t"	//r14+=[r46*r50].lo+c
+	"madc.hi.cc.u32	%15,%46,%50,%15;\n\t"	//r15+=[r46*r50].hi+c
+	"madc.lo.cc.u32	%16,%47,%51,%16;\n\t"	//r16+=[r47*r51].lo+c
+	"madc.hi.cc.u32	%17,%47,%51,%17;\n\t"	//r17+=[r47*r51].hi+c
+	"madc.lo.cc.u32	%18,%47,%53,%18;\n\t"	//r18+=[r47*r53].lo+c
+	"madc.hi.cc.u32	%19,%47,%53,%19;\n\t"	//r19+=[r47*r53].hi+c
+	"madc.lo.cc.u32	%20,%47,%55,%20;\n\t"	//r20+=[r47*r55].lo+c
+	"madc.hi.cc.u32	%21,%47,%55,%21;\n\t"	//r21+=[r47*r55].hi+c
+	"madc.lo.cc.u32	%22,%47,%57,%22;\n\t"	//r22+=[r47*r57].lo+c
+	"madc.hi.cc.u32	%23,%47,%57,%23;\n\t"	//r23+=[r47*r57].hi+c
+	"madc.lo.cc.u32	%24,%47,%59,%24;\n\t"	//r24+=[r47*r59].lo+c
+	"madc.hi.cc.u32	%25,%47,%59,%25;\n\t"	//r25+=[r47*r59].hi+c
+	"madc.lo.cc.u32	%26,%47,%61,%26;\n\t"	//r26+=[r47*r61].lo+c
+	"madc.hi.cc.u32	%27,%47,%61,%27;\n\t"	//r27+=[r47*r61].hi+c
+	"madc.lo.cc.u32	%28,%47,%63,%28;\n\t"	//r28+=[r47*r63].lo+c
+	"madc.hi.cc.u32	%29,%47,%63,%29;\n\t"	//r29+=[r47*r63].hi+c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %2,%33,%51, %2;\n\t"	// r2+=[r33*r51].lo  
+	"madc.hi.cc.u32	 %3,%33,%51, %3;\n\t"	// r3+=[r33*r51].hi  
+	"madc.lo.cc.u32	 %4,%35,%51, %4;\n\t"	// r4+=[r35*r51].lo+c
+	"madc.hi.cc.u32	 %5,%35,%51, %5;\n\t"	// r5+=[r35*r51].hi+c
+	"madc.lo.cc.u32	 %6,%37,%51, %6;\n\t"	// r6+=[r37*r51].lo+c
+	"madc.hi.cc.u32	 %7,%37,%51, %7;\n\t"	// r7+=[r37*r51].hi+c
+	"madc.lo.cc.u32	 %8,%39,%51, %8;\n\t"	// r8+=[r39*r51].lo+c
+	"madc.hi.cc.u32	 %9,%39,%51, %9;\n\t"	// r9+=[r39*r51].hi+c
+	"madc.lo.cc.u32	%10,%41,%51,%10;\n\t"	//r10+=[r41*r51].lo+c
+	"madc.hi.cc.u32	%11,%41,%51,%11;\n\t"	//r11+=[r41*r51].hi+c
+	"madc.lo.cc.u32	%12,%43,%51,%12;\n\t"	//r12+=[r43*r51].lo+c
+	"madc.hi.cc.u32	%13,%43,%51,%13;\n\t"	//r13+=[r43*r51].hi+c
+	"madc.lo.cc.u32	%14,%45,%51,%14;\n\t"	//r14+=[r45*r51].lo+c
+	"madc.hi.cc.u32	%15,%45,%51,%15;\n\t"	//r15+=[r45*r51].hi+c
+	"madc.lo.cc.u32	%16,%46,%52,%16;\n\t"	//r16+=[r46*r52].lo+c
+	"madc.hi.cc.u32	%17,%46,%52,%17;\n\t"	//r17+=[r46*r52].hi+c
+	"madc.lo.cc.u32	%18,%46,%54,%18;\n\t"	//r18+=[r46*r54].lo+c
+	"madc.hi.cc.u32	%19,%46,%54,%19;\n\t"	//r19+=[r46*r54].hi+c
+	"madc.lo.cc.u32	%20,%46,%56,%20;\n\t"	//r20+=[r46*r56].lo+c
+	"madc.hi.cc.u32	%21,%46,%56,%21;\n\t"	//r21+=[r46*r56].hi+c
+	"madc.lo.cc.u32	%22,%46,%58,%22;\n\t"	//r22+=[r46*r58].lo+c
+	"madc.hi.cc.u32	%23,%46,%58,%23;\n\t"	//r23+=[r46*r58].hi+c
+	"madc.lo.cc.u32	%24,%46,%60,%24;\n\t"	//r24+=[r46*r60].lo+c
+	"madc.hi.cc.u32	%25,%46,%60,%25;\n\t"	//r25+=[r46*r60].hi+c
+	"madc.lo.cc.u32	%26,%46,%62,%26;\n\t"	//r26+=[r46*r62].lo+c
+	"madc.hi.cc.u32	%27,%46,%62,%27;\n\t"	//r27+=[r46*r62].hi+c
+	"madc.lo.cc.u32	%28,%46,%64,%28;\n\t"	//r28+=[r46*r64].lo+c
+	"madc.hi.cc.u32	%29,%46,%64,%29;\n\t"	//r29+=[r46*r64].hi+c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %3,%34,%51, %3;\n\t"	// r3+=[r34*r51].lo  
+	"madc.hi.cc.u32	 %4,%34,%51, %4;\n\t"	// r4+=[r34*r51].hi  
+	"madc.lo.cc.u32	 %5,%36,%51, %5;\n\t"	// r5+=[r36*r51].lo+c
+	"madc.hi.cc.u32	 %6,%36,%51, %6;\n\t"	// r6+=[r36*r51].hi+c
+	"madc.lo.cc.u32	 %7,%38,%51, %7;\n\t"	// r7+=[r38*r51].lo+c
+	"madc.hi.cc.u32	 %8,%38,%51, %8;\n\t"	// r8+=[r38*r51].hi+c
+	"madc.lo.cc.u32	 %9,%40,%51, %9;\n\t"	// r9+=[r40*r51].lo+c
+	"madc.hi.cc.u32	%10,%40,%51,%10;\n\t"	//r10+=[r40*r51].hi+c
+	"madc.lo.cc.u32	%11,%42,%51,%11;\n\t"	//r11+=[r42*r51].lo+c
+	"madc.hi.cc.u32	%12,%42,%51,%12;\n\t"	//r12+=[r42*r51].hi+c
+	"madc.lo.cc.u32	%13,%44,%51,%13;\n\t"	//r13+=[r44*r51].lo+c
+	"madc.hi.cc.u32	%14,%44,%51,%14;\n\t"	//r14+=[r44*r51].hi+c
+	"madc.lo.cc.u32	%15,%46,%51,%15;\n\t"	//r15+=[r46*r51].lo+c
+	"madc.hi.cc.u32	%16,%46,%51,%16;\n\t"	//r16+=[r46*r51].hi+c
+	"madc.lo.cc.u32	%17,%46,%53,%17;\n\t"	//r17+=[r46*r53].lo+c
+	"madc.hi.cc.u32	%18,%46,%53,%18;\n\t"	//r18+=[r46*r53].hi+c
+	"madc.lo.cc.u32	%19,%46,%55,%19;\n\t"	//r19+=[r46*r55].lo+c
+	"madc.hi.cc.u32	%20,%46,%55,%20;\n\t"	//r20+=[r46*r55].hi+c
+	"madc.lo.cc.u32	%21,%46,%57,%21;\n\t"	//r21+=[r46*r57].lo+c
+	"madc.hi.cc.u32	%22,%46,%57,%22;\n\t"	//r22+=[r46*r57].hi+c
+	"madc.lo.cc.u32	%23,%46,%59,%23;\n\t"	//r23+=[r46*r59].lo+c
+	"madc.hi.cc.u32	%24,%46,%59,%24;\n\t"	//r24+=[r46*r59].hi+c
+	"madc.lo.cc.u32	%25,%46,%61,%25;\n\t"	//r25+=[r46*r61].lo+c
+	"madc.hi.cc.u32	%26,%46,%61,%26;\n\t"	//r26+=[r46*r61].hi+c
+	"madc.lo.cc.u32	%27,%46,%63,%27;\n\t"	//r27+=[r46*r63].lo+c
+	"madc.hi.cc.u32	%28,%46,%63,%28;\n\t"	//r28+=[r46*r63].hi+c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %3,%33,%52, %3;\n\t"	// r3+=[r33*r52].lo  
+	"madc.hi.cc.u32	 %4,%33,%52, %4;\n\t"	// r4+=[r33*r52].hi  
+	"madc.lo.cc.u32	 %5,%35,%52, %5;\n\t"	// r5+=[r35*r52].lo+c
+	"madc.hi.cc.u32	 %6,%35,%52, %6;\n\t"	// r6+=[r35*r52].hi+c
+	"madc.lo.cc.u32	 %7,%37,%52, %7;\n\t"	// r7+=[r37*r52].lo+c
+	"madc.hi.cc.u32	 %8,%37,%52, %8;\n\t"	// r8+=[r37*r52].hi+c
+	"madc.lo.cc.u32	 %9,%39,%52, %9;\n\t"	// r9+=[r39*r52].lo+c
+	"madc.hi.cc.u32	%10,%39,%52,%10;\n\t"	//r10+=[r39*r52].hi+c
+	"madc.lo.cc.u32	%11,%41,%52,%11;\n\t"	//r11+=[r41*r52].lo+c
+	"madc.hi.cc.u32	%12,%41,%52,%12;\n\t"	//r12+=[r41*r52].hi+c
+	"madc.lo.cc.u32	%13,%43,%52,%13;\n\t"	//r13+=[r43*r52].lo+c
+	"madc.hi.cc.u32	%14,%43,%52,%14;\n\t"	//r14+=[r43*r52].hi+c
+	"madc.lo.cc.u32	%15,%45,%52,%15;\n\t"	//r15+=[r45*r52].lo+c
+	"madc.hi.cc.u32	%16,%45,%52,%16;\n\t"	//r16+=[r45*r52].hi+c
+	"madc.lo.cc.u32	%17,%45,%54,%17;\n\t"	//r17+=[r45*r54].lo+c
+	"madc.hi.cc.u32	%18,%45,%54,%18;\n\t"	//r18+=[r45*r54].hi+c
+	"madc.lo.cc.u32	%19,%45,%56,%19;\n\t"	//r19+=[r45*r56].lo+c
+	"madc.hi.cc.u32	%20,%45,%56,%20;\n\t"	//r20+=[r45*r56].hi+c
+	"madc.lo.cc.u32	%21,%45,%58,%21;\n\t"	//r21+=[r45*r58].lo+c
+	"madc.hi.cc.u32	%22,%45,%58,%22;\n\t"	//r22+=[r45*r58].hi+c
+	"madc.lo.cc.u32	%23,%45,%60,%23;\n\t"	//r23+=[r45*r60].lo+c
+	"madc.hi.cc.u32	%24,%45,%60,%24;\n\t"	//r24+=[r45*r60].hi+c
+	"madc.lo.cc.u32	%25,%45,%62,%25;\n\t"	//r25+=[r45*r62].lo+c
+	"madc.hi.cc.u32	%26,%45,%62,%26;\n\t"	//r26+=[r45*r62].hi+c
+	"madc.lo.cc.u32	%27,%45,%64,%27;\n\t"	//r27+=[r45*r64].lo+c
+	"madc.hi.cc.u32	%28,%45,%64,%28;\n\t"	//r28+=[r45*r64].hi+c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %4,%34,%52, %4;\n\t"	// r4+=[r34*r52].lo  
+	"madc.hi.cc.u32	 %5,%34,%52, %5;\n\t"	// r5+=[r34*r52].hi  
+	"madc.lo.cc.u32	 %6,%36,%52, %6;\n\t"	// r6+=[r36*r52].lo+c
+	"madc.hi.cc.u32	 %7,%36,%52, %7;\n\t"	// r7+=[r36*r52].hi+c
+	"madc.lo.cc.u32	 %8,%38,%52, %8;\n\t"	// r8+=[r38*r52].lo+c
+	"madc.hi.cc.u32	 %9,%38,%52, %9;\n\t"	// r9+=[r38*r52].hi+c
+	"madc.lo.cc.u32	%10,%40,%52,%10;\n\t"	//r10+=[r40*r52].lo+c
+	"madc.hi.cc.u32	%11,%40,%52,%11;\n\t"	//r11+=[r40*r52].hi+c
+	"madc.lo.cc.u32	%12,%42,%52,%12;\n\t"	//r12+=[r42*r52].lo+c
+	"madc.hi.cc.u32	%13,%42,%52,%13;\n\t"	//r13+=[r42*r52].hi+c
+	"madc.lo.cc.u32	%14,%44,%52,%14;\n\t"	//r14+=[r44*r52].lo+c
+	"madc.hi.cc.u32	%15,%44,%52,%15;\n\t"	//r15+=[r44*r52].hi+c
+	"madc.lo.cc.u32	%16,%45,%53,%16;\n\t"	//r16+=[r45*r53].lo+c
+	"madc.hi.cc.u32	%17,%45,%53,%17;\n\t"	//r17+=[r45*r53].hi+c
+	"madc.lo.cc.u32	%18,%45,%55,%18;\n\t"	//r18+=[r45*r55].lo+c
+	"madc.hi.cc.u32	%19,%45,%55,%19;\n\t"	//r19+=[r45*r55].hi+c
+	"madc.lo.cc.u32	%20,%45,%57,%20;\n\t"	//r20+=[r45*r57].lo+c
+	"madc.hi.cc.u32	%21,%45,%57,%21;\n\t"	//r21+=[r45*r57].hi+c
+	"madc.lo.cc.u32	%22,%45,%59,%22;\n\t"	//r22+=[r45*r59].lo+c
+	"madc.hi.cc.u32	%23,%45,%59,%23;\n\t"	//r23+=[r45*r59].hi+c
+	"madc.lo.cc.u32	%24,%45,%61,%24;\n\t"	//r24+=[r45*r61].lo+c
+	"madc.hi.cc.u32	%25,%45,%61,%25;\n\t"	//r25+=[r45*r61].hi+c
+	"madc.lo.cc.u32	%26,%45,%63,%26;\n\t"	//r26+=[r45*r63].lo+c
+	"madc.hi.cc.u32	%27,%45,%63,%27;\n\t"	//r27+=[r45*r63].hi+c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %4,%33,%53, %4;\n\t"	// r4+=[r33*r53].lo  
+	"madc.hi.cc.u32	 %5,%33,%53, %5;\n\t"	// r5+=[r33*r53].hi  
+	"madc.lo.cc.u32	 %6,%35,%53, %6;\n\t"	// r6+=[r35*r53].lo+c
+	"madc.hi.cc.u32	 %7,%35,%53, %7;\n\t"	// r7+=[r35*r53].hi+c
+	"madc.lo.cc.u32	 %8,%37,%53, %8;\n\t"	// r8+=[r37*r53].lo+c
+	"madc.hi.cc.u32	 %9,%37,%53, %9;\n\t"	// r9+=[r37*r53].hi+c
+	"madc.lo.cc.u32	%10,%39,%53,%10;\n\t"	//r10+=[r39*r53].lo+c
+	"madc.hi.cc.u32	%11,%39,%53,%11;\n\t"	//r11+=[r39*r53].hi+c
+	"madc.lo.cc.u32	%12,%41,%53,%12;\n\t"	//r12+=[r41*r53].lo+c
+	"madc.hi.cc.u32	%13,%41,%53,%13;\n\t"	//r13+=[r41*r53].hi+c
+	"madc.lo.cc.u32	%14,%43,%53,%14;\n\t"	//r14+=[r43*r53].lo+c
+	"madc.hi.cc.u32	%15,%43,%53,%15;\n\t"	//r15+=[r43*r53].hi+c
+	"madc.lo.cc.u32	%16,%44,%54,%16;\n\t"	//r16+=[r44*r54].lo+c
+	"madc.hi.cc.u32	%17,%44,%54,%17;\n\t"	//r17+=[r44*r54].hi+c
+	"madc.lo.cc.u32	%18,%44,%56,%18;\n\t"	//r18+=[r44*r56].lo+c
+	"madc.hi.cc.u32	%19,%44,%56,%19;\n\t"	//r19+=[r44*r56].hi+c
+	"madc.lo.cc.u32	%20,%44,%58,%20;\n\t"	//r20+=[r44*r58].lo+c
+	"madc.hi.cc.u32	%21,%44,%58,%21;\n\t"	//r21+=[r44*r58].hi+c
+	"madc.lo.cc.u32	%22,%44,%60,%22;\n\t"	//r22+=[r44*r60].lo+c
+	"madc.hi.cc.u32	%23,%44,%60,%23;\n\t"	//r23+=[r44*r60].hi+c
+	"madc.lo.cc.u32	%24,%44,%62,%24;\n\t"	//r24+=[r44*r62].lo+c
+	"madc.hi.cc.u32	%25,%44,%62,%25;\n\t"	//r25+=[r44*r62].hi+c
+	"madc.lo.cc.u32	%26,%44,%64,%26;\n\t"	//r26+=[r44*r64].lo+c
+	"madc.hi.cc.u32	%27,%44,%64,%27;\n\t"	//r27+=[r44*r64].hi+c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %5,%34,%53, %5;\n\t"	// r5+=[r34*r53].lo  
+	"madc.hi.cc.u32	 %6,%34,%53, %6;\n\t"	// r6+=[r34*r53].hi  
+	"madc.lo.cc.u32	 %7,%36,%53, %7;\n\t"	// r7+=[r36*r53].lo+c
+	"madc.hi.cc.u32	 %8,%36,%53, %8;\n\t"	// r8+=[r36*r53].hi+c
+	"madc.lo.cc.u32	 %9,%38,%53, %9;\n\t"	// r9+=[r38*r53].lo+c
+	"madc.hi.cc.u32	%10,%38,%53,%10;\n\t"	//r10+=[r38*r53].hi+c
+	"madc.lo.cc.u32	%11,%40,%53,%11;\n\t"	//r11+=[r40*r53].lo+c
+	"madc.hi.cc.u32	%12,%40,%53,%12;\n\t"	//r12+=[r40*r53].hi+c
+	"madc.lo.cc.u32	%13,%42,%53,%13;\n\t"	//r13+=[r42*r53].lo+c
+	"madc.hi.cc.u32	%14,%42,%53,%14;\n\t"	//r14+=[r42*r53].hi+c
+	"madc.lo.cc.u32	%15,%44,%53,%15;\n\t"	//r15+=[r44*r53].lo+c
+	"madc.hi.cc.u32	%16,%44,%53,%16;\n\t"	//r16+=[r44*r53].hi+c
+	"madc.lo.cc.u32	%17,%44,%55,%17;\n\t"	//r17+=[r44*r55].lo+c
+	"madc.hi.cc.u32	%18,%44,%55,%18;\n\t"	//r18+=[r44*r55].hi+c
+	"madc.lo.cc.u32	%19,%44,%57,%19;\n\t"	//r19+=[r44*r57].lo+c
+	"madc.hi.cc.u32	%20,%44,%57,%20;\n\t"	//r20+=[r44*r57].hi+c
+	"madc.lo.cc.u32	%21,%44,%59,%21;\n\t"	//r21+=[r44*r59].lo+c
+	"madc.hi.cc.u32	%22,%44,%59,%22;\n\t"	//r22+=[r44*r59].hi+c
+	"madc.lo.cc.u32	%23,%44,%61,%23;\n\t"	//r23+=[r44*r61].lo+c
+	"madc.hi.cc.u32	%24,%44,%61,%24;\n\t"	//r24+=[r44*r61].hi+c
+	"madc.lo.cc.u32	%25,%44,%63,%25;\n\t"	//r25+=[r44*r63].lo+c
+	"madc.hi.cc.u32	%26,%44,%63,%26;\n\t"	//r26+=[r44*r63].hi+c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %5,%33,%54, %5;\n\t"	// r5+=[r33*r54].lo  
+	"madc.hi.cc.u32	 %6,%33,%54, %6;\n\t"	// r6+=[r33*r54].hi  
+	"madc.lo.cc.u32	 %7,%35,%54, %7;\n\t"	// r7+=[r35*r54].lo+c
+	"madc.hi.cc.u32	 %8,%35,%54, %8;\n\t"	// r8+=[r35*r54].hi+c
+	"madc.lo.cc.u32	 %9,%37,%54, %9;\n\t"	// r9+=[r37*r54].lo+c
+	"madc.hi.cc.u32	%10,%37,%54,%10;\n\t"	//r10+=[r37*r54].hi+c
+	"madc.lo.cc.u32	%11,%39,%54,%11;\n\t"	//r11+=[r39*r54].lo+c
+	"madc.hi.cc.u32	%12,%39,%54,%12;\n\t"	//r12+=[r39*r54].hi+c
+	"madc.lo.cc.u32	%13,%41,%54,%13;\n\t"	//r13+=[r41*r54].lo+c
+	"madc.hi.cc.u32	%14,%41,%54,%14;\n\t"	//r14+=[r41*r54].hi+c
+	"madc.lo.cc.u32	%15,%43,%54,%15;\n\t"	//r15+=[r43*r54].lo+c
+	"madc.hi.cc.u32	%16,%43,%54,%16;\n\t"	//r16+=[r43*r54].hi+c
+	"madc.lo.cc.u32	%17,%43,%56,%17;\n\t"	//r17+=[r43*r56].lo+c
+	"madc.hi.cc.u32	%18,%43,%56,%18;\n\t"	//r18+=[r43*r56].hi+c
+	"madc.lo.cc.u32	%19,%43,%58,%19;\n\t"	//r19+=[r43*r58].lo+c
+	"madc.hi.cc.u32	%20,%43,%58,%20;\n\t"	//r20+=[r43*r58].hi+c
+	"madc.lo.cc.u32	%21,%43,%60,%21;\n\t"	//r21+=[r43*r60].lo+c
+	"madc.hi.cc.u32	%22,%43,%60,%22;\n\t"	//r22+=[r43*r60].hi+c
+	"madc.lo.cc.u32	%23,%43,%62,%23;\n\t"	//r23+=[r43*r62].lo+c
+	"madc.hi.cc.u32	%24,%43,%62,%24;\n\t"	//r24+=[r43*r62].hi+c
+	"madc.lo.cc.u32	%25,%43,%64,%25;\n\t"	//r25+=[r43*r64].lo+c
+	"madc.hi.cc.u32	%26,%43,%64,%26;\n\t"	//r26+=[r43*r64].hi+c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %6,%34,%54, %6;\n\t"	// r6+=[r34*r54].lo  
+	"madc.hi.cc.u32	 %7,%34,%54, %7;\n\t"	// r7+=[r34*r54].hi  
+	"madc.lo.cc.u32	 %8,%36,%54, %8;\n\t"	// r8+=[r36*r54].lo+c
+	"madc.hi.cc.u32	 %9,%36,%54, %9;\n\t"	// r9+=[r36*r54].hi+c
+	"madc.lo.cc.u32	%10,%38,%54,%10;\n\t"	//r10+=[r38*r54].lo+c
+	"madc.hi.cc.u32	%11,%38,%54,%11;\n\t"	//r11+=[r38*r54].hi+c
+	"madc.lo.cc.u32	%12,%40,%54,%12;\n\t"	//r12+=[r40*r54].lo+c
+	"madc.hi.cc.u32	%13,%40,%54,%13;\n\t"	//r13+=[r40*r54].hi+c
+	"madc.lo.cc.u32	%14,%42,%54,%14;\n\t"	//r14+=[r42*r54].lo+c
+	"madc.hi.cc.u32	%15,%42,%54,%15;\n\t"	//r15+=[r42*r54].hi+c
+	"madc.lo.cc.u32	%16,%43,%55,%16;\n\t"	//r16+=[r43*r55].lo+c
+	"madc.hi.cc.u32	%17,%43,%55,%17;\n\t"	//r17+=[r43*r55].hi+c
+	"madc.lo.cc.u32	%18,%43,%57,%18;\n\t"	//r18+=[r43*r57].lo+c
+	"madc.hi.cc.u32	%19,%43,%57,%19;\n\t"	//r19+=[r43*r57].hi+c
+	"madc.lo.cc.u32	%20,%43,%59,%20;\n\t"	//r20+=[r43*r59].lo+c
+	"madc.hi.cc.u32	%21,%43,%59,%21;\n\t"	//r21+=[r43*r59].hi+c
+	"madc.lo.cc.u32	%22,%43,%61,%22;\n\t"	//r22+=[r43*r61].lo+c
+	"madc.hi.cc.u32	%23,%43,%61,%23;\n\t"	//r23+=[r43*r61].hi+c
+	"madc.lo.cc.u32	%24,%43,%63,%24;\n\t"	//r24+=[r43*r63].lo+c
+	"madc.hi.cc.u32	%25,%43,%63,%25;\n\t"	//r25+=[r43*r63].hi+c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %6,%33,%55, %6;\n\t"	// r6+=[r33*r55].lo  
+	"madc.hi.cc.u32	 %7,%33,%55, %7;\n\t"	// r7+=[r33*r55].hi  
+	"madc.lo.cc.u32	 %8,%35,%55, %8;\n\t"	// r8+=[r35*r55].lo+c
+	"madc.hi.cc.u32	 %9,%35,%55, %9;\n\t"	// r9+=[r35*r55].hi+c
+	"madc.lo.cc.u32	%10,%37,%55,%10;\n\t"	//r10+=[r37*r55].lo+c
+	"madc.hi.cc.u32	%11,%37,%55,%11;\n\t"	//r11+=[r37*r55].hi+c
+	"madc.lo.cc.u32	%12,%39,%55,%12;\n\t"	//r12+=[r39*r55].lo+c
+	"madc.hi.cc.u32	%13,%39,%55,%13;\n\t"	//r13+=[r39*r55].hi+c
+	"madc.lo.cc.u32	%14,%41,%55,%14;\n\t"	//r14+=[r41*r55].lo+c
+	"madc.hi.cc.u32	%15,%41,%55,%15;\n\t"	//r15+=[r41*r55].hi+c
+	"madc.lo.cc.u32	%16,%42,%56,%16;\n\t"	//r16+=[r42*r56].lo+c
+	"madc.hi.cc.u32	%17,%42,%56,%17;\n\t"	//r17+=[r42*r56].hi+c
+	"madc.lo.cc.u32	%18,%42,%58,%18;\n\t"	//r18+=[r42*r58].lo+c
+	"madc.hi.cc.u32	%19,%42,%58,%19;\n\t"	//r19+=[r42*r58].hi+c
+	"madc.lo.cc.u32	%20,%42,%60,%20;\n\t"	//r20+=[r42*r60].lo+c
+	"madc.hi.cc.u32	%21,%42,%60,%21;\n\t"	//r21+=[r42*r60].hi+c
+	"madc.lo.cc.u32	%22,%42,%62,%22;\n\t"	//r22+=[r42*r62].lo+c
+	"madc.hi.cc.u32	%23,%42,%62,%23;\n\t"	//r23+=[r42*r62].hi+c
+	"madc.lo.cc.u32	%24,%42,%64,%24;\n\t"	//r24+=[r42*r64].lo+c
+	"madc.hi.cc.u32	%25,%42,%64,%25;\n\t"	//r25+=[r42*r64].hi+c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %7,%34,%55, %7;\n\t"	// r7+=[r34*r55].lo  
+	"madc.hi.cc.u32	 %8,%34,%55, %8;\n\t"	// r8+=[r34*r55].hi  
+	"madc.lo.cc.u32	 %9,%36,%55, %9;\n\t"	// r9+=[r36*r55].lo+c
+	"madc.hi.cc.u32	%10,%36,%55,%10;\n\t"	//r10+=[r36*r55].hi+c
+	"madc.lo.cc.u32	%11,%38,%55,%11;\n\t"	//r11+=[r38*r55].lo+c
+	"madc.hi.cc.u32	%12,%38,%55,%12;\n\t"	//r12+=[r38*r55].hi+c
+	"madc.lo.cc.u32	%13,%40,%55,%13;\n\t"	//r13+=[r40*r55].lo+c
+	"madc.hi.cc.u32	%14,%40,%55,%14;\n\t"	//r14+=[r40*r55].hi+c
+	"madc.lo.cc.u32	%15,%42,%55,%15;\n\t"	//r15+=[r42*r55].lo+c
+	"madc.hi.cc.u32	%16,%42,%55,%16;\n\t"	//r16+=[r42*r55].hi+c
+	"madc.lo.cc.u32	%17,%42,%57,%17;\n\t"	//r17+=[r42*r57].lo+c
+	"madc.hi.cc.u32	%18,%42,%57,%18;\n\t"	//r18+=[r42*r57].hi+c
+	"madc.lo.cc.u32	%19,%42,%59,%19;\n\t"	//r19+=[r42*r59].lo+c
+	"madc.hi.cc.u32	%20,%42,%59,%20;\n\t"	//r20+=[r42*r59].hi+c
+	"madc.lo.cc.u32	%21,%42,%61,%21;\n\t"	//r21+=[r42*r61].lo+c
+	"madc.hi.cc.u32	%22,%42,%61,%22;\n\t"	//r22+=[r42*r61].hi+c
+	"madc.lo.cc.u32	%23,%42,%63,%23;\n\t"	//r23+=[r42*r63].lo+c
+	"madc.hi.cc.u32	%24,%42,%63,%24;\n\t"	//r24+=[r42*r63].hi+c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %7,%33,%56, %7;\n\t"	// r7+=[r33*r56].lo  
+	"madc.hi.cc.u32	 %8,%33,%56, %8;\n\t"	// r8+=[r33*r56].hi  
+	"madc.lo.cc.u32	 %9,%35,%56, %9;\n\t"	// r9+=[r35*r56].lo+c
+	"madc.hi.cc.u32	%10,%35,%56,%10;\n\t"	//r10+=[r35*r56].hi+c
+	"madc.lo.cc.u32	%11,%37,%56,%11;\n\t"	//r11+=[r37*r56].lo+c
+	"madc.hi.cc.u32	%12,%37,%56,%12;\n\t"	//r12+=[r37*r56].hi+c
+	"madc.lo.cc.u32	%13,%39,%56,%13;\n\t"	//r13+=[r39*r56].lo+c
+	"madc.hi.cc.u32	%14,%39,%56,%14;\n\t"	//r14+=[r39*r56].hi+c
+	"madc.lo.cc.u32	%15,%41,%56,%15;\n\t"	//r15+=[r41*r56].lo+c
+	"madc.hi.cc.u32	%16,%41,%56,%16;\n\t"	//r16+=[r41*r56].hi+c
+	"madc.lo.cc.u32	%17,%41,%58,%17;\n\t"	//r17+=[r41*r58].lo+c
+	"madc.hi.cc.u32	%18,%41,%58,%18;\n\t"	//r18+=[r41*r58].hi+c
+	"madc.lo.cc.u32	%19,%41,%60,%19;\n\t"	//r19+=[r41*r60].lo+c
+	"madc.hi.cc.u32	%20,%41,%60,%20;\n\t"	//r20+=[r41*r60].hi+c
+	"madc.lo.cc.u32	%21,%41,%62,%21;\n\t"	//r21+=[r41*r62].lo+c
+	"madc.hi.cc.u32	%22,%41,%62,%22;\n\t"	//r22+=[r41*r62].hi+c
+	"madc.lo.cc.u32	%23,%41,%64,%23;\n\t"	//r23+=[r41*r64].lo+c
+	"madc.hi.cc.u32	%24,%41,%64,%24;\n\t"	//r24+=[r41*r64].hi+c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %8,%34,%56, %8;\n\t"	// r8+=[r34*r56].lo  
+	"madc.hi.cc.u32	 %9,%34,%56, %9;\n\t"	// r9+=[r34*r56].hi  
+	"madc.lo.cc.u32	%10,%36,%56,%10;\n\t"	//r10+=[r36*r56].lo+c
+	"madc.hi.cc.u32	%11,%36,%56,%11;\n\t"	//r11+=[r36*r56].hi+c
+	"madc.lo.cc.u32	%12,%38,%56,%12;\n\t"	//r12+=[r38*r56].lo+c
+	"madc.hi.cc.u32	%13,%38,%56,%13;\n\t"	//r13+=[r38*r56].hi+c
+	"madc.lo.cc.u32	%14,%40,%56,%14;\n\t"	//r14+=[r40*r56].lo+c
+	"madc.hi.cc.u32	%15,%40,%56,%15;\n\t"	//r15+=[r40*r56].hi+c
+	"madc.lo.cc.u32	%16,%41,%57,%16;\n\t"	//r16+=[r41*r57].lo+c
+	"madc.hi.cc.u32	%17,%41,%57,%17;\n\t"	//r17+=[r41*r57].hi+c
+	"madc.lo.cc.u32	%18,%41,%59,%18;\n\t"	//r18+=[r41*r59].lo+c
+	"madc.hi.cc.u32	%19,%41,%59,%19;\n\t"	//r19+=[r41*r59].hi+c
+	"madc.lo.cc.u32	%20,%41,%61,%20;\n\t"	//r20+=[r41*r61].lo+c
+	"madc.hi.cc.u32	%21,%41,%61,%21;\n\t"	//r21+=[r41*r61].hi+c
+	"madc.lo.cc.u32	%22,%41,%63,%22;\n\t"	//r22+=[r41*r63].lo+c
+	"madc.hi.cc.u32	%23,%41,%63,%23;\n\t"	//r23+=[r41*r63].hi+c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %8,%33,%57, %8;\n\t"	// r8+=[r33*r57].lo  
+	"madc.hi.cc.u32	 %9,%33,%57, %9;\n\t"	// r9+=[r33*r57].hi  
+	"madc.lo.cc.u32	%10,%35,%57,%10;\n\t"	//r10+=[r35*r57].lo+c
+	"madc.hi.cc.u32	%11,%35,%57,%11;\n\t"	//r11+=[r35*r57].hi+c
+	"madc.lo.cc.u32	%12,%37,%57,%12;\n\t"	//r12+=[r37*r57].lo+c
+	"madc.hi.cc.u32	%13,%37,%57,%13;\n\t"	//r13+=[r37*r57].hi+c
+	"madc.lo.cc.u32	%14,%39,%57,%14;\n\t"	//r14+=[r39*r57].lo+c
+	"madc.hi.cc.u32	%15,%39,%57,%15;\n\t"	//r15+=[r39*r57].hi+c
+	"madc.lo.cc.u32	%16,%40,%58,%16;\n\t"	//r16+=[r40*r58].lo+c
+	"madc.hi.cc.u32	%17,%40,%58,%17;\n\t"	//r17+=[r40*r58].hi+c
+	"madc.lo.cc.u32	%18,%40,%60,%18;\n\t"	//r18+=[r40*r60].lo+c
+	"madc.hi.cc.u32	%19,%40,%60,%19;\n\t"	//r19+=[r40*r60].hi+c
+	"madc.lo.cc.u32	%20,%40,%62,%20;\n\t"	//r20+=[r40*r62].lo+c
+	"madc.hi.cc.u32	%21,%40,%62,%21;\n\t"	//r21+=[r40*r62].hi+c
+	"madc.lo.cc.u32	%22,%40,%64,%22;\n\t"	//r22+=[r40*r64].lo+c
+	"madc.hi.cc.u32	%23,%40,%64,%23;\n\t"	//r23+=[r40*r64].hi+c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %9,%34,%57, %9;\n\t"	// r9+=[r34*r57].lo  
+	"madc.hi.cc.u32	%10,%34,%57,%10;\n\t"	//r10+=[r34*r57].hi  
+	"madc.lo.cc.u32	%11,%36,%57,%11;\n\t"	//r11+=[r36*r57].lo+c
+	"madc.hi.cc.u32	%12,%36,%57,%12;\n\t"	//r12+=[r36*r57].hi+c
+	"madc.lo.cc.u32	%13,%38,%57,%13;\n\t"	//r13+=[r38*r57].lo+c
+	"madc.hi.cc.u32	%14,%38,%57,%14;\n\t"	//r14+=[r38*r57].hi+c
+	"madc.lo.cc.u32	%15,%40,%57,%15;\n\t"	//r15+=[r40*r57].lo+c
+	"madc.hi.cc.u32	%16,%40,%57,%16;\n\t"	//r16+=[r40*r57].hi+c
+	"madc.lo.cc.u32	%17,%40,%59,%17;\n\t"	//r17+=[r40*r59].lo+c
+	"madc.hi.cc.u32	%18,%40,%59,%18;\n\t"	//r18+=[r40*r59].hi+c
+	"madc.lo.cc.u32	%19,%40,%61,%19;\n\t"	//r19+=[r40*r61].lo+c
+	"madc.hi.cc.u32	%20,%40,%61,%20;\n\t"	//r20+=[r40*r61].hi+c
+	"madc.lo.cc.u32	%21,%40,%63,%21;\n\t"	//r21+=[r40*r63].lo+c
+	"madc.hi.cc.u32	%22,%40,%63,%22;\n\t"	//r22+=[r40*r63].hi+c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	 %9,%33,%58, %9;\n\t"	// r9+=[r33*r58].lo  
+	"madc.hi.cc.u32	%10,%33,%58,%10;\n\t"	//r10+=[r33*r58].hi  
+	"madc.lo.cc.u32	%11,%35,%58,%11;\n\t"	//r11+=[r35*r58].lo+c
+	"madc.hi.cc.u32	%12,%35,%58,%12;\n\t"	//r12+=[r35*r58].hi+c
+	"madc.lo.cc.u32	%13,%37,%58,%13;\n\t"	//r13+=[r37*r58].lo+c
+	"madc.hi.cc.u32	%14,%37,%58,%14;\n\t"	//r14+=[r37*r58].hi+c
+	"madc.lo.cc.u32	%15,%39,%58,%15;\n\t"	//r15+=[r39*r58].lo+c
+	"madc.hi.cc.u32	%16,%39,%58,%16;\n\t"	//r16+=[r39*r58].hi+c
+	"madc.lo.cc.u32	%17,%39,%60,%17;\n\t"	//r17+=[r39*r60].lo+c
+	"madc.hi.cc.u32	%18,%39,%60,%18;\n\t"	//r18+=[r39*r60].hi+c
+	"madc.lo.cc.u32	%19,%39,%62,%19;\n\t"	//r19+=[r39*r62].lo+c
+	"madc.hi.cc.u32	%20,%39,%62,%20;\n\t"	//r20+=[r39*r62].hi+c
+	"madc.lo.cc.u32	%21,%39,%64,%21;\n\t"	//r21+=[r39*r64].lo+c
+	"madc.hi.cc.u32	%22,%39,%64,%22;\n\t"	//r22+=[r39*r64].hi+c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%10,%34,%58,%10;\n\t"	//r10+=[r34*r58].lo  
+	"madc.hi.cc.u32	%11,%34,%58,%11;\n\t"	//r11+=[r34*r58].hi  
+	"madc.lo.cc.u32	%12,%36,%58,%12;\n\t"	//r12+=[r36*r58].lo+c
+	"madc.hi.cc.u32	%13,%36,%58,%13;\n\t"	//r13+=[r36*r58].hi+c
+	"madc.lo.cc.u32	%14,%38,%58,%14;\n\t"	//r14+=[r38*r58].lo+c
+	"madc.hi.cc.u32	%15,%38,%58,%15;\n\t"	//r15+=[r38*r58].hi+c
+	"madc.lo.cc.u32	%16,%39,%59,%16;\n\t"	//r16+=[r39*r59].lo+c
+	"madc.hi.cc.u32	%17,%39,%59,%17;\n\t"	//r17+=[r39*r59].hi+c
+	"madc.lo.cc.u32	%18,%39,%61,%18;\n\t"	//r18+=[r39*r61].lo+c
+	"madc.hi.cc.u32	%19,%39,%61,%19;\n\t"	//r19+=[r39*r61].hi+c
+	"madc.lo.cc.u32	%20,%39,%63,%20;\n\t"	//r20+=[r39*r63].lo+c
+	"madc.hi.cc.u32	%21,%39,%63,%21;\n\t"	//r21+=[r39*r63].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%10,%33,%59,%10;\n\t"	//r10+=[r33*r59].lo  
+	"madc.hi.cc.u32	%11,%33,%59,%11;\n\t"	//r11+=[r33*r59].hi  
+	"madc.lo.cc.u32	%12,%35,%59,%12;\n\t"	//r12+=[r35*r59].lo+c
+	"madc.hi.cc.u32	%13,%35,%59,%13;\n\t"	//r13+=[r35*r59].hi+c
+	"madc.lo.cc.u32	%14,%37,%59,%14;\n\t"	//r14+=[r37*r59].lo+c
+	"madc.hi.cc.u32	%15,%37,%59,%15;\n\t"	//r15+=[r37*r59].hi+c
+	"madc.lo.cc.u32	%16,%38,%60,%16;\n\t"	//r16+=[r38*r60].lo+c
+	"madc.hi.cc.u32	%17,%38,%60,%17;\n\t"	//r17+=[r38*r60].hi+c
+	"madc.lo.cc.u32	%18,%38,%62,%18;\n\t"	//r18+=[r38*r62].lo+c
+	"madc.hi.cc.u32	%19,%38,%62,%19;\n\t"	//r19+=[r38*r62].hi+c
+	"madc.lo.cc.u32	%20,%38,%64,%20;\n\t"	//r20+=[r38*r64].lo+c
+	"madc.hi.cc.u32	%21,%38,%64,%21;\n\t"	//r21+=[r38*r64].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%11,%34,%59,%11;\n\t"	//r11+=[r34*r59].lo  
+	"madc.hi.cc.u32	%12,%34,%59,%12;\n\t"	//r12+=[r34*r59].hi  
+	"madc.lo.cc.u32	%13,%36,%59,%13;\n\t"	//r13+=[r36*r59].lo+c
+	"madc.hi.cc.u32	%14,%36,%59,%14;\n\t"	//r14+=[r36*r59].hi+c
+	"madc.lo.cc.u32	%15,%38,%59,%15;\n\t"	//r15+=[r38*r59].lo+c
+	"madc.hi.cc.u32	%16,%38,%59,%16;\n\t"	//r16+=[r38*r59].hi+c
+	"madc.lo.cc.u32	%17,%38,%61,%17;\n\t"	//r17+=[r38*r61].lo+c
+	"madc.hi.cc.u32	%18,%38,%61,%18;\n\t"	//r18+=[r38*r61].hi+c
+	"madc.lo.cc.u32	%19,%38,%63,%19;\n\t"	//r19+=[r38*r63].lo+c
+	"madc.hi.cc.u32	%20,%38,%63,%20;\n\t"	//r20+=[r38*r63].hi+c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %1,%23,%35, %1;\n\t"	// r1+=[r23*r35].lo  
-	"madc.hi.cc.u32	 %2,%23,%35, %2;\n\t"	// r2+=[r23*r35].hi  
-	"madc.lo.cc.u32	 %3,%25,%35, %3;\n\t"	// r3+=[r25*r35].lo+c
-	"madc.hi.cc.u32	 %4,%25,%35, %4;\n\t"	// r4+=[r25*r35].hi+c
-	"madc.lo.cc.u32	 %5,%27,%35, %5;\n\t"	// r5+=[r27*r35].lo+c
-	"madc.hi.cc.u32	 %6,%27,%35, %6;\n\t"	// r6+=[r27*r35].hi+c
-	"madc.lo.cc.u32	 %7,%29,%35, %7;\n\t"	// r7+=[r29*r35].lo+c
-	"madc.hi.cc.u32	 %8,%29,%35, %8;\n\t"	// r8+=[r29*r35].hi+c
-	"madc.lo.cc.u32	 %9,%31,%35, %9;\n\t"	// r9+=[r31*r35].lo+c
-	"madc.hi.cc.u32	%10,%31,%35,%10;\n\t"	//r10+=[r31*r35].hi+c
-	"madc.lo.cc.u32	%11,%32,%36,%11;\n\t"	//r11+=[r32*r36].lo+c
-	"madc.hi.cc.u32	%12,%32,%36,%12;\n\t"	//r12+=[r32*r36].hi+c
-	"madc.lo.cc.u32	%13,%32,%38,%13;\n\t"	//r13+=[r32*r38].lo+c
-	"madc.hi.cc.u32	%14,%32,%38,%14;\n\t"	//r14+=[r32*r38].hi+c
-	"madc.lo.cc.u32	%15,%32,%40,%15;\n\t"	//r15+=[r32*r40].lo+c
-	"madc.hi.cc.u32	%16,%32,%40,%16;\n\t"	//r16+=[r32*r40].hi+c
-	"madc.lo.cc.u32	%17,%32,%42,%17;\n\t"	//r17+=[r32*r42].lo+c
-	"madc.hi.cc.u32	%18,%32,%42,%18;\n\t"	//r18+=[r32*r42].hi+c
-	"madc.lo.cc.u32	%19,%32,%44,%19;\n\t"	//r19+=[r32*r44].lo+c
-	"madc.hi.cc.u32	%20,%32,%44,%20;\n\t"	//r20+=[r32*r44].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%11,%33,%60,%11;\n\t"	//r11+=[r33*r60].lo  
+	"madc.hi.cc.u32	%12,%33,%60,%12;\n\t"	//r12+=[r33*r60].hi  
+	"madc.lo.cc.u32	%13,%35,%60,%13;\n\t"	//r13+=[r35*r60].lo+c
+	"madc.hi.cc.u32	%14,%35,%60,%14;\n\t"	//r14+=[r35*r60].hi+c
+	"madc.lo.cc.u32	%15,%37,%60,%15;\n\t"	//r15+=[r37*r60].lo+c
+	"madc.hi.cc.u32	%16,%37,%60,%16;\n\t"	//r16+=[r37*r60].hi+c
+	"madc.lo.cc.u32	%17,%37,%62,%17;\n\t"	//r17+=[r37*r62].lo+c
+	"madc.hi.cc.u32	%18,%37,%62,%18;\n\t"	//r18+=[r37*r62].hi+c
+	"madc.lo.cc.u32	%19,%37,%64,%19;\n\t"	//r19+=[r37*r64].lo+c
+	"madc.hi.cc.u32	%20,%37,%64,%20;\n\t"	//r20+=[r37*r64].hi+c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %2,%24,%35, %2;\n\t"	// r2+=[r24*r35].lo  
-	"madc.hi.cc.u32	 %3,%24,%35, %3;\n\t"	// r3+=[r24*r35].hi  
-	"madc.lo.cc.u32	 %4,%26,%35, %4;\n\t"	// r4+=[r26*r35].lo+c
-	"madc.hi.cc.u32	 %5,%26,%35, %5;\n\t"	// r5+=[r26*r35].hi+c
-	"madc.lo.cc.u32	 %6,%28,%35, %6;\n\t"	// r6+=[r28*r35].lo+c
-	"madc.hi.cc.u32	 %7,%28,%35, %7;\n\t"	// r7+=[r28*r35].hi+c
-	"madc.lo.cc.u32	 %8,%30,%35, %8;\n\t"	// r8+=[r30*r35].lo+c
-	"madc.hi.cc.u32	 %9,%30,%35, %9;\n\t"	// r9+=[r30*r35].hi+c
-	"madc.lo.cc.u32	%10,%32,%35,%10;\n\t"	//r10+=[r32*r35].lo+c
-	"madc.hi.cc.u32	%11,%32,%35,%11;\n\t"	//r11+=[r32*r35].hi+c
-	"madc.lo.cc.u32	%12,%32,%37,%12;\n\t"	//r12+=[r32*r37].lo+c
-	"madc.hi.cc.u32	%13,%32,%37,%13;\n\t"	//r13+=[r32*r37].hi+c
-	"madc.lo.cc.u32	%14,%32,%39,%14;\n\t"	//r14+=[r32*r39].lo+c
-	"madc.hi.cc.u32	%15,%32,%39,%15;\n\t"	//r15+=[r32*r39].hi+c
-	"madc.lo.cc.u32	%16,%32,%41,%16;\n\t"	//r16+=[r32*r41].lo+c
-	"madc.hi.cc.u32	%17,%32,%41,%17;\n\t"	//r17+=[r32*r41].hi+c
-	"madc.lo.cc.u32	%18,%32,%43,%18;\n\t"	//r18+=[r32*r43].lo+c
-	"madc.hi.cc.u32	%19,%32,%43,%19;\n\t"	//r19+=[r32*r43].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%12,%34,%60,%12;\n\t"	//r12+=[r34*r60].lo  
+	"madc.hi.cc.u32	%13,%34,%60,%13;\n\t"	//r13+=[r34*r60].hi  
+	"madc.lo.cc.u32	%14,%36,%60,%14;\n\t"	//r14+=[r36*r60].lo+c
+	"madc.hi.cc.u32	%15,%36,%60,%15;\n\t"	//r15+=[r36*r60].hi+c
+	"madc.lo.cc.u32	%16,%37,%61,%16;\n\t"	//r16+=[r37*r61].lo+c
+	"madc.hi.cc.u32	%17,%37,%61,%17;\n\t"	//r17+=[r37*r61].hi+c
+	"madc.lo.cc.u32	%18,%37,%63,%18;\n\t"	//r18+=[r37*r63].lo+c
+	"madc.hi.cc.u32	%19,%37,%63,%19;\n\t"	//r19+=[r37*r63].hi+c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %2,%23,%36, %2;\n\t"	// r2+=[r23*r36].lo  
-	"madc.hi.cc.u32	 %3,%23,%36, %3;\n\t"	// r3+=[r23*r36].hi  
-	"madc.lo.cc.u32	 %4,%25,%36, %4;\n\t"	// r4+=[r25*r36].lo+c
-	"madc.hi.cc.u32	 %5,%25,%36, %5;\n\t"	// r5+=[r25*r36].hi+c
-	"madc.lo.cc.u32	 %6,%27,%36, %6;\n\t"	// r6+=[r27*r36].lo+c
-	"madc.hi.cc.u32	 %7,%27,%36, %7;\n\t"	// r7+=[r27*r36].hi+c
-	"madc.lo.cc.u32	 %8,%29,%36, %8;\n\t"	// r8+=[r29*r36].lo+c
-	"madc.hi.cc.u32	 %9,%29,%36, %9;\n\t"	// r9+=[r29*r36].hi+c
-	"madc.lo.cc.u32	%10,%31,%36,%10;\n\t"	//r10+=[r31*r36].lo+c
-	"madc.hi.cc.u32	%11,%31,%36,%11;\n\t"	//r11+=[r31*r36].hi+c
-	"madc.lo.cc.u32	%12,%31,%38,%12;\n\t"	//r12+=[r31*r38].lo+c
-	"madc.hi.cc.u32	%13,%31,%38,%13;\n\t"	//r13+=[r31*r38].hi+c
-	"madc.lo.cc.u32	%14,%31,%40,%14;\n\t"	//r14+=[r31*r40].lo+c
-	"madc.hi.cc.u32	%15,%31,%40,%15;\n\t"	//r15+=[r31*r40].hi+c
-	"madc.lo.cc.u32	%16,%31,%42,%16;\n\t"	//r16+=[r31*r42].lo+c
-	"madc.hi.cc.u32	%17,%31,%42,%17;\n\t"	//r17+=[r31*r42].hi+c
-	"madc.lo.cc.u32	%18,%31,%44,%18;\n\t"	//r18+=[r31*r44].lo+c
-	"madc.hi.cc.u32	%19,%31,%44,%19;\n\t"	//r19+=[r31*r44].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%12,%33,%61,%12;\n\t"	//r12+=[r33*r61].lo  
+	"madc.hi.cc.u32	%13,%33,%61,%13;\n\t"	//r13+=[r33*r61].hi  
+	"madc.lo.cc.u32	%14,%35,%61,%14;\n\t"	//r14+=[r35*r61].lo+c
+	"madc.hi.cc.u32	%15,%35,%61,%15;\n\t"	//r15+=[r35*r61].hi+c
+	"madc.lo.cc.u32	%16,%36,%62,%16;\n\t"	//r16+=[r36*r62].lo+c
+	"madc.hi.cc.u32	%17,%36,%62,%17;\n\t"	//r17+=[r36*r62].hi+c
+	"madc.lo.cc.u32	%18,%36,%64,%18;\n\t"	//r18+=[r36*r64].lo+c
+	"madc.hi.cc.u32	%19,%36,%64,%19;\n\t"	//r19+=[r36*r64].hi+c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %3,%24,%36, %3;\n\t"	// r3+=[r24*r36].lo  
-	"madc.hi.cc.u32	 %4,%24,%36, %4;\n\t"	// r4+=[r24*r36].hi  
-	"madc.lo.cc.u32	 %5,%26,%36, %5;\n\t"	// r5+=[r26*r36].lo+c
-	"madc.hi.cc.u32	 %6,%26,%36, %6;\n\t"	// r6+=[r26*r36].hi+c
-	"madc.lo.cc.u32	 %7,%28,%36, %7;\n\t"	// r7+=[r28*r36].lo+c
-	"madc.hi.cc.u32	 %8,%28,%36, %8;\n\t"	// r8+=[r28*r36].hi+c
-	"madc.lo.cc.u32	 %9,%30,%36, %9;\n\t"	// r9+=[r30*r36].lo+c
-	"madc.hi.cc.u32	%10,%30,%36,%10;\n\t"	//r10+=[r30*r36].hi+c
-	"madc.lo.cc.u32	%11,%31,%37,%11;\n\t"	//r11+=[r31*r37].lo+c
-	"madc.hi.cc.u32	%12,%31,%37,%12;\n\t"	//r12+=[r31*r37].hi+c
-	"madc.lo.cc.u32	%13,%31,%39,%13;\n\t"	//r13+=[r31*r39].lo+c
-	"madc.hi.cc.u32	%14,%31,%39,%14;\n\t"	//r14+=[r31*r39].hi+c
-	"madc.lo.cc.u32	%15,%31,%41,%15;\n\t"	//r15+=[r31*r41].lo+c
-	"madc.hi.cc.u32	%16,%31,%41,%16;\n\t"	//r16+=[r31*r41].hi+c
-	"madc.lo.cc.u32	%17,%31,%43,%17;\n\t"	//r17+=[r31*r43].lo+c
-	"madc.hi.cc.u32	%18,%31,%43,%18;\n\t"	//r18+=[r31*r43].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%13,%34,%61,%13;\n\t"	//r13+=[r34*r61].lo  
+	"madc.hi.cc.u32	%14,%34,%61,%14;\n\t"	//r14+=[r34*r61].hi  
+	"madc.lo.cc.u32	%15,%36,%61,%15;\n\t"	//r15+=[r36*r61].lo+c
+	"madc.hi.cc.u32	%16,%36,%61,%16;\n\t"	//r16+=[r36*r61].hi+c
+	"madc.lo.cc.u32	%17,%36,%63,%17;\n\t"	//r17+=[r36*r63].lo+c
+	"madc.hi.cc.u32	%18,%36,%63,%18;\n\t"	//r18+=[r36*r63].hi+c
 	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %3,%23,%37, %3;\n\t"	// r3+=[r23*r37].lo  
-	"madc.hi.cc.u32	 %4,%23,%37, %4;\n\t"	// r4+=[r23*r37].hi  
-	"madc.lo.cc.u32	 %5,%25,%37, %5;\n\t"	// r5+=[r25*r37].lo+c
-	"madc.hi.cc.u32	 %6,%25,%37, %6;\n\t"	// r6+=[r25*r37].hi+c
-	"madc.lo.cc.u32	 %7,%27,%37, %7;\n\t"	// r7+=[r27*r37].lo+c
-	"madc.hi.cc.u32	 %8,%27,%37, %8;\n\t"	// r8+=[r27*r37].hi+c
-	"madc.lo.cc.u32	 %9,%29,%37, %9;\n\t"	// r9+=[r29*r37].lo+c
-	"madc.hi.cc.u32	%10,%29,%37,%10;\n\t"	//r10+=[r29*r37].hi+c
-	"madc.lo.cc.u32	%11,%30,%38,%11;\n\t"	//r11+=[r30*r38].lo+c
-	"madc.hi.cc.u32	%12,%30,%38,%12;\n\t"	//r12+=[r30*r38].hi+c
-	"madc.lo.cc.u32	%13,%30,%40,%13;\n\t"	//r13+=[r30*r40].lo+c
-	"madc.hi.cc.u32	%14,%30,%40,%14;\n\t"	//r14+=[r30*r40].hi+c
-	"madc.lo.cc.u32	%15,%30,%42,%15;\n\t"	//r15+=[r30*r42].lo+c
-	"madc.hi.cc.u32	%16,%30,%42,%16;\n\t"	//r16+=[r30*r42].hi+c
-	"madc.lo.cc.u32	%17,%30,%44,%17;\n\t"	//r17+=[r30*r44].lo+c
-	"madc.hi.cc.u32	%18,%30,%44,%18;\n\t"	//r18+=[r30*r44].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%13,%33,%62,%13;\n\t"	//r13+=[r33*r62].lo  
+	"madc.hi.cc.u32	%14,%33,%62,%14;\n\t"	//r14+=[r33*r62].hi  
+	"madc.lo.cc.u32	%15,%35,%62,%15;\n\t"	//r15+=[r35*r62].lo+c
+	"madc.hi.cc.u32	%16,%35,%62,%16;\n\t"	//r16+=[r35*r62].hi+c
+	"madc.lo.cc.u32	%17,%35,%64,%17;\n\t"	//r17+=[r35*r64].lo+c
+	"madc.hi.cc.u32	%18,%35,%64,%18;\n\t"	//r18+=[r35*r64].hi+c
 	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %4,%24,%37, %4;\n\t"	// r4+=[r24*r37].lo  
-	"madc.hi.cc.u32	 %5,%24,%37, %5;\n\t"	// r5+=[r24*r37].hi  
-	"madc.lo.cc.u32	 %6,%26,%37, %6;\n\t"	// r6+=[r26*r37].lo+c
-	"madc.hi.cc.u32	 %7,%26,%37, %7;\n\t"	// r7+=[r26*r37].hi+c
-	"madc.lo.cc.u32	 %8,%28,%37, %8;\n\t"	// r8+=[r28*r37].lo+c
-	"madc.hi.cc.u32	 %9,%28,%37, %9;\n\t"	// r9+=[r28*r37].hi+c
-	"madc.lo.cc.u32	%10,%30,%37,%10;\n\t"	//r10+=[r30*r37].lo+c
-	"madc.hi.cc.u32	%11,%30,%37,%11;\n\t"	//r11+=[r30*r37].hi+c
-	"madc.lo.cc.u32	%12,%30,%39,%12;\n\t"	//r12+=[r30*r39].lo+c
-	"madc.hi.cc.u32	%13,%30,%39,%13;\n\t"	//r13+=[r30*r39].hi+c
-	"madc.lo.cc.u32	%14,%30,%41,%14;\n\t"	//r14+=[r30*r41].lo+c
-	"madc.hi.cc.u32	%15,%30,%41,%15;\n\t"	//r15+=[r30*r41].hi+c
-	"madc.lo.cc.u32	%16,%30,%43,%16;\n\t"	//r16+=[r30*r43].lo+c
-	"madc.hi.cc.u32	%17,%30,%43,%17;\n\t"	//r17+=[r30*r43].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%14,%34,%62,%14;\n\t"	//r14+=[r34*r62].lo  
+	"madc.hi.cc.u32	%15,%34,%62,%15;\n\t"	//r15+=[r34*r62].hi  
+	"madc.lo.cc.u32	%16,%35,%63,%16;\n\t"	//r16+=[r35*r63].lo+c
+	"madc.hi.cc.u32	%17,%35,%63,%17;\n\t"	//r17+=[r35*r63].hi+c
 	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
 	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %4,%23,%38, %4;\n\t"	// r4+=[r23*r38].lo  
-	"madc.hi.cc.u32	 %5,%23,%38, %5;\n\t"	// r5+=[r23*r38].hi  
-	"madc.lo.cc.u32	 %6,%25,%38, %6;\n\t"	// r6+=[r25*r38].lo+c
-	"madc.hi.cc.u32	 %7,%25,%38, %7;\n\t"	// r7+=[r25*r38].hi+c
-	"madc.lo.cc.u32	 %8,%27,%38, %8;\n\t"	// r8+=[r27*r38].lo+c
-	"madc.hi.cc.u32	 %9,%27,%38, %9;\n\t"	// r9+=[r27*r38].hi+c
-	"madc.lo.cc.u32	%10,%29,%38,%10;\n\t"	//r10+=[r29*r38].lo+c
-	"madc.hi.cc.u32	%11,%29,%38,%11;\n\t"	//r11+=[r29*r38].hi+c
-	"madc.lo.cc.u32	%12,%29,%40,%12;\n\t"	//r12+=[r29*r40].lo+c
-	"madc.hi.cc.u32	%13,%29,%40,%13;\n\t"	//r13+=[r29*r40].hi+c
-	"madc.lo.cc.u32	%14,%29,%42,%14;\n\t"	//r14+=[r29*r42].lo+c
-	"madc.hi.cc.u32	%15,%29,%42,%15;\n\t"	//r15+=[r29*r42].hi+c
-	"madc.lo.cc.u32	%16,%29,%44,%16;\n\t"	//r16+=[r29*r44].lo+c
-	"madc.hi.cc.u32	%17,%29,%44,%17;\n\t"	//r17+=[r29*r44].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%14,%33,%63,%14;\n\t"	//r14+=[r33*r63].lo  
+	"madc.hi.cc.u32	%15,%33,%63,%15;\n\t"	//r15+=[r33*r63].hi  
+	"madc.lo.cc.u32	%16,%34,%64,%16;\n\t"	//r16+=[r34*r64].lo+c
+	"madc.hi.cc.u32	%17,%34,%64,%17;\n\t"	//r17+=[r34*r64].hi+c
 	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
 	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %5,%24,%38, %5;\n\t"	// r5+=[r24*r38].lo  
-	"madc.hi.cc.u32	 %6,%24,%38, %6;\n\t"	// r6+=[r24*r38].hi  
-	"madc.lo.cc.u32	 %7,%26,%38, %7;\n\t"	// r7+=[r26*r38].lo+c
-	"madc.hi.cc.u32	 %8,%26,%38, %8;\n\t"	// r8+=[r26*r38].hi+c
-	"madc.lo.cc.u32	 %9,%28,%38, %9;\n\t"	// r9+=[r28*r38].lo+c
-	"madc.hi.cc.u32	%10,%28,%38,%10;\n\t"	//r10+=[r28*r38].hi+c
-	"madc.lo.cc.u32	%11,%29,%39,%11;\n\t"	//r11+=[r29*r39].lo+c
-	"madc.hi.cc.u32	%12,%29,%39,%12;\n\t"	//r12+=[r29*r39].hi+c
-	"madc.lo.cc.u32	%13,%29,%41,%13;\n\t"	//r13+=[r29*r41].lo+c
-	"madc.hi.cc.u32	%14,%29,%41,%14;\n\t"	//r14+=[r29*r41].hi+c
-	"madc.lo.cc.u32	%15,%29,%43,%15;\n\t"	//r15+=[r29*r43].lo+c
-	"madc.hi.cc.u32	%16,%29,%43,%16;\n\t"	//r16+=[r29*r43].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%15,%34,%63,%15;\n\t"	//r15+=[r34*r63].lo  
+	"madc.hi.cc.u32	%16,%34,%63,%16;\n\t"	//r16+=[r34*r63].hi  
 	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
 	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
 	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %5,%23,%39, %5;\n\t"	// r5+=[r23*r39].lo  
-	"madc.hi.cc.u32	 %6,%23,%39, %6;\n\t"	// r6+=[r23*r39].hi  
-	"madc.lo.cc.u32	 %7,%25,%39, %7;\n\t"	// r7+=[r25*r39].lo+c
-	"madc.hi.cc.u32	 %8,%25,%39, %8;\n\t"	// r8+=[r25*r39].hi+c
-	"madc.lo.cc.u32	 %9,%27,%39, %9;\n\t"	// r9+=[r27*r39].lo+c
-	"madc.hi.cc.u32	%10,%27,%39,%10;\n\t"	//r10+=[r27*r39].hi+c
-	"madc.lo.cc.u32	%11,%28,%40,%11;\n\t"	//r11+=[r28*r40].lo+c
-	"madc.hi.cc.u32	%12,%28,%40,%12;\n\t"	//r12+=[r28*r40].hi+c
-	"madc.lo.cc.u32	%13,%28,%42,%13;\n\t"	//r13+=[r28*r42].lo+c
-	"madc.hi.cc.u32	%14,%28,%42,%14;\n\t"	//r14+=[r28*r42].hi+c
-	"madc.lo.cc.u32	%15,%28,%44,%15;\n\t"	//r15+=[r28*r44].lo+c
-	"madc.hi.cc.u32	%16,%28,%44,%16;\n\t"	//r16+=[r28*r44].hi+c
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	"mad.lo.cc.u32	%15,%33,%64,%15;\n\t"	//r15+=[r33*r64].lo  
+	"madc.hi.cc.u32	%16,%33,%64,%16;\n\t"	//r16+=[r33*r64].hi  
 	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
 	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
 	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
 	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
 	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %6,%24,%39, %6;\n\t"	// r6+=[r24*r39].lo  
-	"madc.hi.cc.u32	 %7,%24,%39, %7;\n\t"	// r7+=[r24*r39].hi  
-	"madc.lo.cc.u32	 %8,%26,%39, %8;\n\t"	// r8+=[r26*r39].lo+c
-	"madc.hi.cc.u32	 %9,%26,%39, %9;\n\t"	// r9+=[r26*r39].hi+c
-	"madc.lo.cc.u32	%10,%28,%39,%10;\n\t"	//r10+=[r28*r39].lo+c
-	"madc.hi.cc.u32	%11,%28,%39,%11;\n\t"	//r11+=[r28*r39].hi+c
-	"madc.lo.cc.u32	%12,%28,%41,%12;\n\t"	//r12+=[r28*r41].lo+c
-	"madc.hi.cc.u32	%13,%28,%41,%13;\n\t"	//r13+=[r28*r41].hi+c
-	"madc.lo.cc.u32	%14,%28,%43,%14;\n\t"	//r14+=[r28*r43].lo+c
-	"madc.hi.cc.u32	%15,%28,%43,%15;\n\t"	//r15+=[r28*r43].hi+c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %6,%23,%40, %6;\n\t"	// r6+=[r23*r40].lo  
-	"madc.hi.cc.u32	 %7,%23,%40, %7;\n\t"	// r7+=[r23*r40].hi  
-	"madc.lo.cc.u32	 %8,%25,%40, %8;\n\t"	// r8+=[r25*r40].lo+c
-	"madc.hi.cc.u32	 %9,%25,%40, %9;\n\t"	// r9+=[r25*r40].hi+c
-	"madc.lo.cc.u32	%10,%27,%40,%10;\n\t"	//r10+=[r27*r40].lo+c
-	"madc.hi.cc.u32	%11,%27,%40,%11;\n\t"	//r11+=[r27*r40].hi+c
-	"madc.lo.cc.u32	%12,%27,%42,%12;\n\t"	//r12+=[r27*r42].lo+c
-	"madc.hi.cc.u32	%13,%27,%42,%13;\n\t"	//r13+=[r27*r42].hi+c
-	"madc.lo.cc.u32	%14,%27,%44,%14;\n\t"	//r14+=[r27*r44].lo+c
-	"madc.hi.cc.u32	%15,%27,%44,%15;\n\t"	//r15+=[r27*r44].hi+c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %7,%24,%40, %7;\n\t"	// r7+=[r24*r40].lo  
-	"madc.hi.cc.u32	 %8,%24,%40, %8;\n\t"	// r8+=[r24*r40].hi  
-	"madc.lo.cc.u32	 %9,%26,%40, %9;\n\t"	// r9+=[r26*r40].lo+c
-	"madc.hi.cc.u32	%10,%26,%40,%10;\n\t"	//r10+=[r26*r40].hi+c
-	"madc.lo.cc.u32	%11,%27,%41,%11;\n\t"	//r11+=[r27*r41].lo+c
-	"madc.hi.cc.u32	%12,%27,%41,%12;\n\t"	//r12+=[r27*r41].hi+c
-	"madc.lo.cc.u32	%13,%27,%43,%13;\n\t"	//r13+=[r27*r43].lo+c
-	"madc.hi.cc.u32	%14,%27,%43,%14;\n\t"	//r14+=[r27*r43].hi+c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %7,%23,%41, %7;\n\t"	// r7+=[r23*r41].lo  
-	"madc.hi.cc.u32	 %8,%23,%41, %8;\n\t"	// r8+=[r23*r41].hi  
-	"madc.lo.cc.u32	 %9,%25,%41, %9;\n\t"	// r9+=[r25*r41].lo+c
-	"madc.hi.cc.u32	%10,%25,%41,%10;\n\t"	//r10+=[r25*r41].hi+c
-	"madc.lo.cc.u32	%11,%26,%42,%11;\n\t"	//r11+=[r26*r42].lo+c
-	"madc.hi.cc.u32	%12,%26,%42,%12;\n\t"	//r12+=[r26*r42].hi+c
-	"madc.lo.cc.u32	%13,%26,%44,%13;\n\t"	//r13+=[r26*r44].lo+c
-	"madc.hi.cc.u32	%14,%26,%44,%14;\n\t"	//r14+=[r26*r44].hi+c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %8,%24,%41, %8;\n\t"	// r8+=[r24*r41].lo  
-	"madc.hi.cc.u32	 %9,%24,%41, %9;\n\t"	// r9+=[r24*r41].hi  
-	"madc.lo.cc.u32	%10,%26,%41,%10;\n\t"	//r10+=[r26*r41].lo+c
-	"madc.hi.cc.u32	%11,%26,%41,%11;\n\t"	//r11+=[r26*r41].hi+c
-	"madc.lo.cc.u32	%12,%26,%43,%12;\n\t"	//r12+=[r26*r43].lo+c
-	"madc.hi.cc.u32	%13,%26,%43,%13;\n\t"	//r13+=[r26*r43].hi+c
-	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+=c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %8,%23,%42, %8;\n\t"	// r8+=[r23*r42].lo  
-	"madc.hi.cc.u32	 %9,%23,%42, %9;\n\t"	// r9+=[r23*r42].hi  
-	"madc.lo.cc.u32	%10,%25,%42,%10;\n\t"	//r10+=[r25*r42].lo+c
-	"madc.hi.cc.u32	%11,%25,%42,%11;\n\t"	//r11+=[r25*r42].hi+c
-	"madc.lo.cc.u32	%12,%25,%44,%12;\n\t"	//r12+=[r25*r44].lo+c
-	"madc.hi.cc.u32	%13,%25,%44,%13;\n\t"	//r13+=[r25*r44].hi+c
-	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+=c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %9,%24,%42, %9;\n\t"	// r9+=[r24*r42].lo  
-	"madc.hi.cc.u32	%10,%24,%42,%10;\n\t"	//r10+=[r24*r42].hi  
-	"madc.lo.cc.u32	%11,%25,%43,%11;\n\t"	//r11+=[r25*r43].lo+c
-	"madc.hi.cc.u32	%12,%25,%43,%12;\n\t"	//r12+=[r25*r43].hi+c
-	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+=c
-	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+=c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	 %9,%23,%43, %9;\n\t"	// r9+=[r23*r43].lo  
-	"madc.hi.cc.u32	%10,%23,%43,%10;\n\t"	//r10+=[r23*r43].hi  
-	"madc.lo.cc.u32	%11,%24,%44,%11;\n\t"	//r11+=[r24*r44].lo+c
-	"madc.hi.cc.u32	%12,%24,%44,%12;\n\t"	//r12+=[r24*r44].hi+c
-	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+=c
-	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+=c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	%10,%24,%43,%10;\n\t"	//r10+=[r24*r43].lo  
-	"madc.hi.cc.u32	%11,%24,%43,%11;\n\t"	//r11+=[r24*r43].hi  
-	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+=c
-	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+=c
-	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+=c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	"mad.lo.cc.u32	%10,%23,%44,%10;\n\t"	//r10+=[r23*r44].lo  
-	"madc.hi.cc.u32	%11,%23,%44,%11;\n\t"	//r11+=[r23*r44].hi  
-	"addc.cc.u32	%12,%12,  0    ;\n\t"	//r12+=c
-	"addc.cc.u32	%13,%13,  0    ;\n\t"	//r13+=c
-	"addc.cc.u32	%14,%14,  0    ;\n\t"	//r14+=c
-	"addc.cc.u32	%15,%15,  0    ;\n\t"	//r15+=c
-	"addc.cc.u32	%16,%16,  0    ;\n\t"	//r16+=c
-	"addc.cc.u32	%17,%17,  0    ;\n\t"	//r17+=c
-	"addc.cc.u32	%18,%18,  0    ;\n\t"	//r18+=c
-	"addc.cc.u32	%19,%19,  0    ;\n\t"	//r19+=c
-	"addc.cc.u32	%20,%20,  0    ;\n\t"	//r20+=c
-	"addc.cc.u32	%21,%21,  0    ;\n\t"	//r21+=c
-	"addc.u32	%22,%22,  0    ;\n\t"	//r22+=c
-	: "+r"(_a_lo[0]), "+r"(_a_lo[1]), "+r"(_a_lo[2]), "+r"(_a_lo[3]),
-	  "+r"(_a_lo[4]), "+r"(_a_lo[5]), "+r"(_a_lo[6]), "+r"(_a_lo[7]),
-	  "+r"(_a_lo[8]), "+r"(_a_lo[9]), "+r"(_a_lo[10]), "+r"(_a_hi[0]),
-	  "+r"(_a_hi[1]), "+r"(_a_hi[2]), "+r"(_a_hi[3]), "+r"(_a_hi[4]),
-	  "+r"(_a_hi[5]), "+r"(_a_hi[6]), "+r"(_a_hi[7]), "+r"(_a_hi[8]),
-	  "+r"(_a_hi[9]), "+r"(_a_hi[10]), "+r"(overflow)
-	: "r"(_b[0]), "r"(_b[1]), "r"(_b[2]), "r"(_b[3]), "r"(_b[4]),
-	  "r"(_b[5]), "r"(_b[6]), "r"(_b[7]), "r"(_b[8]), "r"(_b[9]),
-	  "r"(_b[10]), "r"(_c[0]), "r"(_c[1]), "r"(_c[2]), "r"(_c[3]),
-	  "r"(_c[4]), "r"(_c[5]), "r"(_c[6]), "r"(_c[7]), "r"(_c[8]),
-	  "r"(_c[9]), "r"(_c[10]));
+	"addc.cc.u32	%22,%22,  0    ;\n\t"	//r22+=c
+	"addc.cc.u32	%23,%23,  0    ;\n\t"	//r23+=c
+	"addc.cc.u32	%24,%24,  0    ;\n\t"	//r24+=c
+	"addc.cc.u32	%25,%25,  0    ;\n\t"	//r25+=c
+	"addc.cc.u32	%26,%26,  0    ;\n\t"	//r26+=c
+	"addc.cc.u32	%27,%27,  0    ;\n\t"	//r27+=c
+	"addc.cc.u32	%28,%28,  0    ;\n\t"	//r28+=c
+	"addc.cc.u32	%29,%29,  0    ;\n\t"	//r29+=c
+	"addc.cc.u32	%30,%30,  0    ;\n\t"	//r30+=c
+	"addc.cc.u32	%31,%31,  0    ;\n\t"	//r31+=c
+	"addc.u32	%32,%32,  0    ;\n\t"	//r32+=c
+	: "+r"(a_lo.w0.x), "+r"(a_lo.w0.y), "+r"(a_lo.w0.z), "+r"(a_lo.w0.w),
+	  "+r"(a_lo.w4.x), "+r"(a_lo.w4.y), "+r"(a_lo.w4.z), "+r"(a_lo.w4.w),
+	  "+r"(a_lo.w8.x), "+r"(a_lo.w8.y), "+r"(a_lo.w8.z), "+r"(a_lo.w8.w),
+	  "+r"(a_lo.w12.x), "+r"(a_lo.w12.y), "+r"(a_lo.w12.z),
+	  "+r"(a_lo.w12.w), "+r"(a_hi.w0.x), "+r"(a_hi.w0.y), "+r"(a_hi.w0.z),
+	  "+r"(a_hi.w0.w), "+r"(a_hi.w4.x), "+r"(a_hi.w4.y), "+r"(a_hi.w4.z),
+	  "+r"(a_hi.w4.w), "+r"(a_hi.w8.x), "+r"(a_hi.w8.y), "+r"(a_hi.w8.z),
+	  "+r"(a_hi.w8.w), "+r"(a_hi.w12.x), "+r"(a_hi.w12.y),
+	  "+r"(a_hi.w12.z), "+r"(a_hi.w12.w), "+r"(overflow)
+	: "r"(b.w0.x), "r"(b.w0.y), "r"(b.w0.z), "r"(b.w0.w), "r"(b.w4.x),
+	  "r"(b.w4.y), "r"(b.w4.z), "r"(b.w4.w), "r"(b.w8.x), "r"(b.w8.y),
+	  "r"(b.w8.z), "r"(b.w8.w), "r"(b.w12.x), "r"(b.w12.y), "r"(b.w12.z),
+	  "r"(b.w12.w), "r"(c.w0.x), "r"(c.w0.y), "r"(c.w0.z), "r"(c.w0.w),
+	  "r"(c.w4.x), "r"(c.w4.y), "r"(c.w4.z), "r"(c.w4.w), "r"(c.w8.x),
+	  "r"(c.w8.y), "r"(c.w8.z), "r"(c.w8.w), "r"(c.w12.x), "r"(c.w12.y),
+	  "r"(c.w12.z), "r"(c.w12.w));
 }
 
 #endif

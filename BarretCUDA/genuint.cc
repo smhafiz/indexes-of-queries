@@ -310,6 +310,49 @@ static void print_sub(uint limbs)
     cout << "}\n\n";
 }
 
+static void print_sub_modulus(uint limbs)
+{
+    cout << "__device__ __forceinline__ void sub_modulus(uintXp<uint" << BITS_IN(limbs) << "> & r, const uint" << BITS_IN(limbs) << " & m)\n";
+    cout << "{\n";
+    sprintf(r0, "%%%u", 0);
+    sprintf(r2, "%%%u", limbs + 1);
+    printf("    asm(\"sub.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
+    printf("\t// r0-=%3s\n", &(*r2='r'));
+    for (int i = 1; i < limbs; ++i)
+    {
+	sprintf(r0, "%%%u", i);
+	sprintf(r2, "%%%u", limbs + i + 1);
+	printf("\t\"subc.cc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
+	printf("\t//%3s-=(%3s+c)\n", &(*r0='r'), &(*r2='r'));
+    }
+    sprintf(r0, "%%%u", limbs);
+    //sprintf(r2, "%%%u", 2 * limbs+1);
+    //printf("\t\"subc.u32\t%3s,%3s,%3s;\\n\\t\"", r0, r0, r2);
+    printf("\t\"subc.u32\t%3s,%3s,  0;\\n\\t\"", r0, r0);
+    printf("\t//%3s-=(    c)\n", &(*r0='r'));
+
+    /*std::stringstream iregs;
+    iregs << "\t: \"+r\"(_a_lo[0])";
+    for (int i = 1; i < limbs; i++) iregs << ", \"+r\"(_a_lo[" << i << "])";
+    iregs << ", \"+r\"(_a_hi[0])";
+    wrap(iregs.str().c_str());*/
+
+    std::stringstream iregs2;
+    iregs2 << "\t: \"+r\"(r.lo"<< print_w(limbs, 0)<<".x)";
+    for (int i = 1; i < limbs; i++) iregs2 << ", \"+r\"(r.lo" << print_w(limbs, i) << print_coords(limbs, i) <<")";
+    iregs2 << ", \"+r\"(r.hi)";
+    wrap(iregs2.str().c_str());
+
+
+
+    std::stringstream oregs2;
+    oregs2 << "\n\t: \"r\"(m"<< print_w(limbs, 0)<<".x)";
+    for (int i = 1; i < limbs; i++) oregs2 << ", \"r\"(m" << print_w(limbs, i) << print_coords(limbs, i) <<")";
+    oregs2 << ");\n";
+    wrap(oregs2.str().c_str());
+    cout << "}\n\n";
+}
+
 static void print_mad(uint limbs)
 {
     vector< vector<int> > col(2 * limbs);
@@ -650,7 +693,7 @@ int main(int argc, char ** argv)
     print_sub(limbs);
     print_get_q(limbs+1);
     print_get_r2(limbs);
-
+    print_sub_modulus(limbs);
     print_mad(limbs);
 
     cout << "#endif\n";
