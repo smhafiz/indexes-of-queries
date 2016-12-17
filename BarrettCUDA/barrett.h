@@ -109,4 +109,9 @@ inline void gpuAssert(cudaError_t code, const char * file, int line)
     }
 }
 
+void initGF28();
+void freeGF28();
+void initGF216();
+void freeGF216();
+
 #endif

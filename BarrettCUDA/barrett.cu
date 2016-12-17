@@ -240,7 +240,9 @@ int main(int argc, char ** argv)
 	    SpMV<uintX>(__l_response, __l_query, __d_response,
 		__d_query, streams[i], matrix);
 	    SpMV_ntl(responses[i], __l_query, matrix);
+	    #ifdef DEBUG
 	    SpMV_ntl_barrett(responses[i], __l_query, matrix, barrett);
+	    #endif
 
 	    std::atomic_fetch_add(&cnt, 1);
 //	    for (int j = 0; j < matrix.nrows; j++)
@@ -282,7 +284,6 @@ void initMatrix(const char * valfile, const char * rowfile,
     NTL::ZZ tmp_zz;
 
     valstream >> tmp_zz;
-
     modulus = NTL::trunc_ZZ(tmp_zz,sizeof(T)*8);
 
     rowstream >> matrix.nrows;
@@ -399,3 +400,43 @@ void freeBarrett(struct BarrettParams<T> & barrett)
     gpuErrchk(cudaFree(barrett.d_subtrahends));
 }
 
+void initGF28()
+{
+    GF28_Element * __temp;
+    gpuErrchk(cudaMalloc((void**)&__temp, sizeof(GF28_mult_table)));
+    gpuErrchk(cudaMemcpy(__temp, &GF28_mult_table, sizeof(GF28_mult_table),
+	cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpyToSymbol(d_GF28_mult_table, &__temp,
+	sizeof(GF28_Element *)));
+}
+
+void freeGF28()
+{
+    void * mult_table;
+    gpuErrchk(cudaGetSymbolAddress((void**)&mult_table, d_GF28_mult_table));
+    gpuErrchk(cudaFree(mult_table));
+}
+
+void initGF216()
+{
+    void * exp_table, * log_table;
+    gpuErrchk(cudaMalloc((void**)&exp_table, sizeof(GF216_exp_table)));
+    gpuErrchk(cudaMalloc((void**)&log_table, sizeof(GF216_log_table)));
+    gpuErrchk(cudaMemcpy(exp_table, &GF216_exp_table, sizeof(GF216_exp_table),
+	cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpy(log_table, &GF216_log_table, sizeof(GF216_log_table),
+	cudaMemcpyHostToDevice));
+    gpuErrchk(cudaMemcpyToSymbol(d_GF216_exp_table, &exp_table,
+	sizeof(GF216_Element *)));
+    gpuErrchk(cudaMemcpyToSymbol(d_GF216_log_table, &log_table,
+	sizeof(GF216_Element *)));
+}
+
+void freeGF216()
+{
+    void * exp_table, * log_table;
+    gpuErrchk(cudaGetSymbolAddress((void**)&exp_table, d_GF216_exp_table));
+    gpuErrchk(cudaGetSymbolAddress((void**)&log_table, d_GF216_exp_table));
+    gpuErrchk(cudaFree(exp_table));
+    gpuErrchk(cudaFree(log_table));
+}
