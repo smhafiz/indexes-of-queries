@@ -4,6 +4,6 @@ indexes
 *.col
 val.*
 *.polys
-BarretCUDA/genuint
-BarretCUDA/barret
-BarretCUDA/uintX.h
+BarrettCUDA/genuint
+BarrettCUDA/barret
+BarrettCUDA/uintX.h

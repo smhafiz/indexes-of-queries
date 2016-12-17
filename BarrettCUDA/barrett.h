@@ -1,26 +1,29 @@
-// This file is part of BarretCUDA v0.1 
+// This file is part of BarrettCUDA v0.1.
 // 
-// BarretCUDA is a fast(ish) CUDA implementation of sparse matrix
-// multiplication modulo a multi-precision prime.
+// BarrettCUDA is a fast(ish) implementation of finite field sparse
+// matrix-vector multiplication (SpMV) for Nvidia GPU devices, written
+// in CUDA C++. BarrettCUDA supports SpMV for matrices expressed in
+// the 'compressed column storage' (CCS) sparse matrix representation
+// over (i) the field of integers modulo an arbitrary multi-precision
+// prime, or (ii) either of the binary fields GF(2^8) or GF(2^16).
 // 
-// Copyright (C) 2016, Ryan Henry and Syed Mahbub Hafiz
+// Copyright (C) 2016, Ryan Henry and Syed Mahbub Hafiz.
 // 
-// 
-// BarretCUDA is free software: you can redistribute it and/or modify
+// BarrettCUDA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published
 // by the Free Software Foundation, either version 3 of the License,
 // or (at your option) any later version.
 // 
-// BarretCUDA is distributed in the hope that it will be useful,
+// BarrettCUDA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
-// along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
+// along with BarrettCUDA. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __BARRET_H_
-#define __BARRET_H_
+#ifndef __BARRETT_H_
+#define __BARRETT_H_
 
 #include <NTL/vec_vec_ZZ_p.h>
 
@@ -40,7 +43,7 @@ __constant__ GF216_Element * d_GF216_exp_table;
 __constant__ GF216_Element * d_GF216_log_table;
 
 template<typename T>
-struct BarretParams
+struct BarrettParams
 {
     T * d_modulus;
     uintXp<T> * d_mu;
@@ -88,11 +91,11 @@ template <typename T>
 void freeMatrix(struct SparseMatrix<T> & matrix);
 
 template <typename T>
-void initBarret(const NTL::ZZ & modulus_zz, struct BarretParams<T> & barret,
+void initBarrett(const NTL::ZZ & modulus_zz, struct BarrettParams<T> & barrett,
 	const uint max_overflow);
 
 template<typename T>
-void freeBarret(struct BarretParams<T> & barret);
+void freeBarrett(struct BarrettParams<T> & barrett);
 
 #endif
 

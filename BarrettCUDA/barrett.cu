@@ -1,34 +1,37 @@
-// This file is part of BarretCUDA v0.1 
+// This file is part of BarrettCUDA v0.1.
 // 
-// BarretCUDA is a fast(ish) CUDA implementation of sparse matrix
-// multiplication modulo a multi-precision prime.
+// BarrettCUDA is a fast(ish) implementation of finite field sparse
+// matrix-vector multiplication (SpMV) for Nvidia GPU devices, written
+// in CUDA C++. BarrettCUDA supports SpMV for matrices expressed in
+// the 'compressed column storage' (CCS) sparse matrix representation
+// over (i) the field of integers modulo an arbitrary multi-precision
+// prime, or (ii) either of the binary fields GF(2^8) or GF(2^16).
 // 
-// Copyright (C) 2016, Ryan Henry and Syed Mahbub Hafiz
+// Copyright (C) 2016, Ryan Henry and Syed Mahbub Hafiz.
 // 
-// 
-// BarretCUDA is free software: you can redistribute it and/or modify
+// BarrettCUDA is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published
 // by the Free Software Foundation, either version 3 of the License,
 // or (at your option) any later version.
 // 
-// BarretCUDA is distributed in the hope that it will be useful,
+// BarrettCUDA is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
-// along with BarretCUDA.  If not, see <http://www.gnu.org/licenses/>.
+// along with BarrettCUDA. If not, see <http://www.gnu.org/licenses/>.
 
 #include <atomic>
 #include <chrono>
 #include <ratio>
 #include <fstream>
 
-#include "barret.h"
+#include "barrett.h"
 #include "uintX.h"
 
 #define THREADS_PER_BLOCK(n) 	(n >= 512 ? 512 : n)
-#define NUM_BLOCKS(n)	((n + THREADS_PER_BLOCK(n) - 1) / THREADS_PER_BLOCK(n))
+#define NUM_BLOCKS(n)		((n + THREADS_PER_BLOCK(n) - 1) / THREADS_PER_BLOCK(n))
 
 #define DEBUG true
 
@@ -67,7 +70,7 @@ template <typename T> struct _SpMV_specializer<T,0>
 	uintXp<T> * mu = (uintXp<T> *)d_mu;
 	T * modulus = (T *)d_modulus;
 
-	// do the Barret reduction
+	// do the Barrett reduction
 	normalize(res_lo.lo, res_hi, subtrahends[overflow], (overflow ? -1: 0));
 	uintXp<T> q = get_q(res_lo.lo, res_hi, *mu);
 	uintXp<T> r2 = get_r2(q, *modulus);
@@ -145,8 +148,8 @@ if (i==DEBUG_IDX){std::cout << "\nNTL  a''': \t"; print_limbs<T>(response[i], LI
     }
 
     template <typename T>
-    void SpMV_ntl_barret(NTL::vec_ZZ_p & response, const T * query,
-	const SparseMatrix<T> & matrix, struct BarretParams<T> & barret)
+    void SpMV_ntl_barrett(NTL::vec_ZZ_p & response, const T * query,
+	const SparseMatrix<T> & matrix, struct BarrettParams<T> & barrett)
     {
 	NTL::vec_ZZ response_ZZ(INIT_SIZE, matrix.ncols);
 	for (int i = 0; i < matrix.ncols; i++)
@@ -158,15 +161,15 @@ if (i==DEBUG_IDX){std::cout << "\nNTL  a''': \t"; print_limbs<T>(response[i], LI
 		response_ZZ[i] += to_ZZ(matrix.l_vals[j]) * to_ZZ(query[matrix.l_rows[j]]);
 	    }
 	    uint overflow = (uint)NTL::trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_PER_UINTX), BITS_IN(sizeof(uint)));
-	    response_ZZ[i] -= barret.l_subtrahends[overflow];
+	    response_ZZ[i] -= barrett.l_subtrahends[overflow];
 	    NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX-1);
-	    NTL::ZZ q2 = q1 * barret.l_mu;
+	    NTL::ZZ q2 = q1 * barrett.l_mu;
 	    NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_PER_UINTX+1);
 	    NTL::ZZ r1 = response_ZZ[i] % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
-	    NTL::ZZ r2 = q3 * barret.l_modulus % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
+	    NTL::ZZ r2 = q3 * barrett.l_modulus % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
 	    NTL::ZZ r = (r1 - r2) % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
 	    response[i] = NTL::to_ZZ_p(r);
-if (i==DEBUG_IDX){std::cout << "\nNTL_BARRET  a''':     \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
+if (i==DEBUG_IDX){std::cout << "\nNTL_BARRETT  a''':     \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
 	}
     }
 #endif // DEBUG
@@ -196,7 +199,7 @@ int main(int argc, char ** argv)
 {
     int nstreams = 4;
 
-    if (argc < 3)
+    if (argc < 4)
     {
 	std::cout << "Usage: " << argv[0] << " VALUES ROWS COLS\n\n";
 	return 1;
@@ -210,12 +213,16 @@ int main(int argc, char ** argv)
     struct SparseMatrix<uintX> matrix = { 0 };
     NTL::ZZ modulus;
 
+cerr << "!!!\n";
+
     uint max_overflow;
     initMatrix(argv[1], argv[2], argv[3], modulus, matrix, max_overflow);
     NTL::ZZ_p::init(modulus);
 
-    struct BarretParams<uintX> barret;
-    initBarret<uintX>(modulus, barret, max_overflow);
+cerr << "!!!\n";
+
+    struct BarrettParams<uintX> barrett;
+    initBarrett<uintX>(modulus, barrett, max_overflow);
 
     uintX * l_query, * d_query;
     cudaMallocHost((void**)&l_query, nstreams * matrix.nrows * sizeof(uintX));
@@ -252,7 +259,7 @@ int main(int argc, char ** argv)
 	    SpMV<uintX>(__l_response, __l_query, __d_response,
 		__d_query, streams[i], matrix);
 	    SpMV_ntl(responses[i], __l_query, matrix);
-	    SpMV_ntl_barret(responses[i], __l_query, matrix, barret);
+	    SpMV_ntl_barrett(responses[i], __l_query, matrix, barrett);
 
 	    std::atomic_fetch_add(&cnt, 1);
 //	    for (int j = 0; j < matrix.nrows; j++)
@@ -274,7 +281,7 @@ int main(int argc, char ** argv)
     cudaFreeHost(l_response);
     cudaFree(d_response);
 
-    freeBarret<uintX>(barret);
+    freeBarrett<uintX>(barrett);
     freeMatrix<uintX>(matrix);
 
     return 0;
@@ -286,32 +293,30 @@ void initMatrix(const char * valfile, const char * rowfile,
 	const char * colfile, NTL::ZZ & modulus,
 	struct SparseMatrix<T> & matrix, uint & max_overflow)
 {
+    cerr << ".\n";
     std::ifstream valstream(valfile, std::ifstream::in);
     if (!valstream) { cerr << "Error: opening VALS files\n"; exit(-1); }
     std::ifstream rowstream(rowfile, std::ifstream::in);
-    if (!rowstream) { cerr << "Error: opening VALS files\n"; exit(-1); }
+    if (!rowstream) { cerr << "Error: opening ROWS files\n"; exit(-1); }
     std::ifstream colstream(colfile, std::ifstream::in);
-    if (!colstream) { cerr << "Error: opening VALS files\n"; exit(-1); }
+    if (!colstream) { cerr << "Error: opening COLS files\n"; exit(-1); }
     NTL::ZZ tmp_zz;
+    cerr << ".\n";
     valstream >> tmp_zz;
+    cerr << ".\n";
     modulus = NTL::trunc_ZZ(tmp_zz,sizeof(T)*8);
-
+cerr << ".\n";
     rowstream >> matrix.nrows;
     rowstream >> matrix.nvals;
     matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
     cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint));
     matrix.l_vals = (T *)malloc(matrix.nvals * sizeof(T));
     cudaMalloc((void**)&matrix.d_vals, matrix.nvals * sizeof(T));
-
+cerr << ".\n";
     colstream >> matrix.ncols;
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
     cudaMalloc((void**)&matrix.d_cols, (matrix.ncols+1) * sizeof(uint));
-
-//std::cout << "modulus:\t" << modulus << "\n";
-//std::cout << "matrix.nrows:\t" << matrix.nrows << "\n";
-//std::cout << "matrix.ncols:\t" << matrix.ncols << "\n";
-//std::cout << "matrix.nvals:\t" << matrix.nvals << "\n";
-
+cerr << ".\n";
     NTL::ZZ_pPush p(modulus);
     for (int i = 0; i < matrix.nvals; i++)
     {
@@ -326,7 +331,7 @@ void initMatrix(const char * valfile, const char * rowfile,
 	cudaMemcpyHostToDevice);
     cudaMemcpy(matrix.d_rows, matrix.l_rows, matrix.nvals * sizeof(uint),
 	cudaMemcpyHostToDevice);
-
+cerr << ".\n";
     for (int i = 0; i < matrix.ncols+1; i++)
     {
 	colstream >> matrix.l_cols[i];
@@ -364,50 +369,50 @@ void freeMatrix(struct SparseMatrix<T> & matrix)
 }
 
 template <typename T>
-void initBarret(const NTL::ZZ & modulus_zz, BarretParams<T> & barret,
+void initBarrett(const NTL::ZZ & modulus_zz, BarrettParams<T> & barrett,
 	const uint max_overflow)
 {
-    barret.l_modulus = modulus_zz;
-    barret.l_mu = NTL::power2_ZZ(2*BITS_PER_LIMB*LIMBS_PER_UINTX) / modulus_zz;
+    barrett.l_modulus = modulus_zz;
+    barrett.l_mu = NTL::power2_ZZ(2*BITS_PER_LIMB*LIMBS_PER_UINTX) / modulus_zz;
     T modulus;
     to_uint<T>(modulus_zz, modulus);
     uintXp<T> mu;
-    to_uint<uintXp<T>>(barret.l_mu, mu);
+    to_uint<uintXp<T>>(barrett.l_mu, mu);
 
-    barret.l_subtrahends.SetLength(max_overflow+1);
+    barrett.l_subtrahends.SetLength(max_overflow+1);
     T * subtrahends = (T *)malloc((max_overflow+1) * sizeof(T));
     for (int i = 0; i <= max_overflow; ++i)
     {
-	barret.l_subtrahends[i] = ((NTL::to_ZZ(i) << (2*BITS_PER_LIMB*LIMBS_PER_UINTX))
+	barrett.l_subtrahends[i] = ((NTL::to_ZZ(i) << (2*BITS_PER_LIMB*LIMBS_PER_UINTX))
 	    / modulus_zz) * modulus_zz;
-	NTL::BytesFromZZ((unsigned char *)&subtrahends[i], barret.l_subtrahends[i],
+	NTL::BytesFromZZ((unsigned char *)&subtrahends[i], barrett.l_subtrahends[i],
 	    LIMBS_PER_UINTX * sizeof(uint));
     }
 
     cudaMalloc((void**)&d_modulus, sizeof(T));
-    cudaGetSymbolAddress((void **)&barret.d_modulus, d_modulus);
-    cudaMemcpy(barret.d_modulus, &modulus, sizeof(T), cudaMemcpyHostToDevice);
+    cudaGetSymbolAddress((void **)&barrett.d_modulus, d_modulus);
+    cudaMemcpy(barrett.d_modulus, &modulus, sizeof(T), cudaMemcpyHostToDevice);
 
     cudaMalloc((void**)&d_mu, sizeof(uintXp<T>));
-    cudaGetSymbolAddress((void **)&barret.d_mu, d_mu);
-    cudaMemcpy(barret.d_mu, &mu, sizeof(uintXp<T>), cudaMemcpyHostToDevice);
+    cudaGetSymbolAddress((void **)&barrett.d_mu, d_mu);
+    cudaMemcpy(barrett.d_mu, &mu, sizeof(uintXp<T>), cudaMemcpyHostToDevice);
 
     cudaMalloc((void**)&d_subtrahends, (max_overflow+1) * sizeof(T));
-    cudaGetSymbolAddress((void **)&barret.d_subtrahends, d_subtrahends);
-    cudaMemcpy(barret.d_subtrahends, subtrahends, (max_overflow+1) * sizeof(T),
+    cudaGetSymbolAddress((void **)&barrett.d_subtrahends, d_subtrahends);
+    cudaMemcpy(barrett.d_subtrahends, subtrahends, (max_overflow+1) * sizeof(T),
 	cudaMemcpyHostToDevice);
 
     free(subtrahends);
 }
 
 template<typename T>
-void freeBarret(struct BarretParams<T> & barret)
+void freeBarrett(struct BarrettParams<T> & barrett)
 {
-    barret.l_subtrahends.kill();
-    barret.l_modulus.kill();
-    barret.l_mu.kill();
-    cudaFree(barret.d_modulus);
-    cudaFree(barret.d_mu);
-    cudaFree(barret.d_subtrahends);
+    barrett.l_subtrahends.kill();
+    barrett.l_modulus.kill();
+    barrett.l_mu.kill();
+    cudaFree(barrett.d_modulus);
+    cudaFree(barrett.d_mu);
+    cudaFree(barrett.d_subtrahends);
 }
 
