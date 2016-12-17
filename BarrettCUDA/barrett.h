@@ -30,8 +30,6 @@
 #include "uint.h"
 #include "gf2e.h"
 
-#define DEBUG_IDX 102
-
 // for uintX
 __constant__ void * d_modulus;
 __constant__ void * d_mu;
@@ -67,35 +65,48 @@ struct SparseMatrix
     uint * l_rows;
 };
 
-// template wizardry to support partial specialization for uintX
+// template wizardry to support function specialization
 template <typename T, int U>
 struct _SpMV_specializer
 {
-    static __device__ void device_SpMV(T * response, const T * query, const uint nvals,
-	const T * vals, const uint ncols, const uint * cols, const uint * rows);
+    static __device__ void device_SpMV(T * response, const T * query,
+	const uint nvals, const T * vals, const uint ncols, const uint * cols,
+	const uint * rows);
 };
 
 template <typename T>
 __global__ void SpMV_kernel(T * response, const T * query, const uint nvals,
-	const T * vals, const uint ncols, const uint * cols, const uint * rows)
+    const T * vals, const uint ncols, const uint * cols, const uint * rows)
 {
-    _SpMV_specializer<T,0>::device_SpMV(response, query, nvals, vals, ncols, cols, rows);
+    _SpMV_specializer<T,0>::device_SpMV(response, query, nvals, vals, ncols,
+	cols, rows);
 }
 
 template <typename T>
 void initMatrix(const char * valfile, const char * rowfile,
-	const char * colfile, NTL::ZZ & modulus,
-	struct SparseMatrix<T> & matrix, uint & max_overflow);
+    const char * colfile, NTL::ZZ & modulus, struct SparseMatrix<T> & matrix,
+    uint & max_overflow);
 
 template <typename T>
 void freeMatrix(struct SparseMatrix<T> & matrix);
 
 template <typename T>
 void initBarrett(const NTL::ZZ & modulus_zz, struct BarrettParams<T> & barrett,
-	const uint max_overflow);
+    const uint max_overflow);
 
 template<typename T>
 void freeBarrett(struct BarrettParams<T> & barrett);
 
-#endif
+// Adapted from: http://stackoverflow.com/questions/14038589/what-is-the-canonical-way-to-check-for-errors-using-the-cuda-runtime-api
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char * file, int line)
+{
+    if (code != cudaSuccess) 
+    {
+	fprintf(stderr,"Error: %s (line %d of %s)\n", cudaGetErrorString(code),
+	    line, file);
+	exit(-1);
+    }
+}
 
+#endif
