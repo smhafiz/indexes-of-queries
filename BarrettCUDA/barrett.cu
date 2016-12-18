@@ -33,6 +33,9 @@
 #define THREADS_PER_BLOCK(n) (n >= 512 ? 512 : n)
 #define NUM_BLOCKS(n) ((n + THREADS_PER_BLOCK(n) - 1) / THREADS_PER_BLOCK(n))
 
+#define DEBUG_IDX 107
+#define DEBUG true
+
 NTL_CLIENT
 
 // specialization for uintX
@@ -58,17 +61,30 @@ template <typename T> struct _SpMV_specializer<T,0>
 	T * subtrahends = (T *)d_subtrahends;
 	uintXp<T> * mu = (uintXp<T> *)d_mu;
 	T * modulus = (T *)d_modulus;
-
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_lo:  \t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_hi:  \t"); _print_limbs<T>(res_hi, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  over:  \t%u", overflow);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[overflow], LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
 	// do the Barrett reduction
 	normalize(res_lo.lo, res_hi, subtrahends[overflow], (overflow ? -1: 0));
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_lo': \t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_hi': \t"); _print_limbs<T>(res_hi, LIMBS_PER_UINTX);}
 	uintXp<T> q = get_q(res_lo.lo, res_hi, *mu);
+if (DEBUG && i==DEBUG_IDX){printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi, 1);}
 	uintXp<T> r2 = get_r2(q, *modulus);
+if (DEBUG && i==DEBUG_IDX){printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
 	res_lo.hi = sub(res_lo.lo, res_hi, r2);
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(res_lo.hi, 1);}
 	if (res_lo.hi) sub_modulus(res_lo, *modulus);
 	if (res_lo.hi) sub_modulus(res_lo, *modulus);
-
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(res_lo.hi, 1);}
 	// write final result to global memory
 	response[i] = res_lo.lo;
+if (DEBUG && i==DEBUG_IDX){ printf("\nCUDA Kernel  a''': \t"); _print_limbs<T>(response[i], LIMBS_PER_UINTX);}
     }
 };
 
@@ -125,6 +141,7 @@ void SpMV_ntl(NTL::vec_ZZ_p & response, const T * query,
 	    response[i] += to_ZZ_p(matrix.l_vals[j])
 			 * to_ZZ_p(query[matrix.l_rows[j]]);
 	}
+	if (DEBUG && i==DEBUG_IDX){std::cout << "\nNTL  a''': \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
     }
 }
 
@@ -142,15 +159,29 @@ void SpMV_ntl(NTL::vec_ZZ_p & response, const T * query,
 	    {
 		response_ZZ[i] += to_ZZ(matrix.l_vals[j]) * to_ZZ(query[matrix.l_rows[j]]);
 	    }
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  a_lo:  \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  a_hi:  \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 	    uint overflow = (uint)NTL::trunc_long(response_ZZ[i] >> 2*BITS_IN(LIMBS_PER_UINTX), BITS_IN(sizeof(uint)));
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  over:  \t" << overflow;}
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  sub_lo:\t"; print_limbs<T>(barrett.l_subtrahends[overflow], LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  sub_hi:\t"; print_limbs<T>(barrett.l_subtrahends[2*overflow+1] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 	    response_ZZ[i] -= barrett.l_subtrahends[overflow];
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  a_lo': \t"; print_limbs<T>(response_ZZ[i], LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  a_hi': \t"; print_limbs<T>(response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX), LIMBS_PER_UINTX);}
 	    NTL::ZZ q1 = response_ZZ[i] >> BITS_IN(LIMBS_PER_UINTX-1);
 	    NTL::ZZ q2 = q1 * barrett.l_mu;
 	    NTL::ZZ q3 = q2 >> BITS_IN(LIMBS_PER_UINTX+1);
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  q_lo:  \t"; print_limbs<T>(q3, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  q_hi:  \t"; print_limbs<uint>(q3 >> BITS_IN(LIMBS_PER_UINTX), 1);}
+
 	    NTL::ZZ r1 = response_ZZ[i] % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
 	    NTL::ZZ r2 = q3 * barrett.l_modulus % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  r2:    \t"; print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
 	    NTL::ZZ r = (r1 - r2) % NTL::power2_ZZ(BITS_IN(LIMBS_PER_UINTX+1));
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  a_lo'':\t"; print_limbs<T>(r, LIMBS_PER_UINTX);}
+if (DEBUG && i==DEBUG_IDX){std::cout << "\n  a_hi'':\t"; print_limbs<uint>(r >> BITS_IN(LIMBS_PER_UINTX), 1);}
 	    response[i] = NTL::to_ZZ_p(r);
+if (DEBUG && i==DEBUG_IDX){std::cout << "\nNTL_BARRET  a''':     \t"; print_limbs<T>(response[i], LIMBS_PER_UINTX);}
 	}
     }
 #endif // DEBUG
@@ -177,7 +208,7 @@ void SpMV(T * l_response, const T * l_query,
 
 int main(int argc, char ** argv)
 {
-    int nstreams = 4;
+    int nstreams = 1;
 
     if (argc < 4)
     {
@@ -186,7 +217,7 @@ int main(int argc, char ** argv)
     }
 
     time_t t0 = time(0);
-    t0 = 1481878728;
+    t0 = 1482014996;
     NTL::SetSeed(to_ZZ(t0));
     std::cout << "seed: " << t0 << "\n";
 
@@ -227,7 +258,7 @@ int main(int argc, char ** argv)
     auto start = std::chrono::high_resolution_clock::now();
     std::chrono::nanoseconds onesec{1000000000};
 
-    while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
+    //while (std::chrono::duration_cast<std::chrono::duration<int,std::nano>>(std::chrono::high_resolution_clock::now() - start) < onesec)
     {
 	#pragma omp parallel
 	for (int i = 0; i < nstreams; i++)
@@ -276,35 +307,89 @@ void initMatrix(const char * valfile, const char * rowfile,
 	struct SparseMatrix<T> & matrix, uint & max_overflow)
 {
     std::ifstream valstream(valfile, std::ifstream::in);
-    if (!valstream) { cerr << "Error: opening VALS files\n"; exit(-1); }
+    if (!valstream) { cerr << "Error: CCS representation: can't open VALS file\n"; exit(-1); }
     std::ifstream rowstream(rowfile, std::ifstream::in);
-    if (!rowstream) { cerr << "Error: opening ROWS files\n"; exit(-1); }
+    if (!rowstream) { cerr << "Error: CCS representation: can't open ROWS file\n"; exit(-1); }
     std::ifstream colstream(colfile, std::ifstream::in);
-    if (!colstream) { cerr << "Error: opening COLS files\n"; exit(-1); }
-    NTL::ZZ tmp_zz;
+    if (!colstream) { cerr << "Error: CCS representation: can't open COLS file\n"; exit(-1); }
 
+    NTL::ZZ tmp_zz;
     valstream >> tmp_zz;
-    modulus = NTL::trunc_ZZ(tmp_zz,sizeof(T)*8);
+    if(tmp_zz <= NTL::to_ZZ(0)) 
+    {
+	cerr << "Error: CCS representation: VALS file: Modulus should be positive.\n"; exit(-1);//trigerred even the file is empty
+    }
+    if(NTL::NumBits(tmp_zz) >= (sizeof(T)*8)) 
+    {
+	modulus = NTL::trunc_ZZ(tmp_zz,sizeof(T)*8);
+    } else {
+	cerr << "Error: CCS representation: VALS file: Modulus length is small\n"; exit(-1);//good
+    }
+    if(!valstream.good())
+    {	
+	cerr << "Error: CCS representation: VALS file: File has no more value.\n"; exit(-1); //never trigerred
+    }
 
     rowstream >> matrix.nrows;
+    if(matrix.nrows <= NTL::to_ZZ(0)) 
+    {
+	cerr << "Error: CCS representation: ROWS file: Number of rows (p) should be positive.\n"; exit(-1);
+    }
+    if(!rowstream.good())
+    {
+	cerr << "Error: CCS representation: ROWS file: File has no more value.\n"; exit(-1);
+    }
+
     rowstream >> matrix.nvals;
+    if(matrix.nvals < NTL::to_ZZ(0)) 
+    {
+	cerr << "Error: CCS representation: ROWS file: Number of non-zero values should be non-negitive.\n"; exit(-1);
+    }
+    if(!rowstream.good())
+    {
+	cerr << "Error: CCS representation: ROWS file: File has no more value.\n"; exit(-1);
+    }
+
+    
     matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
     gpuErrchk(cudaMalloc((void**)&matrix.d_rows, matrix.nvals * sizeof(uint)));
     matrix.l_vals = (T *)malloc(matrix.nvals * sizeof(T));
     gpuErrchk(cudaMalloc((void**)&matrix.d_vals, matrix.nvals * sizeof(T)));
 
     colstream >> matrix.ncols;
+    if(matrix.ncols <= NTL::to_ZZ(0)) 
+    {
+	cerr << "Error: CCS representation: COLS file: Number of columns (r) should be positive.\n"; exit(-1);//trigerred even with empty file
+    }
+    if(!colstream.good())
+    {
+	cerr << "Error: CCS representation: COLS file: File has no more value.\n"; exit(-1);//never trigerred
+    }
+
+
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
-    gpuErrchk(cudaMalloc((void**)&matrix.d_cols,
-	(matrix.ncols+1) * sizeof(uint)));
+    gpuErrchk(cudaMalloc((void**)&matrix.d_cols, (matrix.ncols+1) * sizeof(uint)));
 
     NTL::ZZ_pPush p(modulus);
     for (int i = 0; i < matrix.nvals; i++)
     {
 	NTL::ZZ_p tmp;
 	valstream >> tmp;
+	if(!valstream.good())
+	{
+		cerr << "Error: CCS representation:  VALS file: Number of non-zero values is less than the provided length.\n"; exit(-1);//good
+	}
 	to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
-	rowstream >> matrix.l_rows[i];
+        rowstream >> matrix.l_rows[i];
+	if(!rowstream.good())
+	{
+		cerr << "Error: CCS representation:  ROWS file: each value should have a row number.\n"; exit(-1);//good
+	}
+	if(matrix.l_rows[i] < NTL::to_ZZ(0) || matrix.l_rows[i] >= matrix.nrows) 
+	{
+		cerr << "Error: CCS representation: ROWS file: Invalid row number.\n"; exit(-1);//good
+	}
+	
     }
     valstream.close();
     rowstream.close();
@@ -312,10 +397,26 @@ void initMatrix(const char * valfile, const char * rowfile,
 	cudaMemcpyHostToDevice));
     gpuErrchk(cudaMemcpy(matrix.d_rows, matrix.l_rows,
 	matrix.nvals * sizeof(uint), cudaMemcpyHostToDevice));
-
+	
+    long sum_vals = 0;
     for (int i = 0; i < matrix.ncols+1; i++)
     {
 	colstream >> matrix.l_cols[i];
+	if(!colstream.good())
+	{
+		cerr << "Error: CCS representation:  COLS file: Number of column pointer is less than the provided length.\n"; exit(-1);//good
+	}
+	if (i>0) {
+		if( matrix.l_cols[i] < matrix.l_cols[i-1] || matrix.l_cols[i] > matrix.nvals || matrix.l_cols[i] < NTL::to_ZZ(0)) 
+		{
+			cerr << "Error: CCS representation: COLS file: Invalid column pointer given.\n"; exit(-1);//good
+		}
+		sum_vals += matrix.l_cols[i] - matrix.l_cols[i-1];
+	}
+    }
+    if(sum_vals < matrix.nvals) 
+    {
+	cerr << "Error: CCS representation:  COLS file: More non-zero values left to put in columns.\n"; exit(-1);//good
     }
     colstream.close();
 
