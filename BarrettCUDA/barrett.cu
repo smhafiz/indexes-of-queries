@@ -315,9 +315,13 @@ void initMatrix(const char * valfile, const char * rowfile,
 
     NTL::ZZ tmp_zz;
     valstream >> tmp_zz;
+    if(!valstream.good())
+    {	
+	cerr << "Error: CCS representation: VALS file: File has no more value.\n"; exit(-1); //good
+    }
     if(tmp_zz <= NTL::to_ZZ(0)) 
     {
-	cerr << "Error: CCS representation: VALS file: Modulus should be positive.\n"; exit(-1);//trigerred even the file is empty
+	cerr << "Error: CCS representation: VALS file: Modulus should be positive.\n"; exit(-1);//good
     }
     if(NTL::NumBits(tmp_zz) >= (sizeof(T)*8)) 
     {
@@ -325,30 +329,29 @@ void initMatrix(const char * valfile, const char * rowfile,
     } else {
 	cerr << "Error: CCS representation: VALS file: Modulus length is small\n"; exit(-1);//good
     }
-    if(!valstream.good())
-    {	
-	cerr << "Error: CCS representation: VALS file: File has no more value.\n"; exit(-1); //never trigerred
-    }
+
 
     rowstream >> matrix.nrows;
+    if(!rowstream.good())
+    {
+	cerr << "Error: CCS representation: ROWS file: File has no more value.\n"; exit(-1);
+    }
     if(matrix.nrows <= NTL::to_ZZ(0)) 
     {
 	cerr << "Error: CCS representation: ROWS file: Number of rows (p) should be positive.\n"; exit(-1);
     }
+
+
+    rowstream >> matrix.nvals;
     if(!rowstream.good())
     {
 	cerr << "Error: CCS representation: ROWS file: File has no more value.\n"; exit(-1);
     }
-
-    rowstream >> matrix.nvals;
     if(matrix.nvals < NTL::to_ZZ(0)) 
     {
 	cerr << "Error: CCS representation: ROWS file: Number of non-zero values should be non-negitive.\n"; exit(-1);
     }
-    if(!rowstream.good())
-    {
-	cerr << "Error: CCS representation: ROWS file: File has no more value.\n"; exit(-1);
-    }
+
 
     
     matrix.l_rows = (uint *)malloc(matrix.nvals * sizeof(uint));
@@ -357,14 +360,15 @@ void initMatrix(const char * valfile, const char * rowfile,
     gpuErrchk(cudaMalloc((void**)&matrix.d_vals, matrix.nvals * sizeof(T)));
 
     colstream >> matrix.ncols;
-    if(matrix.ncols <= NTL::to_ZZ(0)) 
-    {
-	cerr << "Error: CCS representation: COLS file: Number of columns (r) should be positive.\n"; exit(-1);//trigerred even with empty file
-    }
     if(!colstream.good())
     {
-	cerr << "Error: CCS representation: COLS file: File has no more value.\n"; exit(-1);//never trigerred
+	cerr << "Error: CCS representation: COLS file: File has no value.\n"; exit(-1);//good
     }
+    if(matrix.ncols <= NTL::to_ZZ(0)) 
+    {
+	cerr << "Error: CCS representation: COLS file: Number of columns (r) should be positive.\n"; exit(-1);//good
+    }
+
 
 
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
