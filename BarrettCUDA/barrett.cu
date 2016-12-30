@@ -62,30 +62,30 @@ template <typename T> struct _SpMV_specializer<T,0>
     T * subtrahends = (T *)d_subtrahends;
     uintXp<T> * mu = (uintXp<T> *)d_mu;
     T * modulus = (T *)d_modulus;
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo:  \t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi:  \t"); _print_limbs<T>(res_hi, LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  over:  \t%u", overflow);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[overflow], LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
-    // do the Barrett reduction
-    normalize(res_lo.lo, res_hi, subtrahends[overflow], (overflow ? -1: 0));
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo': \t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi': \t"); _print_limbs<T>(res_hi, LIMBS_PER_UINTX);}
-    uintXp<T> q = get_q(res_lo.lo, res_hi, *mu);
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo, LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi, 1);}
-    uintXp<T> r2 = get_r2(q, *modulus);
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
-    res_lo.hi = sub(res_lo.lo, res_hi, r2);
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(res_lo.hi, 1);}
-    if (res_lo.hi) sub_modulus(res_lo, *modulus);
-    if (res_lo.hi) sub_modulus(res_lo, *modulus);
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(res_lo.hi, 1);}
-    // write final result to global memory
-    response[i] = res_lo.lo;
-if (DEBUG_IF_ENABLED && i==DEBUG_IDX){ printf("\nCUDA Kernel  a''': \t"); _print_limbs<T>(response[i], LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo:  \t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi:  \t"); _print_limbs<T>(res_hi, LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  over:  \t%u", overflow);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  sub_lo:\t"); _print_limbs<T>(subtrahends[overflow], LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  sub_hi:\t"); _print_limbs<T>(subtrahends[2*overflow+1], LIMBS_PER_UINTX);}
+	    // do the Barrett reduction
+	    normalize(res_lo.lo, res_hi, subtrahends[overflow], (overflow ? -1: 0));
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo': \t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi': \t"); _print_limbs<T>(res_hi, LIMBS_PER_UINTX);}
+	    uintXp<T> q = get_q(res_lo.lo, res_hi, *mu);
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  q_lo:  \t"); _print_limbs<T>(q.lo, LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  q_hi:  \t"); _print_limbs<uint>(q.hi, 1);}
+	    uintXp<T> r2 = get_r2(q, *modulus);
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  r2:    \t"); _print_limbs<uintXp<T>>(r2, LIMBS_PER_UINTX+1);}
+	    res_lo.hi = sub(res_lo.lo, res_hi, r2);
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(res_lo.hi, 1);}
+	    if (res_lo.hi) sub_modulus(res_lo, *modulus);
+	    if (res_lo.hi) sub_modulus(res_lo, *modulus);
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_lo'':\t"); _print_limbs<T>(res_lo.lo, LIMBS_PER_UINTX);}
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){printf("\n  a_hi'':\t"); _print_limbs<uint>(res_lo.hi, 1);}
+	    // write final result to global memory
+	    response[i] = res_lo.lo;
+	if (DEBUG_IF_ENABLED && i==DEBUG_IDX){ printf("\nCUDA Kernel  a''': \t"); _print_limbs<T>(response[i], LIMBS_PER_UINTX);}
     }
 };
 
@@ -128,6 +128,77 @@ template <> struct _SpMV_specializer<GF216_Element,0>
         res ^= d_GF216_exp_table[log_x+log_y];
     }
     response[i] = res;
+    }
+};
+
+
+// specialization for uintX
+template <typename T> struct _truncateBits_specializer<T,0>
+{
+    static void truncateBits( T * vals, const  NTL::ZZ tmp)
+    {
+	to_uint<T>(tmp,vals);
+    }
+};
+
+// specialization for GF28_Element
+template <> struct _truncateBits_specializer<GF28_Element,0>
+{
+    static void truncateBits( GF28_Element * vals, const  NTL::ZZ tmp)
+    {
+	*vals = NTL::trunc_long(tmp, 8);
+    }
+};
+
+// specialization for GF216_Element
+template <> struct _truncateBits_specializer<GF216_Element,0>
+{
+    static void truncateBits( GF216_Element * vals, const  NTL::ZZ tmp)
+    {
+	*vals = NTL::trunc_long(tmp, 16);
+    }
+};
+
+/**
+    #ifdef uintX
+    
+    #endif*/
+// specialization for uintX
+template <typename T> struct _maxOverflow_specializer<T,0>
+{
+    static uint maxOverflow(const uint ncols, const uint * cols, const uint nvals, const T * vals, NTL::ZZ & modulus)
+    {
+	NTL::ZZ max_col = NTL::to_ZZ(0);
+    for (int i = 0; i < ncols; i++)
+    {
+	    NTL::ZZ this_col = NTL::to_ZZ(0);
+	    for (int j = cols[i]; j < cols[i+1]; j++)
+	    {
+		this_col += to_ZZ(vals[j]);
+	    }
+	    max_col = (max_col > this_col) ? max_col : this_col;
+    }
+    max_col *= (modulus-1);
+    max_col >>= (2*BITS_PER_LIMB*LIMBS_PER_UINTX);
+    return (uint)trunc_long(max_col, 32);
+    }
+};
+
+// specialization for GF28_Element
+template <> struct _maxOverflow_specializer<GF28_Element,0>
+{
+    static uint maxOverflow(const uint ncols, const uint * cols, const uint nvals, const GF28_Element * vals, NTL::ZZ & modulus)
+    {
+	return 0;
+    }
+};
+
+// specialization for GF216_Element
+template <> struct _maxOverflow_specializer<GF216_Element,0>
+{
+    static uint maxOverflow(const uint ncols, const uint * cols, const uint nvals, const GF216_Element * vals, NTL::ZZ & modulus)
+    {
+	return 0;
     }
 };
 
@@ -462,25 +533,25 @@ void initMatrix(const char * valfile, const char * rowfile,
     matrix.l_cols = (uint *)malloc((matrix.ncols+1) * sizeof(uint));
     gpuErrchk(cudaMalloc((void**)&matrix.d_cols, (matrix.ncols+1) * sizeof(uint)));
 
-    NTL::ZZ_pPush p(modulus);
+    //NTL::ZZ_pPush p(modulus);
     for (int i = 0; i < matrix.nvals; i++)
     {
-    NTL::ZZ_p tmp;
+    NTL::ZZ tmp;
     valstream >> tmp;
     if(!valstream.good())
     {
         cerr << "Error: CCS representation:  VALS file: Number of non-zero values is less than the provided length.\n"; exit(-1);//good
     }
-   
-    #ifdef uintX
-        to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
-    #endif
-    #ifdef GF28
-        matrix.l_vals[i] = NTL::trunc_long(tmp_zz, 8);
-    #endif
-    #ifdef GF216
-        matrix.l_vals[i] = NTL::trunc_long(tmp_zz, 16);
-    #endif
+    _truncateBits_specializer<T,0>::truncateBits(matrix.l_vals+i,tmp);
+	    /*#ifdef uintX
+		to_uint<T>(NTL::rep(tmp), matrix.l_vals[i]);
+	    #endif
+	    #ifdef GF28
+		matrix.l_vals[i] = NTL::trunc_long(tmp_zz, 8);
+	    #endif
+	    #ifdef GF216
+		matrix.l_vals[i] = NTL::trunc_long(tmp_zz, 16);
+	    #endif*/
         rowstream >> matrix.l_rows[i];
     if(!rowstream.good())
     {
@@ -520,21 +591,22 @@ void initMatrix(const char * valfile, const char * rowfile,
     cerr << "Error: CCS representation:  COLS file: More non-zero values left to put in columns.\n"; exit(-1);//good
     }
     colstream.close();
-    #ifdef uintX
+    /*#ifdef uintX
     NTL::ZZ max_col = NTL::to_ZZ(0);
     for (int i = 0; i < matrix.ncols; i++)
     {
-    NTL::ZZ this_col = NTL::to_ZZ(0);
-    for (int j = matrix.l_cols[i]; j < matrix.l_cols[i+1]; j++)
-    {
-        this_col += to_ZZ(matrix.l_vals[j]);
-    }
-    max_col = (max_col > this_col) ? max_col : this_col;
+	    NTL::ZZ this_col = NTL::to_ZZ(0);
+	    for (int j = matrix.l_cols[i]; j < matrix.l_cols[i+1]; j++)
+	    {
+		this_col += to_ZZ(matrix.l_vals[j]);
+	    }
+	    max_col = (max_col > this_col) ? max_col : this_col;
     }
     max_col *= (modulus-1);
     max_col >>= (2*BITS_PER_LIMB*LIMBS_PER_UINTX);
     max_overflow = (uint)trunc_long(max_col, 32);
-    #endif
+    #endif*/
+    max_overflow = _maxOverflow_specializer<T,0>::maxOverflow(matrix.ncols, matrix.l_cols, matrix.nvals, matrix.l_vals, modulus);
     gpuErrchk(cudaMemcpy(matrix.d_cols, matrix.l_cols,
     (matrix.ncols+1) * sizeof(uint), cudaMemcpyHostToDevice));
 }

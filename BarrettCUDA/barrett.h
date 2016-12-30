@@ -74,6 +74,19 @@ struct _SpMV_specializer
 	const uint * rows);
 };
 
+template <typename T, int U>
+struct _truncateBits_specializer
+{
+    static void truncateBits( T * vals, const  NTL::ZZ tmp);
+};
+
+template <typename T, int U>
+struct _maxOverflow_specializer
+{
+    static uint maxOverflow(const uint ncols, const uint * cols, const uint nvals, const GF216_Element * vals, NTL::ZZ & modulus);
+};
+
+
 template <typename T>
 __global__ void SpMV_kernel(T * response, const T * query, const uint nvals,
     const T * vals, const uint ncols, const uint * cols, const uint * rows)
