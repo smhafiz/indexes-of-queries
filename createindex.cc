@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <chrono>
 
 #include <NTL/ZZ_pX.h>
 #include <NTL/vec_ZZ_p.h>
@@ -11,6 +12,9 @@ NTL_CLIENT
 
 int main(int argc, char **argv)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+    //std::chrono::nanoseconds onesec{1000000000};
+
     NTL::ZZ modulus = NTL::RandomPrime_ZZ(atoi(argv[1])*8);//to support GF(2^8)
     
     //for(int d=0;d<argc;d++)cout << argv[d] << endl;
@@ -191,5 +195,7 @@ int main(int argc, char **argv)
     buffer.kill();
     delete [] nz;
 
+    //auto time_elapsed = ;
+    std::cout << "Time requires to batch CCS files: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " milliseconds\n";
     return 0;
 }
